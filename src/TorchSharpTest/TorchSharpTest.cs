@@ -26,7 +26,9 @@ namespace TorchSharpTest
         public void Test2()
         {
             var device = new torch.Device(DeviceType.CUDA);
-            var c = torch.randn(3, 5, 4, device: device);
+            var tensor = torch.randn(3, 5, 4, device: device);
+            var ndArray = tensor.data<float>().ToNDArray();
+            Print(ndArray);
         }
     }
 }

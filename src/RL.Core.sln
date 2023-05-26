@@ -5,7 +5,13 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RL.Core", "RL.Core\RL.Core.csproj", "{54CABBC2-BBCF-4F8F-955B-431E100AC187}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorchSharpTest", "TorchSharpTest\TorchSharpTest.csproj", "{77C48BA9-1604-4EE0-BCBE-DC9B6DC238A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorchSharpTest", "TorchSharpTest\TorchSharpTest.csproj", "{77C48BA9-1604-4EE0-BCBE-DC9B6DC238A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{8919C8FE-5A2A-477B-A1A3-832F4EAC36A5}"
+	ProjectSection(SolutionItems) = preProject
+		..\.gitignore = ..\.gitignore
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
