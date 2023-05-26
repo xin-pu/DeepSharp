@@ -1,4 +1,4 @@
-﻿namespace RL.Core
+﻿namespace RL.Core.Policies
 {
     public interface IPolicy
     {

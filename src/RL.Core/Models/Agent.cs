@@ -1,5 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using TorchSharp;
+﻿using RL.Core.Policies;
 
 namespace RL.Core
 {
@@ -34,6 +33,6 @@ namespace RL.Core
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public abstract torch.Tensor RunPolicy(State state);
+        public abstract Tensor RunPolicy(State state);
     }
 }

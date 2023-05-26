@@ -1,6 +1,5 @@
-using Xunit.Abstractions;
-using static TorchSharp.torch;
-using static TorchSharp.torch.nn;
+
+
 
 namespace TorchSharpTest
 {
@@ -15,17 +14,19 @@ namespace TorchSharpTest
         [Fact]
         public void Test1()
         {
-            var lin1 = Linear(4, 5);
+            var device = new torch.Device(DeviceType.CUDA);
 
-            var x = randn(3, 5, 4);
-
-            var y = lin1.forward(x);
+            var linear = Linear(4, 5, device: device);
+            var x = torch.randn(3, 5, 4, device: device);
+            var y = linear.forward(x);
             Print(y);
         }
 
         [Fact]
         public void Test2()
         {
+            var device = new torch.Device(DeviceType.CUDA);
+            var c = torch.randn(3, 5, 4, device: device);
         }
     }
 }
