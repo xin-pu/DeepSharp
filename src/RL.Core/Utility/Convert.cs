@@ -1,21 +1,21 @@
-﻿using System.Text;
-
-namespace RL.Core.Utility
+﻿namespace RL.Core.Utility
 {
-    public class TensorOp
+    public class Convert
     {
-        public static string ToString(torch.Tensor tensor, int maxLengthShow = 4)
+        /// <summary>
+        ///     Convert Mat to Tensor
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static torch.Tensor ToTensor(Mat mat)
         {
-            var dims = tensor.shape;
-            var dtype = tensor.dtype;
-            var array = tensor.data<float>().ToNDArray();
-
-            var strBuild = new StringBuilder();
-
-
-            strBuild.AppendLine($"[{string.Join(",", dims)}]\t{dtype}\t{tensor.device}");
-            return strBuild.ToString();
+            var dims = OpMat.GetDims(mat);
+            mat.GetArray(out float[] d);
+            var original = torch.from_array(d);
+            var final = original.reshape(dims);
+            return final;
         }
+
 
         /// <summary>
         ///     转换为 Array

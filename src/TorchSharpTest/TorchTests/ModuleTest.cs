@@ -31,6 +31,31 @@ namespace TorchSharpTest.TorchTests
 
             Print(y);
         }
+
+
+        [Fact]
+        public void TrainTest()
+        {
+            var x = torch.randn(64, 100).to(device);
+            var y = torch.randn(64, 3).to(device);
+            var net = new Net(100, 5, 3).to(device);
+            var optimizer = torch.optim.Adam(net.Sequential.parameters());
+
+            for (var i = 0; i < 10; i++)
+            {
+                var eval = net.Forward(x);
+                var output = functional.mse_loss(eval, y, Reduction.Sum);
+
+                optimizer.zero_grad();
+
+                output.backward();
+
+                optimizer.step();
+
+                var loss = output.item<float>();
+                Print($"epoch:\t{i:D5}\tLoss:\t{loss}");
+            }
+        }
     }
 
     public class Net : Module
@@ -44,12 +69,12 @@ namespace TorchSharpTest.TorchTests
                 Linear(hiddenSize, actionNum).to(DeviceType.CUDA));
         }
 
+
+        public Sequential Sequential { set; get; }
+
         public torch.Tensor Forward(torch.Tensor x)
         {
             return Sequential.forward(x);
         }
-
-
-        public Sequential Sequential { set; get; }
     }
 }

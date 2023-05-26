@@ -1,4 +1,4 @@
-namespace TorchSharpTest
+namespace TorchSharpTest.TorchTests
 {
     public class TensorTest : AbstractTest
     {
