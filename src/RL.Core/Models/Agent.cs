@@ -33,6 +33,6 @@ namespace RL.Core
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public abstract Tensor RunPolicy(State state);
+        public abstract torch.Tensor RunPolicy(State state);
     }
 }

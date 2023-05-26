@@ -6,9 +6,9 @@
     public class Reward : ObservableObject
     {
         private DateTime _timeStamp;
-        private Tensor? _value;
+        private torch.Tensor? _value;
 
-        public Reward(Tensor value)
+        public Reward(torch.Tensor value)
         {
             Value = value;
             TimeStamp = DateTime.Now;
@@ -26,7 +26,7 @@
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public Tensor? Value
+        public torch.Tensor? Value
         {
             set => SetProperty(ref _value, value);
             get => _value;

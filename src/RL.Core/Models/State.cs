@@ -6,7 +6,7 @@
     public class State : ObservableObject
     {
         private DateTime _timeStamp;
-        private Tensor? _value;
+        private torch.Tensor? _value;
 
         /// <summary>
         ///     奖励产生的时间戳
@@ -21,7 +21,7 @@
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public Tensor? Value
+        public torch.Tensor? Value
         {
             set => SetProperty(ref _value, value);
             get => _value;

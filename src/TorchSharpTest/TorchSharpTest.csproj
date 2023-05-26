@@ -24,4 +24,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\RL.Core\RL.Core.csproj" />
+  </ItemGroup>
+
 </Project>

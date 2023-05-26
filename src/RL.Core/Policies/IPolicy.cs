@@ -2,6 +2,6 @@
 {
     public interface IPolicy
     {
-        public Tensor Predict(Tensor input);
+        public torch.Tensor Predict(torch.Tensor input);
     }
 }
