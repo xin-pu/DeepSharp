@@ -1,15 +1,18 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using TorchSharp;
-
-namespace RL.Core
+﻿namespace RL.Core
 {
     /// <summary>
-    ///     环境的状态
+    ///     环境给出的奖励
     /// </summary>
-    public class State : ObservableObject
+    public class Reward : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor? _value;
+        private Tensor? _value;
+
+        public Reward(Tensor value)
+        {
+            Value = value;
+            TimeStamp = DateTime.Now;
+        }
 
         /// <summary>
         ///     奖励产生的时间戳
@@ -20,11 +23,10 @@ namespace RL.Core
             get => _timeStamp;
         }
 
-
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public torch.Tensor? Value
+        public Tensor? Value
         {
             set => SetProperty(ref _value, value);
             get => _value;

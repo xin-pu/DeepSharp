@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace RL.Core
+﻿namespace RL.Core
 {
     /// <summary>
     ///     环境
