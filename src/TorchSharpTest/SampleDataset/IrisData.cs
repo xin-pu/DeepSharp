@@ -11,7 +11,7 @@ namespace TorchSharpTest.SampleDataset
         {
         }
 
-        [StreamHeader(0)] public float Label { set; get; }
+        [StreamHeader(0)] public long Label { set; get; }
         [StreamHeader(1)] public float SepalLength { set; get; }
         [StreamHeader(2)] public float SepalWidth { set; get; }
         [StreamHeader(3)] public float PetalLength { set; get; }
@@ -24,7 +24,9 @@ namespace TorchSharpTest.SampleDataset
 
         public override torch.Tensor GetLabels()
         {
-            return torch.tensor(new[] {Label});
+            var array = Enumerable.Range(0, 3).Select(a => (float) a).ToArray();
+            array[Label] = 1;
+            return torch.tensor(array);
         }
 
         public override string ToString()
