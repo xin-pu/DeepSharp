@@ -1,2 +1,2 @@
 # ReinforcementLearning
- A Demo for Reinforcement Learning
+Secondary development by torchsharp for Deep Learning and Reinforcement Learning
