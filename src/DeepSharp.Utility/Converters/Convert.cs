@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.Utility
+﻿using DeepSharp.Utility.Operations;
+
+namespace DeepSharp.Utility.Converters
 {
     public class Convert
     {

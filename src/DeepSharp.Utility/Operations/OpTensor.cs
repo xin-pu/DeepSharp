@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace DeepSharp.Utility
+namespace DeepSharp.Utility.Operations
 {
     public class OpTensor
     {

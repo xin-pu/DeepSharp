@@ -1,4 +1,4 @@
-﻿namespace DeepSharp.Utility
+﻿namespace DeepSharp.Utility.Operations
 {
     public class OpMat
     {

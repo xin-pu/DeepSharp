@@ -12,4 +12,8 @@
     <PackageReference Include="TorchSharp" Version="0.100.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Enumeration\" />
+  </ItemGroup>
+
 </Project>
