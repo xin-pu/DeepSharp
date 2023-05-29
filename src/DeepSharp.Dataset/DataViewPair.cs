@@ -37,8 +37,7 @@
 
         public DataViewPair To(torch.Device device)
         {
-            var res = new DataViewPair(Features.to(device),
-                Labels.to(device));
+            var res = new DataViewPair(Labels.to(device), Features.to(device));
             return res;
         }
     }

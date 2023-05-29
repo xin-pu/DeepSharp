@@ -59,3 +59,18 @@ while (iterator.MoveNext())
     Print(current);
 }
 ```
+
+### InfiniteDataLoader
+
+```c#
+
+var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
+var dataConfig = new DataLoaderConfig();
+var dataloader = new InfiniteDataLoader<IrisData>(dataset, dataConfig);
+
+await foreach (var a in dataloader.GetBatchSample(100))
+{
+    var array = a.Labels.data<float>().ToArray();
+    Print($"{string.Join(";", array)}");
+}
+```

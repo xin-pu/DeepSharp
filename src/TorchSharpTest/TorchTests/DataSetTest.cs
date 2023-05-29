@@ -36,7 +36,7 @@ namespace TorchSharpTest.TorchTests
         }
 
         [Fact]
-        public void MyDataLoaderTest()
+        public void DataLoaderTest()
         {
             var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
             var dataConfig = new DataLoaderConfig
@@ -50,6 +50,20 @@ namespace TorchSharpTest.TorchTests
             {
                 var current = iterator.Current;
                 Print(current);
+            }
+        }
+
+        [Fact]
+        public async void InfiniteDataLoaderTest()
+        {
+            var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
+            var dataConfig = new DataLoaderConfig();
+            var dataloader = new InfiniteDataLoader<IrisData>(dataset, dataConfig);
+
+            await foreach (var a in dataloader.GetBatchSample(100))
+            {
+                var array = a.Labels.data<float>().ToArray();
+                Print($"{string.Join(";", array)}");
             }
         }
     }
