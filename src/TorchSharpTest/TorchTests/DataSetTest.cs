@@ -1,4 +1,8 @@
-﻿namespace TorchSharpTest.TorchTests
+﻿using DeepSharp.Dataset;
+using DeepSharp.Dataset.Models;
+using TorchSharpTest.SampleDataset;
+
+namespace TorchSharpTest.TorchTests
 {
     public class DataSetTest : AbstractTest
     {
@@ -8,32 +12,27 @@
         }
 
         [Fact]
-        public void DatasetTest()
+        public void StreamDatasetTest()
         {
-        }
-    }
-
-    public class IrisData
-    {
-        public int Label;
-
-        public double PetalLength;
-
-        public double PetalWidth;
-
-        public double SepalLength;
-
-        public double SepalWidth;
-    }
-
-
-    public class IrisDataSet : torch.utils.data.Dataset
-    {
-        public override Dictionary<string, torch.Tensor> GetTensor(long index)
-        {
-            throw new NotImplementedException();
+            var dataset = new ObjectDataset<IrisData>(@"F:\Iris\iris-train.txt");
+            var res = dataset.GetTensor(0);
+            Print(res);
         }
 
-        public override long Count { get; }
+        [Fact]
+        public void StreamDataloaderTest()
+        {
+            var dataset = new ObjectDataset<IrisData>(@"F:\Iris\iris-train.txt");
+            var dataloader =
+                new torch.utils.data.DataLoader<IrisData, DataViewPair>(dataset, 4,
+                    DataViewPair.FromDataViews, true, new torch.Device(DeviceType.CUDA));
+
+            using var iterator = dataloader.GetEnumerator();
+            while (iterator.MoveNext())
+            {
+                var current = iterator.Current;
+                Print(current);
+            }
+        }
     }
 }

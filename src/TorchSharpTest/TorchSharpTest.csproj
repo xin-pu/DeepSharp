@@ -24,4 +24,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DeepSharp.Dataset\DeepSharp.Dataset.csproj" />
+  </ItemGroup>
+
 </Project>
