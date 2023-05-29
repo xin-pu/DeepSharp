@@ -26,7 +26,7 @@
             var views = datasetViews.ToList();
             var features = views.Select(a => a.GetFeatures()).ToList();
             var labels = views.Select(a => a.GetLabels()).ToList();
-            var result = new DataViewPair(labels, features);
+            var result = new DataViewPair(labels, features).To(device);
             return result;
         }
     }
