@@ -2,8 +2,8 @@
 {
     public class DataLoader<T> : torch.utils.data.DataLoader<T, DataViewPair> where T : DataView
     {
-        public DataLoader(Dataset<T> dataset, DataLoaderConfig config, torch.Device device)
-            : base(dataset, config.BatchSize, CollateFunc, config.Shuffle, device, config.Seed, config.NumWorker,
+        public DataLoader(Dataset<T> dataset, DataLoaderConfig config)
+            : base(dataset, config.BatchSize, CollateFunc, config.Shuffle, config.Device, config.Seed, config.NumWorker,
                 config.DropLast)
         {
         }

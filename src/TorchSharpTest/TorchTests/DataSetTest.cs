@@ -43,7 +43,7 @@ namespace TorchSharpTest.TorchTests
             {
                 Device = new torch.Device(DeviceType.CUDA)
             };
-            var dataloader = new DataLoader<IrisData>(dataset, dataConfig, new torch.Device(DeviceType.CUDA));
+            var dataloader = new DataLoader<IrisData>(dataset, dataConfig);
 
             using var iterator = dataloader.GetEnumerator();
             while (iterator.MoveNext())
