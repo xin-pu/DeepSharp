@@ -1,4 +1,4 @@
-﻿namespace RL.Core
+﻿namespace DeepSharp.RL.Models
 {
     /// <summary>
     ///     环境给出的奖励

@@ -14,4 +14,8 @@
     <PackageReference Include="TorchSharp" Version="0.100.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\DeepSharp.Utility\DeepSharp.Utility.csproj" />
+  </ItemGroup>
+
 </Project>

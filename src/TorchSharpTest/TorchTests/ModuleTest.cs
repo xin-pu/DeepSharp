@@ -39,7 +39,7 @@ namespace TorchSharpTest.TorchTests
             var x = torch.randn(64, 100).to(device);
             var y = torch.randn(64, 3).to(device);
             var net = new Net(100, 5, 3).to(device);
-            var optimizer = torch.optim.Adam(net.Sequential.parameters());
+            var optimizer = torch.optim.Adam(net.parameters());
 
             for (var i = 0; i < 10; i++)
             {
@@ -71,6 +71,11 @@ namespace TorchSharpTest.TorchTests
 
 
         public Sequential Sequential { set; get; }
+
+        public override IEnumerable<Parameter> parameters(bool recurse = true)
+        {
+            return Sequential.parameters();
+        }
 
         public torch.Tensor Forward(torch.Tensor x)
         {

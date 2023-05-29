@@ -1,4 +1,4 @@
-﻿namespace RL.Core
+﻿namespace DeepSharp.RL
 {
     /// <summary>
     ///     生成每个Action的概率，并根据概率 选择当次Action

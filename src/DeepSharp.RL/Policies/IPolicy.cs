@@ -1,4 +1,4 @@
-﻿namespace RL.Core.Policies
+﻿namespace DeepSharp.RL.Policies
 {
     public interface IPolicy
     {
