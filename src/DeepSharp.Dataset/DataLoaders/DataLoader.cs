@@ -18,5 +18,12 @@ namespace DeepSharp.Dataset
             var result = new DataViewPair(labels, features).To(device);
             return result;
         }
+
+        public async IAsyncEnumerable<DataViewPair> GetBatchSample()
+        {
+            using var enumerator = GetEnumerator();
+            while (enumerator.MoveNext()) yield return enumerator.Current;
+            await Task.CompletedTask;
+        }
     }
 }
