@@ -1,22 +1,21 @@
 ﻿using DeepSharp.Dataset;
-using DeepSharp.Dataset.Models;
+using DeepSharp.Dataset.Datasets;
 
 namespace TorchSharpTest.SampleDataset
 {
     public class IrisData : DataView
     {
-        [StreamHeader(0)] public float Label { set; get; }
-        [StreamHeader(1)] public float SepalLength { set; get; }
-        [StreamHeader(2)] public float SepalWidth { set; get; }
-        [StreamHeader(3)] public float PetalLength { set; get; }
-        [StreamHeader(4)] public float PetalWidth { set; get; }
-
-
         /// <summary>
         /// </summary>
         public IrisData()
         {
         }
+
+        [StreamHeader(0)] public float Label { set; get; }
+        [StreamHeader(1)] public float SepalLength { set; get; }
+        [StreamHeader(2)] public float SepalWidth { set; get; }
+        [StreamHeader(3)] public float PetalLength { set; get; }
+        [StreamHeader(4)] public float PetalWidth { set; get; }
 
         public override torch.Tensor GetFeatures()
         {

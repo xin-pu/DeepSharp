@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.Dataset.Models
+﻿using DeepSharp.Dataset.Datasets;
+
+namespace DeepSharp.Dataset
 {
     /// <summary>
     ///     包含批次信息的 数据集 张量对象

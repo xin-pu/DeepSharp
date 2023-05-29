@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using DeepSharp.Dataset.Datasets;
 using DeepSharp.Dataset.Models;
 
 namespace DeepSharp.Dataset
@@ -7,10 +8,10 @@ namespace DeepSharp.Dataset
     ///     通过文件流加载面向对象的数据集
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class ObjectDataset<T> : torch.utils.data.Dataset<T>
+    public class Dataset<T> : torch.utils.data.Dataset<T>
         where T : DataView
     {
-        public ObjectDataset(string path, char splitChar = '\t', bool hasHeader = true)
+        public Dataset(string path, char splitChar = '\t', bool hasHeader = true)
         {
             /// Step 0 Precheck
             File.Exists(path).Should().BeTrue($"File {path} should exist.");
