@@ -37,5 +37,14 @@
         {
             writeLint(tensor);
         }
+
+        /// <summary>
+        ///     Todo optimize print Tensor
+        /// </summary>
+        /// <param name="tensor"></param>
+        internal void Print(float tensor)
+        {
+            writeLint(tensor);
+        }
     }
 }

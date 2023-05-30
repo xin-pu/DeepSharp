@@ -2,6 +2,11 @@
 {
     public interface IPolicy
     {
-        public torch.Tensor Predict(torch.Tensor input);
+        /// <summary>
+        ///     get next action according observation
+        /// </summary>
+        /// <param name="observation"></param>
+        /// <returns></returns>
+        public torch.Tensor PredictAction(torch.Tensor observation);
     }
 }
