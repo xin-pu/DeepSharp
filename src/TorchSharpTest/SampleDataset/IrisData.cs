@@ -24,9 +24,9 @@ namespace TorchSharpTest.SampleDataset
 
         public override torch.Tensor GetLabels()
         {
-            var array = Enumerable.Range(0, 3).Select(a => (float) a).ToArray();
-            array[Label] = 1;
-            return torch.tensor(array);
+            //var array = Enumerable.Range(0, 3).Select(a => (float) a).ToArray();
+            //array[Label] = 1;
+            return torch.tensor(Label);
         }
 
         public override string ToString()

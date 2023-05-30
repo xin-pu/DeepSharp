@@ -34,78 +34,83 @@ namespace TorchSharpTest.TorchTests
             Print(y);
         }
 
+        public string SaveFile => "StatModel.ts";
 
         [Fact]
-        public void TrainTest()
-        {
-            var x = torch.randn(64, 100).to(device);
-            var y = torch.randn(64, 3).to(device);
-            var net = new Net(100, 3).to(device);
-            var optimizer = torch.optim.Adam(net.parameters());
-
-            for (var i = 0; i < 10; i++)
-            {
-                var eval = net.Forward(x);
-                var output = functional.mse_loss(eval, y, Reduction.Sum);
-
-                optimizer.zero_grad();
-
-                output.backward();
-
-                optimizer.step();
-
-                var loss = output.item<float>();
-                Print($"epoch:\t{i:D5}\tLoss:\t{loss}");
-            }
-        }
-
-        [Fact]
-        public async void TrainTest2()
+        public async void TrainTest()
         {
             var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
             var dataConfig = new DataLoaderConfig {BatchSize = 8};
             var dataloader = new DataLoader<IrisData>(dataset, dataConfig);
 
-            var net = new Net(4, 3).to(device);
-            var optimizer = torch.optim.SGD(net.parameters(), 1E-3);
 
-
-            var bceWithLogitsLoss = BCEWithLogitsLoss();
-            foreach (var epoch in Enumerable.Range(0, 100))
+            using var net = Sequential(
+                Linear(4, 10),
+                Linear(10, 3));
             {
-                var lossEpoch = new List<float>();
-                await foreach (var datapair in dataloader.GetBatchSample())
+                var r = net.to(device);
+                var optimizer = torch.optim.Adam(r.parameters());
+                var bceWithLogitsLoss = CrossEntropyLoss();
+                foreach (var epoch in Enumerable.Range(0, 500))
                 {
-                    var (x, y) = (datapair.Features, datapair.Labels);
+                    var lossEpoch = new List<float>();
+                    await foreach (var datapair in dataloader.GetBatchSample())
+                    {
+                        var (x, y) = (datapair.Features, datapair.Labels);
 
-                    var eval = net.Forward(x);
-                    var output = bceWithLogitsLoss.call(eval, y);
+                        var eval = r.forward(x);
+                        var y_resharp = y.squeeze(-1);
+                        var output = bceWithLogitsLoss.call(eval, y_resharp);
 
-                    optimizer.zero_grad();
-                    output.backward();
-                    optimizer.step();
+                        optimizer.zero_grad();
+                        output.backward();
+                        optimizer.step();
 
-                    var loss = output.item<float>();
-                    lossEpoch.Add(loss);
+                        var loss = output.item<float>();
+                        lossEpoch.Add(loss);
+                    }
+
+                    var t = lossEpoch.Average();
+                    Print($"epoch:\t{epoch:D5}\tLoss:\t{t:F4}");
                 }
 
-                var t = lossEpoch.Average();
-                Print($"epoch:\t{epoch:D5}\tLoss:\t{t:F4}");
+                if (File.Exists(SaveFile)) File.Delete(SaveFile);
+
+                r.save(SaveFile);
             }
-
-
-            net.save("StatModel.ts");
         }
 
         [Fact]
-        public void LoadModel()
+        public void Predict()
         {
-            var net = new Net(4, 3);
-            net.load("StatModel.ts");
-            var testdata = new IrisData {PetalLength = 5.9f, PetalWidth = 2.1f, SepalLength = 7.1f, SepalWidth = 3.0f};
-            var y = net.Forward(testdata.GetFeatures().unsqueeze(0).to(device));
-            var z = y.sigmoid().data<float>().ToArray();
-            Print(string.Join(",", z));
+            using var net = Sequential(
+                Linear(4, 10),
+                Linear(10, 3));
+            {
+                net.load("StatModel.ts");
+
+                var testdata = new IrisData
+                {
+                    SepalLength = 4.6f,
+                    SepalWidth = 3.1f,
+                    PetalLength = 1.5f,
+                    PetalWidth = 0.2f
+                };
+                var y = net.forward(testdata.GetFeatures().unsqueeze(0));
+
+                var arr = y.data<float>().ToArray();
+                var res = y.argmax().item<long>();
+
+                Print(string.Join(",", arr));
+                Print(res.ToString());
+            }
+        }
+
+        public Sequential GetNet(int obsSize = 4, int actionNum = 3)
+        {
+            return Sequential(
+                Linear(obsSize, 10).to(DeviceType.CUDA),
+                Linear(10, actionNum).to(DeviceType.CUDA));
         }
     }
 
