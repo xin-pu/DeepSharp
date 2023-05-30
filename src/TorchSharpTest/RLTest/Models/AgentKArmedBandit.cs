@@ -1,6 +1,8 @@
 ﻿using DeepSharp.RL.CrossEntropy;
+using DeepSharp.RL.Models;
 using DeepSharp.RL.Policies;
 using static TorchSharp.torch.optim;
+using Action = DeepSharp.RL.Models.Action;
 
 namespace TorchSharpTest.RLTest
 {
@@ -19,15 +21,16 @@ namespace TorchSharpTest.RLTest
 
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { set; get; }
 
-        public torch.Tensor PredictAction(torch.Tensor observation)
+        public Action PredictAction(Reward reward)
         {
-            return Net.forward(observation);
+            var action = Net.forward(reward.Value);
+            return new Action {Value = action};
         }
 
 
         public void Learn(List<torch.Tensor> observations, List<torch.Tensor> rewards)
         {
-            if (observations.Count < 1000)
+            if (observations.Count < 100)
                 return;
 
             var filterObservations = observations.Skip(observations.Count - 1000).Take(1000).ToList();

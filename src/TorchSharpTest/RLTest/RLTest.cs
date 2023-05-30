@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.CrossEntropy;
+﻿using DeepSharp.RL.Models;
+using Action = DeepSharp.RL.Models.Action;
 
 namespace TorchSharpTest.RLTest
 {
@@ -45,16 +46,22 @@ namespace TorchSharpTest.RLTest
             kArmedBandit.Reset();
             Print(kArmedBandit);
 
-            var net = new Net(k, 10, k);
+            /// Step 2 创建智能体
+            var agent = new AgentKArmedBandit(k, k);
 
-            var actions = new List<torch.Tensor>();
-            var rewards = new List<torch.Tensor>();
+            var actions = new List<Action>();
+            var rewards = new List<Reward>();
 
-            foreach (var i in Enumerable.Range(0, 1))
-                if (i < batchSize)
-                {
-                    var index = random.Next(0, 2);
-                }
+            foreach (var i in Enumerable.Range(0, 1000))
+            {
+                var reward = kArmedBandit.Reward;
+                rewards.Add(reward);
+
+                var action = agent.PredictAction(reward);
+                actions.Add(action);
+                Print($"{i}\t{action}");
+                agent.Learn(rewards.Select(a => a.Value).ToList(), actions.Select(a => a.Value).ToList());
+            }
         }
     }
 }

@@ -8,6 +8,7 @@
     {
         private string _name;
         private State? _state;
+        private Reward? _reward;
         private List<State> _stateList;
 
         protected Envir()
@@ -30,8 +31,14 @@
 
         public State? State
         {
-            internal set => SetProperty(ref _state, value);
+            set => SetProperty(ref _state, value);
             get => _state;
+        }
+
+        public Reward? Reward
+        {
+            set => SetProperty(ref _reward, value);
+            get => _reward;
         }
 
 

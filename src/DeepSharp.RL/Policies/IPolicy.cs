@@ -1,4 +1,7 @@
-﻿namespace DeepSharp.RL.Policies
+﻿using DeepSharp.RL.Models;
+using Action = DeepSharp.RL.Models.Action;
+
+namespace DeepSharp.RL.Policies
 {
     public interface IPolicy
     {
@@ -7,6 +10,6 @@
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public torch.Tensor PredictAction(torch.Tensor observation);
+        public Action PredictAction(Reward reward);
     }
 }

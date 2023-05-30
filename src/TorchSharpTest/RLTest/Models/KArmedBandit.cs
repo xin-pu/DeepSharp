@@ -15,6 +15,8 @@ namespace TorchSharpTest.RLTest
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
                 bandits[i] = new Bandit($"{i}", random.Next(2, 8) * 1f / 10);
+            State = new State {Value = torch.zeros(k)};
+            Reward = new Reward(torch.zeros(k));
         }
 
         protected int K { set; get; }
@@ -45,6 +47,7 @@ namespace TorchSharpTest.RLTest
             var sum = state.Value.sum();
             return new Reward(sum);
         }
+
 
         public override string ToString()
         {
