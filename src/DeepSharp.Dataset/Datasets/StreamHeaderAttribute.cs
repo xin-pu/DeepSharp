@@ -1,6 +1,6 @@
-﻿using DeepSharp.Dataset.Models;
+﻿
 
-namespace DeepSharp.Dataset.Datasets
+namespace DeepSharp.Dataset
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class StreamHeaderAttribute : Attribute

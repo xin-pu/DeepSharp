@@ -1,4 +1,4 @@
-﻿namespace DeepSharp.Dataset.Models
+﻿namespace DeepSharp.Dataset
 {
     /// <summary>
     ///     Specifies the range of indices of input columns that should be mapped to an output column.

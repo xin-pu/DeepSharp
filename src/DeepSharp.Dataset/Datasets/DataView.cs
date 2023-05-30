@@ -3,23 +3,23 @@
     public abstract class DataView
     {
         /// <summary>
-        ///     转换为单个数据的特征张量，不含批次信息
+        ///     Get the features with tensor format.
         /// </summary>
         /// <returns></returns>
         public abstract torch.Tensor GetFeatures();
 
         /// <summary>
-        ///     转换为单个数据的标签张量，不含批次信息
+        ///     Get the labels with tensor format.
         /// </summary>
         /// <returns></returns>
         public abstract torch.Tensor GetLabels();
 
 
         /// <summary>
-        ///     将DataView对象转为 最终训练用的 特征与标签 张量 对象
+        ///     convert batch DataView to  single DataView Pair
         /// </summary>
         /// <param name="datasetViews"></param>
-        /// <param name="device">训练时使用的设备</param>
+        /// <param name="device">cpu or  cuda</param>
         /// <returns></returns>
         public static DataViewPair FromDataViews(IEnumerable<DataView> datasetViews, torch.Device device)
         {

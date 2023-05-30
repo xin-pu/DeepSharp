@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.Dataset
 {
     /// <summary>
-    ///     基于异步流实现无穷尽的循环loader
+    ///     Infinite DataLoader inherit from DataLoader
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class InfiniteDataLoader<T> : DataLoader<T>
@@ -13,7 +13,7 @@
             IEnumerator = GetEnumerator();
         }
 
-        public IEnumerator<DataViewPair> IEnumerator { protected set; get; }
+        protected IEnumerator<DataViewPair> IEnumerator { set; get; }
 
         public async IAsyncEnumerable<DataViewPair> GetBatchSample(int sample)
         {

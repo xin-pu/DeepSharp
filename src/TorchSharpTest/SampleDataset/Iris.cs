@@ -1,5 +1,4 @@
 ﻿using DeepSharp.Dataset;
-using DeepSharp.Dataset.Datasets;
 
 namespace TorchSharpTest.SampleDataset
 {

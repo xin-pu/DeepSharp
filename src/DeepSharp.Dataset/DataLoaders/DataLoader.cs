@@ -1,8 +1,11 @@
-﻿using static TorchSharp.torch.utils.data;
-
-namespace DeepSharp.Dataset
+﻿namespace DeepSharp.Dataset
 {
-    public class DataLoader<T> : DataLoader<T, DataViewPair> where T : DataView
+    /// <summary>
+    ///     Basic DataLoader inherit from torch.utils.data.DataLoader
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class DataLoader<T> : torch.utils.data.DataLoader<T, DataViewPair>
+        where T : DataView
     {
         public DataLoader(Dataset<T> dataset, DataLoaderConfig config)
             : base(dataset, config.BatchSize, CollateFunc, config.Shuffle, config.Device, config.Seed, config.NumWorker,

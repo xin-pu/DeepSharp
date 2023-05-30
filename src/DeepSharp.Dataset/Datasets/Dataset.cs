@@ -1,22 +1,22 @@
 ﻿using System.Reflection;
-using DeepSharp.Dataset.Datasets;
-using DeepSharp.Dataset.Models;
 
 namespace DeepSharp.Dataset
 {
     /// <summary>
-    ///     通过文件流加载面向对象的数据集
+    ///     Load DataSet by object-oriented inherit from torch.utils.data.Dataset
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class Dataset<T> : torch.utils.data.Dataset<T>
         where T : DataView
     {
+        protected T[] AllData { set; get; }
+
         public Dataset(string path, char splitChar = '\t', bool hasHeader = true)
         {
-            /// Step 0 Precheck
+            /// Step 1 Precheck
             File.Exists(path).Should().BeTrue($"File {path} should exist.");
 
-            /// Step 1 Read Stream to DataTable or Array
+            /// Step 2 Read Stream to DataTable or Array
             using var stream = new StreamReader(path);
             var allline = stream.ReadToEnd()
                 .Split('\r', '\n')
@@ -28,14 +28,12 @@ namespace DeepSharp.Dataset
 
             var fieldDict = GetFieldDict(typeof(T));
 
-            /// Step 2 According LoadColumnAttribute Change to Data
+            /// Step 3 According LoadColumnAttribute Change to Data
             AllData = alldata
                 .Select(single => GetData(fieldDict, single))
                 .ToArray();
             Count = AllData.Length;
         }
-
-        public T[] AllData { set; get; }
 
         public override long Count { get; }
 
@@ -45,9 +43,9 @@ namespace DeepSharp.Dataset
         }
 
 
-        #region MyRegion
+        #region protect function
 
-        private static Dictionary<PropertyInfo, StreamHeaderRange> GetFieldDict(Type type)
+        protected static Dictionary<PropertyInfo, StreamHeaderRange> GetFieldDict(Type type)
         {
             var fieldInfo = type.GetProperties()
                 .Where(a => a.CustomAttributes
@@ -59,7 +57,7 @@ namespace DeepSharp.Dataset
             return dict;
         }
 
-        private static T GetData(Dictionary<PropertyInfo, StreamHeaderRange> dict, string[] array)
+        protected static T GetData(Dictionary<PropertyInfo, StreamHeaderRange> dict, string[] array)
         {
             var obj = (T) Activator.CreateInstance(typeof(T))!;
             dict.ToList().ForEach(p =>
