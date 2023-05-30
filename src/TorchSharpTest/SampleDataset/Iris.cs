@@ -3,11 +3,11 @@ using DeepSharp.Dataset.Datasets;
 
 namespace TorchSharpTest.SampleDataset
 {
-    public class IrisData : DataView
+    public class Iris : DataView
     {
         /// <summary>
         /// </summary>
-        public IrisData()
+        public Iris()
         {
         }
 
@@ -24,9 +24,7 @@ namespace TorchSharpTest.SampleDataset
 
         public override torch.Tensor GetLabels()
         {
-            //var array = Enumerable.Range(0, 3).Select(a => (float) a).ToArray();
-            //array[Label] = 1;
-            return torch.tensor(Label);
+            return torch.tensor(new[] {Label});
         }
 
         public override string ToString()
@@ -40,10 +38,10 @@ namespace TorchSharpTest.SampleDataset
         ///     return a random Iris
         /// </summary>
         /// <returns></returns>
-        public static IrisData RandomIris()
+        public static Iris RandomIris()
         {
             var randomSource = new Random();
-            return new IrisData
+            return new Iris
             {
                 Label = randomSource.Next(0, 3),
                 PetalLength = randomSource.NextSingle() * 4,
