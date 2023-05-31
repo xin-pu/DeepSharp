@@ -1,6 +1,5 @@
 ﻿using DeepSharp.Dataset;
 using TorchSharpTest.SampleDataset;
-using static TorchSharp.torch;
 
 namespace TorchSharpTest.DemoTest
 {
@@ -12,7 +11,7 @@ namespace TorchSharpTest.DemoTest
         }
 
 
-        private Device device => new(DeviceType.CUDA);
+        private torch.Device device => new(DeviceType.CUDA);
         public string SaveFile => "Iris.txt";
 
 
@@ -29,7 +28,7 @@ namespace TorchSharpTest.DemoTest
 
             var net = new DemoNet(4, 3).to(device);
 
-            var optimizer = optim.Adam(net.parameters());
+            var optimizer = torch.optim.Adam(net.parameters());
             var crossEntropyLoss = CrossEntropyLoss();
             foreach (var epoch in Enumerable.Range(0, 500))
             {

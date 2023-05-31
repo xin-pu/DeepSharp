@@ -10,7 +10,7 @@ namespace DeepSharp.RL.CrossEntropy
             throw new NotImplementedException();
         }
 
-        public override torch.Tensor RunPolicy(State state)
+        public override torch.Tensor RunPolicy(Observation observation)
         {
             throw new NotImplementedException();
         }

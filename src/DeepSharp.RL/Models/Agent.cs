@@ -31,8 +31,8 @@ namespace DeepSharp.RL.Models
         /// <summary>
         ///     策略函数，根据最新状态，生成新的动作
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="observation"></param>
         /// <returns></returns>
-        public abstract torch.Tensor RunPolicy(State state);
+        public abstract torch.Tensor RunPolicy(Observation observation);
     }
 }

@@ -10,6 +10,6 @@ namespace DeepSharp.RL.Policies
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public Action PredictAction(Reward reward);
+        public Action PredictAction(Observation reward);
     }
 }

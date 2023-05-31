@@ -1,14 +1,14 @@
 ﻿namespace DeepSharp.RL.Models
 {
     /// <summary>
-    ///     环境给出的奖励
+    ///     一批观察得到的汇总奖励
     /// </summary>
     public class Reward : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor? _value;
+        private float _value;
 
-        public Reward(torch.Tensor value)
+        public Reward(float value)
         {
             Value = value;
             TimeStamp = DateTime.Now;
@@ -24,9 +24,9 @@
         }
 
         /// <summary>
-        ///     奖励的张量格式
+        ///     奖励,定量
         /// </summary>
-        public torch.Tensor? Value
+        public float Value
         {
             set => SetProperty(ref _value, value);
             get => _value;

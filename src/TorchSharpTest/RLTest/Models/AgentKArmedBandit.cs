@@ -21,20 +21,35 @@ namespace TorchSharpTest.RLTest
 
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { set; get; }
 
-        public Action PredictAction(Reward reward)
+
+        /// <summary>
+        ///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
+        /// </summary>
+        /// <param name="observation"></param>
+        /// <returns></returns>
+        public Action PredictAction(Observation observation)
         {
-            var action = Net.forward(reward.Value);
-            return new Action {Value = action};
+            var sm = Softmax(1);
+            var action = Net.forward(observation.Value);
+            var actionProbs = sm.forward(action);
+
+            var nextAction = torch.multinomial(actionProbs, 1, false);
+
+            return new Action {Value = nextAction};
         }
 
 
-        public void Learn(List<torch.Tensor> observations, List<torch.Tensor> rewards)
+        /// <summary>
+        /// </summary>
+        /// <param name="observations">网络的输入 是单个观察</param>
+        /// <param name="actions">网络的输出 是动作的概率分布</param>
+        public void Learn(List<torch.Tensor> observations, List<torch.Tensor> actions)
         {
             if (observations.Count < 100)
                 return;
 
             var filterObservations = observations.Skip(observations.Count - 1000).Take(1000).ToList();
-            var filterRewards = rewards.Skip(rewards.Count - 1000).Take(1000).ToList();
+            var filterRewards = actions.Skip(actions.Count - 1000).Take(1000).ToList();
             var observatio = torch.vstack(filterObservations);
             var reward = torch.vstack(filterRewards);
             var pred = Net.forward(reward);

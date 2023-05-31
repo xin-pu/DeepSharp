@@ -5,18 +5,18 @@
     /// </summary>
     public class Bandit
     {
-        public double Prob { internal set; get; }
-
         public Bandit(string name, double prob = 0.7)
         {
             Name = name;
             Prob = prob;
         }
 
+        public double Prob { internal set; get; }
+
         public string Name { get; set; }
 
 
-        public int Step()
+        public float Step()
         {
             var d = new Random();
             var pro = d.NextDouble();

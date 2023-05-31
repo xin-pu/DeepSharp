@@ -56,11 +56,6 @@ namespace TorchSharpTest.RLTest
             {
                 var reward = kArmedBandit.Reward;
                 rewards.Add(reward);
-
-                var action = agent.PredictAction(reward);
-                actions.Add(action);
-                Print($"{i}\t{action}");
-                agent.Learn(rewards.Select(a => a.Value).ToList(), actions.Select(a => a.Value).ToList());
             }
         }
     }

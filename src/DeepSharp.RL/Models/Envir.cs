@@ -7,9 +7,9 @@
     public abstract class Envir : ObservableObject
     {
         private string _name;
-        private State? _state;
+        private Observation? _observation;
         private Reward? _reward;
-        private List<State> _stateList;
+        private List<Observation> _stateList;
 
         protected Envir()
             : this("Env")
@@ -18,9 +18,9 @@
 
         protected Envir(string name)
         {
-            _state = null;
+            _observation = null;
             _name = name;
-            _stateList = new List<State>();
+            _stateList = new List<Observation>();
         }
 
         public string Name
@@ -29,10 +29,10 @@
             get => _name;
         }
 
-        public State? State
+        public Observation? Observation
         {
-            set => SetProperty(ref _state, value);
-            get => _state;
+            set => SetProperty(ref _observation, value);
+            get => _observation;
         }
 
         public Reward? Reward
@@ -42,7 +42,7 @@
         }
 
 
-        public List<State> StateList
+        public List<Observation> StateList
         {
             internal set => SetProperty(ref _stateList, value);
             get => _stateList;
@@ -58,9 +58,9 @@
         /// <returns></returns>
         public Reward Step(Action action)
         {
-            State = UpdateState(action);
-            StateList.Add(State);
-            var reward = GetReward(State);
+            Observation = UpdateState(action);
+            StateList.Add(Observation);
+            var reward = GetReward(Observation);
             return reward;
         }
 
@@ -69,7 +69,7 @@
         /// </summary>
         public void Reset()
         {
-            State = null;
+            Observation = null;
             StateList.Clear();
         }
 
@@ -78,14 +78,14 @@
         /// </summary>
         /// <param name="action"></param>
         /// <returns></returns>
-        public abstract State UpdateState(Action action);
+        public abstract Observation UpdateState(Action action);
 
         /// <summary>
         ///     根据环境状态计算奖励
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="observation"></param>
         /// <returns></returns>
-        public abstract Reward GetReward(State state);
+        public abstract Reward GetReward(Observation observation);
     }
 
     public class Action : ObservableObject

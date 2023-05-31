@@ -1,15 +1,15 @@
 ﻿namespace DeepSharp.RL.Models
 {
     /// <summary>
-    ///     环境的状态
+    ///     观察
     /// </summary>
-    public class State : ObservableObject
+    public class Observation : ObservableObject
     {
         private DateTime _timeStamp;
         private torch.Tensor? _value;
 
         /// <summary>
-        ///     奖励产生的时间戳
+        ///     观察产生的时间戳
         /// </summary>
         public DateTime TimeStamp
         {
@@ -19,7 +19,7 @@
 
 
         /// <summary>
-        ///     奖励的张量格式
+        ///     观察的张量格式
         /// </summary>
         public torch.Tensor? Value
         {
