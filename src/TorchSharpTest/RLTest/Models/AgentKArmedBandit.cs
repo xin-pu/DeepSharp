@@ -32,7 +32,7 @@ namespace TorchSharpTest.RLTest
             var sm = Softmax(1);
             var action = Net.forward(observation.Value.unsqueeze(0));
             var actionProbs = sm.forward(action);
-
+            Console.WriteLine("1");
             var nextAction = torch.multinomial(actionProbs, 1, false);
 
             return new Action {Value = nextAction};

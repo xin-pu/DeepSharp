@@ -18,7 +18,7 @@ namespace TorchSharpTest.RLTest
                 bandits[i] = new Bandit($"{i}", random.Next(2, 8) * 1f / 10);
 
             bandits[0].Prob = 0.3;
-            bandits[1].Prob = 0.7;
+            bandits[1].Prob = 0.9;
             Observation = new Observation {Value = torch.zeros(k)};
             Reward = new Reward(0);
         }

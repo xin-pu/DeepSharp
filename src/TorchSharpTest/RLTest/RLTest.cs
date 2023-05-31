@@ -49,7 +49,6 @@
             var k = 2;
             var batchSize = 1000;
             var percent = 0.7f;
-            var random = new Random();
 
             /// Step 1 创建环境
             var kArmedBandit = new KArmedBandit(k);

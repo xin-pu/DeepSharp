@@ -9,17 +9,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\README.md = ..\README.md
+		..\images\RL CrossEntroy Demo.png = ..\images\RL CrossEntroy Demo.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepSharp.Utility", "DeepSharp.Utility\DeepSharp.Utility.csproj", "{93F876FF-1723-404F-9AA3-CD1D0873A3AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Utility", "DeepSharp.Utility\DeepSharp.Utility.csproj", "{93F876FF-1723-404F-9AA3-CD1D0873A3AB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.RL", "DeepSharp.RL\DeepSharp.RL.csproj", "{8E1D7BEF-3F6F-4237-A48D-3DA57757EB46}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepSharp.ObjectDetection", "DeepSharp.ObjectDetection\DeepSharp.ObjectDetection.csproj", "{327843B4-A428-433D-A469-4D3AE9A5AC16}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.ObjectDetection", "DeepSharp.ObjectDetection\DeepSharp.ObjectDetection.csproj", "{327843B4-A428-433D-A469-4D3AE9A5AC16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepSharp.Dataset", "DeepSharp.Dataset\DeepSharp.Dataset.csproj", "{DD12A0F3-A494-4F38-A841-3E68BA4D7871}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Dataset", "DeepSharp.Dataset\DeepSharp.Dataset.csproj", "{DD12A0F3-A494-4F38-A841-3E68BA4D7871}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DeepSharp.Core", "DeepSharp.Core\DeepSharp.Core.csproj", "{BAAFB244-1F3C-4A1A-AF1D-DBAD116F8CFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Core", "DeepSharp.Core\DeepSharp.Core.csproj", "{BAAFB244-1F3C-4A1A-AF1D-DBAD116F8CFF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
