@@ -1,4 +1,6 @@
-﻿namespace TorchSharpTest.RLTest
+﻿using DeepSharp.RL.Models.Agents;
+
+namespace TorchSharpTest.RLTest
 {
     public class RLTest : AbstractTest
     {
@@ -46,7 +48,7 @@
         [Fact]
         public void Main()
         {
-            var k = 2;
+            var k = 4;
             var batchSize = 1000;
             var percent = 0.7f;
 
@@ -55,12 +57,12 @@
             Print(kArmedBandit);
 
             /// Step 2 创建智能体
-            var agent = new AgentKArmedBandit(k, k);
+            var agent = new AgentCrossEntropy(k, k);
 
             /// Step 3 边收集 边学习
             foreach (var i in Enumerable.Range(0, 200))
             {
-                var batch = kArmedBandit.GetBatchs(agent);
+                var batch = kArmedBandit.GetBatchs(agent, 50);
                 var oars = agent.GetElite(batch, percent);
 
                 var observation = torch.vstack(oars.Select(a => a.Observation.Value).ToList());

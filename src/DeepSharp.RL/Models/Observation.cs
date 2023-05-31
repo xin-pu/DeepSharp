@@ -6,7 +6,22 @@
     public class Observation : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor _value;
+        private torch.Tensor _value = torch.zeros(1);
+
+        public Observation(torch.Tensor state)
+        {
+            Value = state;
+            TimeStamp = DateTime.Now;
+        }
+
+        /// <summary>
+        ///     观察的张量格式
+        /// </summary>
+        public torch.Tensor Value
+        {
+            set => SetProperty(ref _value, value);
+            get => _value;
+        }
 
         /// <summary>
         ///     观察产生的时间戳
@@ -18,18 +33,9 @@
         }
 
 
-        /// <summary>
-        ///     观察的张量格式
-        /// </summary>
-        public torch.Tensor Value
-        {
-            set => SetProperty(ref _value, value);
-            get => _value;
-        }
-
         public override string ToString()
         {
-            return $"{TimeStamp}\t{Value}";
+            return $"Observation:{Value}\t@{TimeStamp}";
         }
     }
 }

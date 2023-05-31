@@ -7,11 +7,12 @@ namespace TorchSharpTest.RLTest
     /// <summary>
     ///     多臂赌博机,每个赌博机以 0,0.1到1 的概率随机生成
     /// </summary>
-    public class KArmedBandit : Envir
+    public class KArmedBandit : Environ
     {
-        public KArmedBandit(int k)
+        public KArmedBandit(int k) : base("KArmedBandit")
         {
-            K = k;
+            ObservationSpace = ActionSpace = K = k;
+
             var random = new Random();
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
@@ -19,16 +20,19 @@ namespace TorchSharpTest.RLTest
 
             bandits[0].Prob = 0.3;
             bandits[1].Prob = 0.9;
-            Observation = new Observation {Value = torch.zeros(k)};
+            Observation = new Observation(torch.zeros(k));
             Reward = new Reward(0);
         }
 
         protected int K { set; get; }
         protected Bandit[] bandits { set; get; }
 
+        public sealed override int ActionSpace { set; get; }
+        public sealed override int ObservationSpace { set; get; }
+
         public override void ResetObservation()
         {
-            Observation = new Observation {Value = torch.zeros(K)};
+            Observation = new Observation(torch.zeros(K));
             Reward = new Reward(0);
         }
 
@@ -44,7 +48,7 @@ namespace TorchSharpTest.RLTest
             var stateArray = Enumerable.Repeat(0, K).Select(a => (float) a).ToArray();
             stateArray[banditSelectIndex] = value;
             var stateTensor = torch.from_array(stateArray, torch.ScalarType.Float32);
-            return new Observation {Value = stateTensor};
+            return new Observation(stateTensor);
         }
 
         /// <summary>
@@ -79,7 +83,7 @@ namespace TorchSharpTest.RLTest
                 var action = policy.PredictAction(Observation);
                 var obs = Observation = UpdateState(action);
                 var reward = GetReward(obs);
-                episode.Oars.Add(new OAR {Action = action, Observation = obs, Reward = reward});
+                episode.Oars.Add(new Step {Action = action, Observation = obs, Reward = reward});
             }
 
             episode.SumReward = new Reward(episode.Oars.Sum(a => a.Reward.Value));
@@ -99,37 +103,5 @@ namespace TorchSharpTest.RLTest
 
             return combines.ToArray();
         }
-    }
-
-
-    public class Episode
-    {
-        public Episode()
-        {
-            Oars = new List<OAR>();
-            SumReward = new Reward(0);
-        }
-
-        public List<OAR> Oars { set; get; }
-        public Reward SumReward { set; get; }
-    }
-
-
-    public struct OAR
-    {
-        /// <summary>
-        ///     动作
-        /// </summary>
-        public Action Action { set; get; }
-
-        /// <summary>
-        ///     动作后的观察
-        /// </summary>
-        public Observation Observation { set; get; }
-
-        /// <summary>
-        ///     动作后的奖励
-        /// </summary>
-        public Reward Reward { set; get; }
     }
 }

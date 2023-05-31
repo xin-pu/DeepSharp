@@ -1,26 +1,28 @@
 ﻿using DeepSharp.RL.CrossEntropy;
-using DeepSharp.RL.Models;
 using DeepSharp.RL.Policies;
 using static TorchSharp.torch.optim;
-using Action = DeepSharp.RL.Models.Action;
 
-namespace TorchSharpTest.RLTest
+namespace DeepSharp.RL.Models.Agents
 {
-    public class AgentKArmedBandit : IPolicy
+    public class AgentCrossEntropy : IPolicy
     {
-        public AgentKArmedBandit(int obsSize, int actionSize)
+        public AgentCrossEntropy(int obsSize, int actionSize, int hiddenSize = 100)
         {
-            Net = new Net(obsSize, 100, actionSize);
-            optimizer = Adam(Net.parameters(), 1E-2);
+            Net = new Net(obsSize, hiddenSize, actionSize);
+            Optimizer = Adam(Net.parameters(), 1E-2);
             Loss = CrossEntropyLoss();
         }
 
-        public Net Net { set; get; }
+        public Net Net { protected set; get; }
 
-        public Optimizer optimizer { set; get; }
+        public Optimizer Optimizer { protected set; get; }
 
-        public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { set; get; }
+        public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { protected set; get; }
 
+        public void UpdateOptimizer(Optimizer optimizer)
+        {
+            Optimizer = optimizer;
+        }
 
         /// <summary>
         ///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
@@ -29,17 +31,15 @@ namespace TorchSharpTest.RLTest
         /// <returns></returns>
         public Action PredictAction(Observation observation)
         {
+            var input = observation.Value.unsqueeze(0);
             var sm = Softmax(1);
-            var action = Net.forward(observation.Value.unsqueeze(0));
-            var actionProbs = sm.forward(action);
-            Console.WriteLine("1");
-            var nextAction = torch.multinomial(actionProbs, 1, false);
-
-            return new Action {Value = nextAction};
+            var actionProbs = sm.forward(Net.forward(input));
+            var nextAction = torch.multinomial(actionProbs, 1);
+            return new Action(nextAction);
         }
 
 
-        public OAR[] GetElite(Episode[] episodes, double percent)
+        public Step[] GetElite(Episode[] episodes, double percent)
         {
             var reward = episodes
                 .Select(a => a.SumReward.Value)
@@ -63,12 +63,11 @@ namespace TorchSharpTest.RLTest
         public float Learn(torch.Tensor observations, torch.Tensor actions)
         {
             var pred = Net.forward(observations);
-
             var output = Loss.call(pred, actions);
 
-            optimizer.zero_grad();
+            Optimizer.zero_grad();
             output.backward();
-            optimizer.step();
+            Optimizer.step();
 
             var loss = output.item<float>();
             return loss;

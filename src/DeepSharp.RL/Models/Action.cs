@@ -1,30 +1,27 @@
 ﻿namespace DeepSharp.RL.Models
 {
-    /// <summary>
-    ///     Reward
-    /// </summary>
-    public class Reward : ObservableObject
+    public class Action : ObservableObject
     {
         private DateTime _timeStamp;
-        private float _value;
+        private torch.Tensor _value = torch.zeros(1);
 
-        public Reward(float value)
+        public Action(torch.Tensor action)
         {
-            Value = value;
+            Value = action;
             TimeStamp = DateTime.Now;
         }
 
         /// <summary>
-        ///     reward
+        ///     奖励的张量格式
         /// </summary>
-        public float Value
+        public torch.Tensor Value
         {
             set => SetProperty(ref _value, value);
             get => _value;
         }
 
         /// <summary>
-        ///     TimeStamp of get reward
+        ///     奖励产生的时间戳
         /// </summary>
         public DateTime TimeStamp
         {
@@ -35,7 +32,7 @@
 
         public override string ToString()
         {
-            return $"Reward:{Value} @{TimeStamp}";
+            return $"{TimeStamp}\t{Value}";
         }
     }
 }

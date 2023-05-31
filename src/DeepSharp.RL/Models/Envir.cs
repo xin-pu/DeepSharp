@@ -4,23 +4,18 @@
     ///     环境
     ///     提供观察 并给与奖励
     /// </summary>
-    public abstract class Envir : ObservableObject
+    public abstract class Environ : ObservableObject
     {
         private string _name;
-        private Observation? _observation;
-        private Reward? _reward;
-        private List<Observation> _stateList;
+        private Observation _observation;
+        private Reward _reward;
+        private List<Observation> _observationList = new();
 
-        protected Envir()
-            : this("Env")
-        {
-        }
 
-        protected Envir(string name)
+        protected Environ(string name)
         {
-            _observation = null;
             _name = name;
-            _stateList = new List<Observation>();
+            _observation = new Observation(torch.zeros(ObservationSpace));
         }
 
         public string Name
@@ -29,40 +24,30 @@
             get => _name;
         }
 
+        public abstract int ActionSpace { set; get; }
+        public abstract int ObservationSpace { set; get; }
+
         public Observation Observation
         {
             set => SetProperty(ref _observation, value);
             get => _observation;
         }
 
-        public Reward? Reward
+        public Reward Reward
         {
             set => SetProperty(ref _reward, value);
             get => _reward;
         }
 
 
-        public List<Observation> StateList
+        public List<Observation> ObservationList
         {
-            internal set => SetProperty(ref _stateList, value);
-            get => _stateList;
+            internal set => SetProperty(ref _observationList, value);
+            get => _observationList;
         }
 
-        public int Life => StateList.Count;
+        public int Life => ObservationList.Count;
 
-        /// <summary>
-        ///     环境 根据当前当做更新状态
-        ///     根据新状态，返回奖励
-        /// </summary>
-        /// <param name="Action"></param>
-        /// <returns></returns>
-        public Reward Step(Action action)
-        {
-            Observation = UpdateState(action);
-            StateList.Add(Observation);
-            var reward = GetReward(Observation);
-            return reward;
-        }
 
         /// <summary>
         ///     恢复初始
@@ -70,7 +55,7 @@
         public void Reset()
         {
             ResetObservation();
-            StateList.Clear();
+            ObservationList.Clear();
         }
 
         public abstract void ResetObservation();
@@ -88,35 +73,5 @@
         /// <param name="observation"></param>
         /// <returns></returns>
         public abstract Reward GetReward(Observation observation);
-    }
-
-    public class Action : ObservableObject
-    {
-        private DateTime _timeStamp;
-        private torch.Tensor _value;
-
-        /// <summary>
-        ///     奖励产生的时间戳
-        /// </summary>
-        public DateTime TimeStamp
-        {
-            set => SetProperty(ref _timeStamp, value);
-            get => _timeStamp;
-        }
-
-
-        /// <summary>
-        ///     奖励的张量格式
-        /// </summary>
-        public torch.Tensor Value
-        {
-            set => SetProperty(ref _value, value);
-            get => _value;
-        }
-
-        public override string ToString()
-        {
-            return $"{TimeStamp}\t{Value}";
-        }
     }
 }
