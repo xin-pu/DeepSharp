@@ -16,12 +16,21 @@ namespace TorchSharpTest.RLTest
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
                 bandits[i] = new Bandit($"{i}", random.Next(2, 8) * 1f / 10);
+
+            bandits[0].Prob = 0.3;
+            bandits[1].Prob = 0.7;
             Observation = new Observation {Value = torch.zeros(k)};
             Reward = new Reward(0);
         }
 
         protected int K { set; get; }
         protected Bandit[] bandits { set; get; }
+
+        public override void ResetObservation()
+        {
+            Observation = new Observation {Value = torch.zeros(K)};
+            Reward = new Reward(0);
+        }
 
         /// <summary>
         /// </summary>
@@ -80,9 +89,12 @@ namespace TorchSharpTest.RLTest
 
         public Episode[] GetBatchs(IPolicy policy, int batchSize = 20)
         {
+            ResetObservation();
             var combines = new List<Episode>();
             foreach (var i in Enumerable.Repeat(0, batchSize))
             {
+                var episode = GetEpisode(policy);
+                combines.Add(episode);
             }
 
             return combines.ToArray();

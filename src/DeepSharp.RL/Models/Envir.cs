@@ -29,7 +29,7 @@
             get => _name;
         }
 
-        public Observation? Observation
+        public Observation Observation
         {
             set => SetProperty(ref _observation, value);
             get => _observation;
@@ -69,9 +69,11 @@
         /// </summary>
         public void Reset()
         {
-            Observation = null;
+            ResetObservation();
             StateList.Clear();
         }
+
+        public abstract void ResetObservation();
 
         /// <summary>
         ///     根据执行动作，更新环境 状态
@@ -91,7 +93,7 @@
     public class Action : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor? _value;
+        private torch.Tensor _value;
 
         /// <summary>
         ///     奖励产生的时间戳
@@ -106,7 +108,7 @@
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public torch.Tensor? Value
+        public torch.Tensor Value
         {
             set => SetProperty(ref _value, value);
             get => _value;

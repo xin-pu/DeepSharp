@@ -10,8 +10,8 @@ namespace TorchSharpTest.RLTest
     {
         public AgentKArmedBandit(int obsSize, int actionSize)
         {
-            Net = new Net(obsSize, 10, actionSize);
-            optimizer = Adam(Net.parameters());
+            Net = new Net(obsSize, 100, actionSize);
+            optimizer = Adam(Net.parameters(), 1E-2);
             Loss = CrossEntropyLoss();
         }
 
@@ -30,7 +30,7 @@ namespace TorchSharpTest.RLTest
         public Action PredictAction(Observation observation)
         {
             var sm = Softmax(1);
-            var action = Net.forward(observation.Value);
+            var action = Net.forward(observation.Value.unsqueeze(0));
             var actionProbs = sm.forward(action);
 
             var nextAction = torch.multinomial(actionProbs, 1, false);
@@ -39,28 +39,39 @@ namespace TorchSharpTest.RLTest
         }
 
 
+        public OAR[] GetElite(Episode[] episodes, double percent)
+        {
+            var reward = episodes
+                .Select(a => a.SumReward.Value)
+                .ToArray();
+            var rewardP = reward.OrderByDescending(a => a)
+                .Take((int) (reward.Length * percent))
+                .Min();
+
+            var elite = episodes
+                .Where(e => e.SumReward.Value > rewardP)
+                .SelectMany(e => e.Oars)
+                .ToArray();
+
+            return elite;
+        }
+
         /// <summary>
         /// </summary>
         /// <param name="observations">网络的输入 是单个观察</param>
         /// <param name="actions">网络的输出 是动作的概率分布</param>
-        public void Learn(List<torch.Tensor> observations, List<torch.Tensor> actions)
+        public float Learn(torch.Tensor observations, torch.Tensor actions)
         {
-            if (observations.Count < 100)
-                return;
+            var pred = Net.forward(observations);
 
-            var filterObservations = observations.Skip(observations.Count - 1000).Take(1000).ToList();
-            var filterRewards = actions.Skip(actions.Count - 1000).Take(1000).ToList();
-            var observatio = torch.vstack(filterObservations);
-            var reward = torch.vstack(filterRewards);
-            var pred = Net.forward(reward);
-
-            var output = Loss.call(pred, observatio);
+            var output = Loss.call(pred, actions);
 
             optimizer.zero_grad();
             output.backward();
             optimizer.step();
 
             var loss = output.item<float>();
+            return loss;
         }
     }
 }
