@@ -78,21 +78,21 @@ await foreach (var a in dataloader.GetBatchSample(100))
 
 ## RL
 
-Slove KArmedBandit Problem by Cross Entropy Deep RFeinforcement Learning
+Slove KArmedBandit Problem by Cross Entropy Deep Reinforcement Learning
 
 ``` c#
 var k = 2;
 var batchSize = 1000;
 var percent = 0.7f;
 
-/// Step 1 ´´½¨»·¾³
+/// Step 1 åˆ›å»ºçŽ¯å¢ƒ
 var kArmedBandit = new KArmedBandit(k);
 Print(kArmedBandit);
 
-/// Step 2 ´´½¨ÖÇÄÜÌå
+/// Step 2 åˆ›å»ºæ™ºèƒ½ä½“
 var agent = new AgentKArmedBandit(k, k);
 
-/// Step 3 ±ßÊÕ¼¯ ±ßÑ§Ï°
+/// Step 3 è¾¹æ”¶é›† è¾¹å­¦ä¹ 
 foreach (var i in Enumerable.Range(0, 200))
 {
     var batch = kArmedBandit.GetBatchs(agent);
