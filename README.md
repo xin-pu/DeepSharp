@@ -80,29 +80,36 @@ await foreach (var a in dataloader.GetBatchSample(100))
 
 Slove KArmedBandit Problem by Cross Entropy Deep Reinforcement Learning
 
-``` c#
-var k = 2;
-var batchSize = 1000;
-var percent = 0.7f;
+1. Develop  KArmedBandit which Inherit  from Environ
+2. Create KArmedBandit with 4 Bandit
+3. Create AgentCrossEntropy by send KArmedBandit
+4. Learn by Epoch
+    1. Get Batch Episodes
+    2. Filter Elite from Batch Episodes
+    3. Agent learn by  Elite
+    4. Next epoch until exit learn.
 
-/// Step 1 创建环境
-var kArmedBandit = new KArmedBandit(k);
+
+``` c#
+var epoch = 100;
+var episodesEachBatch = 20;
+
+/// Step 1 Create a 4-Armed Bandit
+var kArmedBandit = new KArmedBandit(4);
 Print(kArmedBandit);
 
-/// Step 2 创建智能体
-var agent = new AgentKArmedBandit(k, k);
+/// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
+var agent = new AgentCrossEntropy(kArmedBandit);
 
-/// Step 3 边收集 边学习
-foreach (var i in Enumerable.Range(0, 200))
+/// Step 3 Learn and Optimize
+foreach (var i in Enumerable.Range(0, epoch))
 {
-    var batch = kArmedBandit.GetBatchs(agent);
-    var oars = agent.GetElite(batch, percent);
+    var batch = kArmedBandit.GetMultiEpisodes(agent, episodesEachBatch);
+    var eliteOars = agent.GetElite(batch); /// Get eliteOars 
 
-    var observation = torch.vstack(oars.Select(a => a.Observation.Value).ToList());
-    var action = torch.vstack(oars.Select(a => a.Action.Value).ToList()).squeeze(-1);
-
+    /// Agent Learn by elite observation & action
+    var loss = agent.Learn(eliteOars);
     var rewardMean = batch.Select(a => a.SumReward.Value).Average();
-    var loss = agent.Learn(observation, action);
 
     Print($"Epoch:{i:D4}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
 }
