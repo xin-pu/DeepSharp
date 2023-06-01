@@ -28,11 +28,6 @@ namespace TorchSharpTest.RLTest
         protected Bandit[] bandits { set; get; }
 
 
-        public override void ResetObservation()
-        {
-            Observation = new Observation(torch.zeros(ObservationSpace));
-        }
-
         /// <summary>
         /// </summary>
         /// <param name="action">动作，该环境下包含智能体选择的赌博机索引</param>

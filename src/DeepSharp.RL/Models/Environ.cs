@@ -55,14 +55,10 @@ namespace DeepSharp.RL.Models
         public void Reset()
         {
             ObservationList.Clear();
-            ResetObservation();
+            Observation = new Observation(torch.zeros(ObservationSpace));
             Reward = new Reward(0);
         }
 
-        /// <summary>
-        ///     Reset  Observation
-        /// </summary>
-        public abstract void ResetObservation();
 
         /// <summary>
         ///     Calculate one reward from one observation
@@ -108,7 +104,7 @@ namespace DeepSharp.RL.Models
         /// <returns></returns>
         public virtual Episode[] GetMultiEpisodes(IPolicy policy, int episodesSize)
         {
-            ResetObservation();
+            Reset();
 
             var episodes = Enumerable.Repeat(0, episodesSize)
                 .Select(_ => GetEpisode(policy))
