@@ -47,6 +47,11 @@ namespace DeepSharp.RL.Environs
             return new Observation(obsTensor);
         }
 
+        public override float DiscountReward(Episode episode, float Gamma = 0.9f)
+        {
+            return 1;
+        }
+
         public override bool StopEpoch(int epoch)
         {
             return epoch >= 20;

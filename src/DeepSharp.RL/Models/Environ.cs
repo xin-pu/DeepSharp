@@ -52,7 +52,7 @@ namespace DeepSharp.RL.Models
         /// <summary>
         ///     恢复初始
         /// </summary>
-        public void Reset()
+        public virtual void Reset()
         {
             ObservationList.Clear();
             Observation = new Observation(torch.zeros(ObservationSpace));
@@ -83,6 +83,7 @@ namespace DeepSharp.RL.Models
         /// <returns></returns>
         public virtual Episode GetEpisode(IPolicy policy)
         {
+            Reset();
             var episode = new Episode();
             var epoch = 0;
             while (StopEpoch(epoch) == false)
@@ -94,9 +95,12 @@ namespace DeepSharp.RL.Models
                 episode.Oars.Add(new Step {Action = action, Observation = obs, Reward = reward});
             }
 
-            episode.SumReward = new Reward(episode.Oars.Sum(a => a.Reward.Value));
+            var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode);
+            episode.SumReward = new Reward(sumReward);
             return episode;
         }
+
+        public abstract float DiscountReward(Episode episode, float Gamma = 0.9f);
 
         public abstract bool StopEpoch(int epoch);
 
@@ -108,8 +112,6 @@ namespace DeepSharp.RL.Models
         /// <returns></returns>
         public virtual Episode[] GetMultiEpisodes(IPolicy policy, int episodesSize)
         {
-            Reset();
-
             var episodes = Enumerable.Repeat(0, episodesSize)
                 .Select(_ => GetEpisode(policy))
                 .ToArray();

@@ -3,15 +3,15 @@ using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest
 {
-    public class RLTest : AbstractTest
+    public class KArmedBanditTest : AbstractTest
     {
-        public RLTest(ITestOutputHelper testOutputHelper)
+        public KArmedBanditTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
 
         [Fact]
-        public void BanditTest()
+        public void BanditCreateTest()
         {
             var count = 0;
             var bandit = new Bandit("A");
@@ -27,7 +27,7 @@ namespace TorchSharpTest.RLTest
         }
 
         [Fact]
-        public void KArmedBanditTest()
+        public void KArmedBanditCreateTest()
         {
             var kArmedBandit = new KArmedBandit(5);
             Print(kArmedBandit);

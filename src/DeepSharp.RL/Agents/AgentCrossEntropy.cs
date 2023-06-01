@@ -17,7 +17,7 @@ namespace DeepSharp.RL.Agents
             PercentElite = percentElite;
             SampleActionSpace = 1;
             AgentNet = new Net(ObservationSize, hiddenSize, ActionSize);
-            Optimizer = Adam(AgentNet.parameters(), 1E-2);
+            Optimizer = Adam(AgentNet.parameters(), 0.01);
             Loss = CrossEntropyLoss();
         }
 
@@ -44,10 +44,22 @@ namespace DeepSharp.RL.Agents
             return new Action(nextAction);
         }
 
+        /// <summary>
+        ///     增加记忆功能，记录历史的精英片段
+        /// </summary>
+        public List<Step> MemeSteps { set; get; } = new();
+
         public override float Learn(Step[] steps)
         {
-            var observation = torch.vstack(steps.Select(a => a.Observation.Value).ToList());
-            var action = torch.vstack(steps.Select(a => a.Action.Value).ToList());
+            if (steps.Length == 0) return float.MaxValue;
+
+            var final = steps.Concat(MemeSteps).ToList();
+
+            var observation = torch.vstack(final.Select(a => a.Observation.Value).ToList());
+            var action = torch.vstack(final.Select(a => a.Action.Value).ToList());
+
+            MemeSteps = final.OrderByDescending(a => a.Reward.Value).Take(10).ToList();
+
             return Learn(observation, action);
         }
 
@@ -93,8 +105,7 @@ namespace DeepSharp.RL.Agents
         {
             observations.shape.Last().Should()
                 .Be(ObservationSize, $"Agent observations tensor should be [B,{ObservationSize}]");
-            //actions.shape.Last().Should()
-            //    .Be(ActionSize, $"Agent actions tensor should be [B,{ActionSize}]");
+
             actions = actions.squeeze(-1);
             var pred = AgentNet.forward(observations);
             var output = Loss.call(pred, actions);
