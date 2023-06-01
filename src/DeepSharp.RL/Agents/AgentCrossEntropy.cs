@@ -1,31 +1,48 @@
 ﻿using DeepSharp.RL.Models;
-using DeepSharp.RL.Policies;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
 using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentCrossEntropy : IPolicy
+    /// <summary>
+    ///     An Agent base on CrossEntropy Function
+    ///     Cross-Entropy Method
+    ///     http://people.smp.uq.edu.au/DirkKroese/ps/eormsCE.pdf
+    /// </summary>
+    public class AgentCrossEntropy : Agent
     {
-        public AgentCrossEntropy(int obsSize, int actionSize, int hiddenSize = 100)
+        public AgentCrossEntropy(Environ environ, float percentElite = 0.7f, int hiddenSize = 100) : base(environ)
         {
-            ObservationSize = obsSize;
-            ActionSize = actionSize;
-            AgentNet = new Net(obsSize, hiddenSize, actionSize);
+            PercentElite = percentElite;
+            SampleActionSpace = 1;
+            AgentNet = new Net(ObservationSize, hiddenSize, ActionSize);
             Optimizer = Adam(AgentNet.parameters(), 1E-2);
             Loss = CrossEntropyLoss();
         }
 
-        public int ObservationSize { protected set; get; }
-        public int ActionSize { protected set; get; }
 
+        public float PercentElite { protected set; get; }
 
         public Net AgentNet { protected set; get; }
 
         public Optimizer Optimizer { protected set; get; }
 
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { protected set; get; }
+
+        /// <summary>
+        ///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
+        /// </summary>
+        /// <param name="observation"></param>
+        /// <returns></returns>
+        public override Action PredictAction(Observation observation)
+        {
+            var input = observation.Value.unsqueeze(0);
+            var sm = Softmax(1);
+            var actionProbs = sm.forward(AgentNet.forward(input));
+            var nextAction = torch.multinomial(actionProbs, SampleActionSpace);
+            return new Action(nextAction);
+        }
 
         /// <summary>
         ///     Replace default Optimizer
@@ -37,31 +54,18 @@ namespace DeepSharp.RL.Agents
         }
 
         /// <summary>
-        ///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
-        /// </summary>
-        /// <param name="observation"></param>
-        /// <returns></returns>
-        public Action PredictAction(Observation observation)
-        {
-            var input = observation.Value.unsqueeze(0);
-            var sm = Softmax(1);
-            var actionProbs = sm.forward(AgentNet.forward(input));
-            return new Action(actionProbs);
-        }
-
-        /// <summary>
         ///     Get Elite
         /// </summary>
         /// <param name="episodes"></param>
         /// <param name="percent"></param>
         /// <returns></returns>
-        public Step[] GetElite(Episode[] episodes, double percent)
+        public Step[] GetElite(Episode[] episodes)
         {
             var reward = episodes
                 .Select(a => a.SumReward.Value)
                 .ToArray();
             var rewardP = reward.OrderByDescending(a => a)
-                .Take((int) (reward.Length * percent))
+                .Take((int) (reward.Length * PercentElite))
                 .Min();
 
             var elite = episodes
@@ -82,9 +86,9 @@ namespace DeepSharp.RL.Agents
         {
             observations.shape.Last().Should()
                 .Be(ObservationSize, $"Agent observations tensor should be [B,{ObservationSize}]");
-            actions.shape.Last().Should()
-                .Be(ActionSize, $"Agent actions tensor should be [B,{ActionSize}]");
-
+            //actions.shape.Last().Should()
+            //    .Be(ActionSize, $"Agent actions tensor should be [B,{ActionSize}]");
+            actions = actions.squeeze(-1);
             var pred = AgentNet.forward(observations);
             var output = Loss.call(pred, actions);
 

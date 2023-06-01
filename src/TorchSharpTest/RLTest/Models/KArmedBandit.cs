@@ -12,7 +12,6 @@ namespace TorchSharpTest.RLTest
         {
             ObservationSpace = k;
             ActionSpace = k;
-            SampleActionSpace = 1;
             var random = new Random();
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
@@ -42,9 +41,7 @@ namespace TorchSharpTest.RLTest
         {
             var obs = new float[ObservationSpace];
 
-            var nextAction = torch.multinomial(action.Value, SampleActionSpace);
-
-            var banditSelectIndex = nextAction.data<long>().ToArray();
+            var banditSelectIndex = action.Value.data<long>().ToArray();
 
             foreach (var index in banditSelectIndex)
             {

@@ -37,7 +37,7 @@ namespace TorchSharpTest.RLTest
         {
             var probs = new[] {0.5f, 0.5f};
 
-            foreach (var i in Enumerable.Repeat(0, 10))
+            foreach (var _ in Enumerable.Repeat(0, 10))
             {
                 var res = torch.multinomial(torch.from_array(probs), 1);
                 var index = res.item<long>();
@@ -48,28 +48,26 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void Main()
         {
-            var k = 4;
-            var batchSize = 1000;
-            var percent = 0.7f;
-
             /// Step 1 创建环境
-            var kArmedBandit = new KArmedBandit(k);
+            var kArmedBandit = new KArmedBandit(4);
             Print(kArmedBandit);
 
             /// Step 2 创建智能体
-            var agent = new AgentCrossEntropy(k, k);
+            var agent = new AgentCrossEntropy(kArmedBandit);
 
             /// Step 3 边收集 边学习
             foreach (var i in Enumerable.Range(0, 200))
             {
                 var batch = kArmedBandit.GetMultiEpisodes(agent, 20);
-                var oars = agent.GetElite(batch, percent);
+                var oars = agent.GetElite(batch); /// 智能体获取精英片段
 
                 var observation = torch.vstack(oars.Select(a => a.Observation.Value).ToList());
                 var action = torch.vstack(oars.Select(a => a.Action.Value).ToList());
 
-                var rewardMean = batch.Select(a => a.SumReward.Value).Average();
+                /// Agent Learn by elite observation & action
                 var loss = agent.Learn(observation, action);
+                var rewardMean = batch.Select(a => a.SumReward.Value).Average();
+
 
                 Print($"Epoch:{i:D4}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
             }

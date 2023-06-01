@@ -24,9 +24,9 @@ namespace DeepSharp.RL.Models
             get => _name;
         }
 
-        protected internal int ActionSpace { set; get; }
-        protected internal int SampleActionSpace { set; get; }
-        protected internal int ObservationSpace { set; get; }
+        public int ActionSpace { protected set; get; }
+        public int SampleActionSpace { protected set; get; }
+        public int ObservationSpace { protected set; get; }
 
         public Observation Observation
         {

@@ -5,34 +5,21 @@ namespace DeepSharp.RL.Models
     /// <summary>
     ///     智能体
     /// </summary>
-    public abstract class Agent : ObservableObject
+    public abstract class Agent : ObservableObject, IPolicy
     {
-        private IPolicy? _policy;
-        private Reward[] _rewards = Array.Empty<Reward>();
-
-        public Reward[] Rewards
+        protected Agent(Environ env)
         {
-            set => SetProperty(ref _rewards, value);
-            get => _rewards;
+            ObservationSize = env.ObservationSpace;
+            ActionSize = env.ActionSpace;
+            SampleActionSpace = env.SampleActionSpace;
         }
 
-        public IPolicy? Policy
-        {
-            set => SetProperty(ref _policy, value);
-            get => _policy;
-        }
 
-        /// <summary>
-        ///     根据rewards 学习或者更新策略
-        /// </summary>
-        public abstract IPolicy LearnPolicy(Reward[] rewards);
+        public int ObservationSize { protected set; get; }
+        public int ActionSize { protected set; get; }
+        public int SampleActionSpace { protected set; get; }
 
 
-        /// <summary>
-        ///     策略函数，根据最新状态，生成新的动作
-        /// </summary>
-        /// <param name="observation"></param>
-        /// <returns></returns>
-        public abstract torch.Tensor RunPolicy(Observation observation);
+        public abstract Action PredictAction(Observation reward);
     }
 }
