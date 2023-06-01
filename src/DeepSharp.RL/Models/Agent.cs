@@ -21,5 +21,8 @@ namespace DeepSharp.RL.Models
 
 
         public abstract Action PredictAction(Observation reward);
+
+
+        public abstract float Learn(Step[] steps);
     }
 }

@@ -44,6 +44,13 @@ namespace DeepSharp.RL.Agents
             return new Action(nextAction);
         }
 
+        public override float Learn(Step[] steps)
+        {
+            var observation = torch.vstack(steps.Select(a => a.Observation.Value).ToList());
+            var action = torch.vstack(steps.Select(a => a.Action.Value).ToList());
+            return Learn(observation, action);
+        }
+
         /// <summary>
         ///     Replace default Optimizer
         /// </summary>
