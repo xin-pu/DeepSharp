@@ -1,4 +1,4 @@
-﻿using DeepSharp.RL.Models.Agents;
+﻿using DeepSharp.RL.Agents;
 
 namespace TorchSharpTest.RLTest
 {
@@ -62,11 +62,11 @@ namespace TorchSharpTest.RLTest
             /// Step 3 边收集 边学习
             foreach (var i in Enumerable.Range(0, 200))
             {
-                var batch = kArmedBandit.GetBatchs(agent, 50);
+                var batch = kArmedBandit.GetMultiEpisodes(agent, 20);
                 var oars = agent.GetElite(batch, percent);
 
                 var observation = torch.vstack(oars.Select(a => a.Observation.Value).ToList());
-                var action = torch.vstack(oars.Select(a => a.Action.Value).ToList()).squeeze(-1);
+                var action = torch.vstack(oars.Select(a => a.Action.Value).ToList());
 
                 var rewardMean = batch.Select(a => a.SumReward.Value).Average();
                 var loss = agent.Learn(observation, action);
