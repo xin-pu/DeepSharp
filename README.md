@@ -78,6 +78,8 @@ await foreach (var a in dataloader.GetBatchSample(100))
 
 ## RL
 
+### AgentCrossEntropy
+
 Slove KArmedBandit Problem by Cross Entropy Deep Reinforcement Learning
 
 1. Develop  KArmedBandit which Inherit  from Environ
@@ -116,3 +118,8 @@ foreach (var i in Enumerable.Range(0, epoch))
 ```
 
 ![R L Cross Entroy Demo](images/RL%20CrossEntroy%20Demo.png)
+
+
+### AgentCrossEntropy With memory and Discount factor
+1. Introducing discount factor 
+2. Increased memory function to retain elite fragments

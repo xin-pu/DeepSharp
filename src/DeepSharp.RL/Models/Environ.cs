@@ -81,11 +81,13 @@ namespace DeepSharp.RL.Models
         /// <param name="policy"></param>
         /// <param name="maxPeriod">limit size of a episode</param>
         /// <returns></returns>
-        public virtual Episode GetEpisode(IPolicy policy, int maxPeriod = 20)
+        public virtual Episode GetEpisode(IPolicy policy)
         {
             var episode = new Episode();
-            foreach (var _ in Enumerable.Range(0, maxPeriod))
+            var epoch = 0;
+            while (StopEpoch(epoch) == false)
             {
+                epoch++;
                 var action = policy.PredictAction(Observation);
                 var obs = Observation = UpdateEnviron(action);
                 var reward = GetReward(obs);
@@ -95,6 +97,8 @@ namespace DeepSharp.RL.Models
             episode.SumReward = new Reward(episode.Oars.Sum(a => a.Reward.Value));
             return episode;
         }
+
+        public abstract bool StopEpoch(int epoch);
 
         /// <summary>
         ///     Get Multi Episodes by one policy.

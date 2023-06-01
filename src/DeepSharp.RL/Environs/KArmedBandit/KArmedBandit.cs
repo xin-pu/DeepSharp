@@ -17,8 +17,6 @@ namespace DeepSharp.RL.Environs
             foreach (var i in Enumerable.Range(0, k))
                 bandits[i] = new Bandit($"{i}", random.Next(2, 8) * 1f / 10);
 
-            bandits[0].Prob = 0.3;
-            bandits[1].Prob = 0.9;
             Observation = new Observation(torch.zeros(k));
             Reward = new Reward(0);
             Reset();
@@ -48,6 +46,12 @@ namespace DeepSharp.RL.Environs
             var obsTensor = torch.from_array(obs, torch.ScalarType.Float32);
             return new Observation(obsTensor);
         }
+
+        public override bool StopEpoch(int epoch)
+        {
+            return epoch >= 20;
+        }
+
 
         /// <summary>
         ///     该环境下 当次奖励为赌博机的获得金币数量，无需转换
