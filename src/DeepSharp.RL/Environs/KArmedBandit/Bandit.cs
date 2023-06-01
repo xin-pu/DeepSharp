@@ -1,4 +1,4 @@
-﻿namespace TorchSharpTest.RLTest
+﻿namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     简化的赌博机，以Prob 概率吐出一枚硬币

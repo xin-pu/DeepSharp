@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest
 {

@@ -1,7 +1,7 @@
 ﻿using DeepSharp.RL.Models;
 using Action = DeepSharp.RL.Models.Action;
 
-namespace TorchSharpTest.RLTest
+namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     多臂赌博机,每个赌博机以 0,0.1到1 的概率随机生成
