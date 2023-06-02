@@ -74,6 +74,20 @@ namespace DeepSharp.RL.Models
         /// <returns>new observation</returns>
         public abstract Observation UpdateEnviron(Action action);
 
+        /// <summary>
+        ///     Get Multi Episodes by one policy.
+        /// </summary>
+        /// <param name="policy">Agent</param>
+        /// <param name="episodesSize">the size of episodes need return</param>
+        /// <returns></returns>
+        public virtual Episode[] GetMultiEpisodes(IPolicy policy, int episodesSize)
+        {
+            var episodes = Enumerable.Repeat(0, episodesSize)
+                .Select(_ => GetEpisode(policy))
+                .ToArray();
+
+            return episodes;
+        }
 
         /// <summary>
         ///     Get episode by one policy without reset Environ
@@ -90,9 +104,12 @@ namespace DeepSharp.RL.Models
             {
                 epoch++;
                 var action = policy.PredictAction(Observation);
-                var obs = Observation = UpdateEnviron(action);
-                var reward = GetReward(obs);
-                episode.Oars.Add(new Step {Action = action, Observation = obs, Reward = reward});
+                var obs = UpdateEnviron(action);
+                if ((Observation.Value.argmax() - obs.Value.argmax()).item<long>() == 0)
+                    continue;
+                Observation = new Observation(obs.Value.clone());
+                Reward = GetReward(Observation);
+                episode.Oars.Add(new Step {Action = action, Observation = Observation, Reward = Reward});
             }
 
             var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode);
@@ -100,24 +117,9 @@ namespace DeepSharp.RL.Models
             return episode;
         }
 
-        public abstract float DiscountReward(Episode episode, float Gamma = 0.9f);
+        public abstract float DiscountReward(Episode episode, float Gamma = 0.95f);
 
         public abstract bool StopEpoch(int epoch);
-
-        /// <summary>
-        ///     Get Multi Episodes by one policy.
-        /// </summary>
-        /// <param name="policy">Agent</param>
-        /// <param name="episodesSize">the size of episodes need return</param>
-        /// <returns></returns>
-        public virtual Episode[] GetMultiEpisodes(IPolicy policy, int episodesSize)
-        {
-            var episodes = Enumerable.Repeat(0, episodesSize)
-                .Select(_ => GetEpisode(policy))
-                .ToArray();
-
-            return episodes;
-        }
 
 
         public override string ToString()

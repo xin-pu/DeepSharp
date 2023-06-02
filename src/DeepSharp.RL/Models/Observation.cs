@@ -35,7 +35,9 @@
 
         public override string ToString()
         {
-            return $"Observation:{Value}\t@{TimeStamp}";
+            var data = Value.data<float>().ToArray();
+            var dataStr = string.Join(",", data);
+            return $"Observation:{dataStr}\t@{TimeStamp}";
         }
     }
 }

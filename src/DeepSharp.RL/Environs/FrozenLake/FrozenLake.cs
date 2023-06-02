@@ -26,7 +26,7 @@ namespace DeepSharp.RL.Environs
             }
 
             this[0].Role = LakeRole.Start;
-            this[5].Role = this[7].Role = this[11].Role = this[12].Role = LakeRole.Hole;
+            this[5].Role = this[11].Role = LakeRole.Hole;
             this[15].Role = LakeRole.End;
 
             return LakeUnits;
@@ -85,36 +85,36 @@ namespace DeepSharp.RL.Environs
             var p = random.NextDouble();
             var rowCurrent = this[PlayID].Row;
             var columnCurrent = this[PlayID].Column;
-
+            p = 0.2;
             PlayID = banditSelectIndex switch
             {
                 /// 往上走
                 0 => p switch
                 {
-                    < 4f / 5 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
-                    < 4.5f / 5 => this[new[] {0, rowCurrent - 1}.Max(), new[] {0, columnCurrent - 1}.Max()].Index,
-                    _ => this[new[] {0, rowCurrent - 1}.Max(), new[] {3, columnCurrent + 1}.Min()].Index
+                    < 1f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    < 2f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    _ => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index
                 },
                 ///往下走
                 1 => p switch
                 {
-                    < 4f / 5 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
-                    < 4.5f / 5 => this[new[] {3, rowCurrent + 1}.Min(), new[] {0, columnCurrent - 1}.Max()].Index,
-                    _ => this[new[] {3, rowCurrent + 1}.Min(), new[] {3, columnCurrent + 1}.Min()].Index
+                    < 1f / 3 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
+                    < 2f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    _ => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index
                 },
                 ///往左走
                 2 => p switch
                 {
-                    < 4f / 5 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
-                    < 4.5f / 5 => this[new[] {0, rowCurrent - 1}.Max(), new[] {0, columnCurrent - 1}.Max()].Index,
-                    _ => this[new[] {3, rowCurrent + 1}.Min(), new[] {0, columnCurrent - 1}.Max()].Index
+                    < 1f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    < 2f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    _ => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index
                 },
                 ///往右走
                 3 => p switch
                 {
-                    < 4f / 5 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
-                    < 4.5f / 5 => this[new[] {0, rowCurrent - 1}.Max(), new[] {3, columnCurrent + 1}.Min()].Index,
-                    _ => this[new[] {3, rowCurrent + 1}.Min(), new[] {3, columnCurrent + 1}.Min()].Index
+                    < 1f / 3 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
+                    < 2f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    _ => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index
                 },
                 _ => PlayID
             };
@@ -125,9 +125,10 @@ namespace DeepSharp.RL.Environs
             return new Observation(stateTensor);
         }
 
-        public override float DiscountReward(Episode episode, float Gamma = 0.9f)
+        public override float DiscountReward(Episode episode, float Gamma)
         {
-            return (float) Math.Pow(Gamma, episode.Oars.Count);
+            var res = (float) Math.Pow(Gamma, episode.Oars.Count);
+            return res;
         }
 
         public override bool StopEpoch(int epoch)

@@ -47,7 +47,7 @@ namespace DeepSharp.RL.Environs
             return new Observation(obsTensor);
         }
 
-        public override float DiscountReward(Episode episode, float Gamma = 0.9f)
+        public override float DiscountReward(Episode episode, float Gamma = 0.95f)
         {
             return 1;
         }

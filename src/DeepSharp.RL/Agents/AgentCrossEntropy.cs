@@ -44,21 +44,16 @@ namespace DeepSharp.RL.Agents
             return new Action(nextAction);
         }
 
-        /// <summary>
-        ///     增加记忆功能，记录历史的精英片段
-        /// </summary>
-        public List<Step> MemeSteps { set; get; } = new();
 
-        public override float Learn(Step[] steps)
+        public override float Learn(Episode[] steps)
         {
             if (steps.Length == 0) return float.MaxValue;
 
-            var final = steps.Concat(MemeSteps).ToList();
+            var observations = steps.SelectMany(a => a.Oars.Select(d => d.Observation.Value));
+            var actions = steps.SelectMany(a => a.Oars.Select(d => d.Action.Value));
 
-            var observation = torch.vstack(final.Select(a => a.Observation.Value).ToList());
-            var action = torch.vstack(final.Select(a => a.Action.Value).ToList());
-
-            MemeSteps = final.OrderByDescending(a => a.Reward.Value).Take(10).ToList();
+            var observation = torch.vstack(observations.ToList());
+            var action = torch.vstack(actions.ToList());
 
             return Learn(observation, action);
         }
@@ -78,7 +73,7 @@ namespace DeepSharp.RL.Agents
         /// <param name="episodes"></param>
         /// <param name="percent"></param>
         /// <returns></returns>
-        public Step[] GetElite(Episode[] episodes)
+        public Episode[] GetElite(Episode[] episodes)
         {
             var reward = episodes
                 .Select(a => a.SumReward.Value)
@@ -87,12 +82,12 @@ namespace DeepSharp.RL.Agents
                 .Take((int) (reward.Length * PercentElite))
                 .Min();
 
-            var elite = episodes
+            var filterEpisodes = episodes
                 .Where(e => e.SumReward.Value > rewardP)
-                .SelectMany(e => e.Oars)
                 .ToArray();
 
-            return elite;
+
+            return filterEpisodes;
         }
 
         /// <summary>
