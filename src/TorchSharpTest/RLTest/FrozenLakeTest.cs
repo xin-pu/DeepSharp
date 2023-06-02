@@ -32,7 +32,7 @@ namespace TorchSharpTest.RLTest
         public void Main()
         {
             var epoch = 5000;
-            var episodesEachBatch = 30;
+            var episodesEachBatch = 100;
 
             /// Step 1 Create a 4-Armed Bandit
             var forFrozenLake = new Frozenlake();
@@ -53,6 +53,8 @@ namespace TorchSharpTest.RLTest
                 var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
 
                 Print($"Epoch:{i:D4}\t:\t{success:p2}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
+                if (success > 0.75)
+                    break;
             }
         }
     }

@@ -6,7 +6,7 @@ namespace DeepSharp.RL.Environs
 {
     public class Frozenlake : Environ
     {
-        public Frozenlake() : base("Lake")
+        public Frozenlake() : base("Frozenlake")
         {
             LakeUnits = new List<LakeUnit>();
             LakeUnits = CreateLake4();
@@ -138,8 +138,8 @@ namespace DeepSharp.RL.Environs
 
         public override void Reset()
         {
-            PlayID = 0;
             base.Reset();
+            PlayID = 0;
         }
 
         public override string ToString()

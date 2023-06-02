@@ -73,7 +73,7 @@ namespace DeepSharp.RL.Agents
         /// <param name="episodes"></param>
         /// <param name="percent"></param>
         /// <returns></returns>
-        public Episode[] GetElite(Episode[] episodes)
+        public virtual Episode[] GetElite(Episode[] episodes)
         {
             var reward = episodes
                 .Select(a => a.SumReward.Value)
