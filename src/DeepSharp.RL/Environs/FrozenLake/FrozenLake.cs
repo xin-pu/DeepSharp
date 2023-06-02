@@ -26,7 +26,8 @@ namespace DeepSharp.RL.Environs
             }
 
             this[0].Role = LakeRole.Start;
-            this[5].Role = this[11].Role = LakeRole.Hole;
+            //this[5].Role = this[7].Role = this[11].Role = this[12].Role = LakeRole.Hole;
+            this[5].Role = this[11].Role = this[12].Role = LakeRole.Hole;
             this[15].Role = LakeRole.End;
 
             return LakeUnits;

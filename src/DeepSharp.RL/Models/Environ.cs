@@ -105,9 +105,9 @@ namespace DeepSharp.RL.Models
                 epoch++;
                 var action = policy.PredictAction(Observation);
                 var obs = UpdateEnviron(action);
-                if ((Observation.Value.argmax() - obs.Value.argmax()).item<long>() == 0)
-                    continue;
-                Observation = new Observation(obs.Value.clone());
+                //if ((Observation.Value.argmax() - obs.Value.argmax()).item<long>() == 0)
+                //    continue;
+                Observation = obs;
                 Reward = GetReward(Observation);
                 episode.Oars.Add(new Step {Action = action, Observation = Observation, Reward = Reward});
             }

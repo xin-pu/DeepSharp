@@ -45,15 +45,16 @@ namespace TorchSharpTest.RLTest
             foreach (var i in Enumerable.Range(0, epoch))
             {
                 var batch = forFrozenLake.GetMultiEpisodes(agent, episodesEachBatch);
-                var success = batch.Count(a => a.SumReward.Value > 0) * 1f / batch.Length;
+                var success = batch.Count(a => a.SumReward.Value > 0);
+
                 var eliteOars = agent.GetElite(batch); /// Get eliteOars 
 
                 /// Agent Learn by elite observation & action
                 var loss = agent.Learn(eliteOars);
                 var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
 
-                Print($"Epoch:{i:D4}\t:\t{success:p2}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
-                if (success > 0.75)
+                Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
+                if (success > 75)
                     break;
             }
         }

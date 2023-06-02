@@ -11,16 +11,22 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public class AgentCrossEntropyExt : AgentCrossEntropy
     {
-        public AgentCrossEntropyExt(Environ environ, float percentElite = 0.7f, int hiddenSize = 100)
+        public AgentCrossEntropyExt(
+            Environ environ,
+            float percentElite = 0.7f,
+            int hiddenSize = 150)
             : base(environ, percentElite, hiddenSize)
         {
-            Optimizer = Adam(AgentNet.parameters(), 0.001);
+            Optimizer = Adam(AgentNet.parameters());
         }
 
         /// <summary>
         ///     增加记忆功能，记录历史的精英片段
         /// </summary>
         public List<Episode> MemeSteps { set; get; } = new();
+
+        public int MemsLength = 50;
+        public List<DateTime> Start = new();
 
         /// <summary>
         ///     Get Elite
@@ -30,18 +36,27 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Episode[] GetElite(Episode[] episodes)
         {
-            var reward = episodes.Concat(MemeSteps)
+            var current = episodes.Select(a => a.DateTime).ToList();
+            Start.Add(current.Min());
+            if (Start.Count > 20)
+                Start.RemoveAt(0);
+
+            var combine = episodes.Concat(MemeSteps).ToList();
+            var reward = combine
                 .Select(a => a.SumReward.Value)
                 .ToArray();
             var rewardP = reward.OrderByDescending(a => a)
                 .Take((int) (reward.Length * PercentElite))
                 .Min();
 
-            var filterEpisodes = episodes
-                .Where(e => e.SumReward.Value >= rewardP)
+            var filterEpisodes = combine
+                .Where(e => e.SumReward.Value > rewardP)
                 .ToArray();
 
-            MemeSteps = filterEpisodes.OrderByDescending(a => a.SumReward.Value).Take(500).ToList();
+
+            MemeSteps = filterEpisodes.Where(a => a.DateTime > Start.Min())
+                .Take(MemsLength)
+                .ToList();
 
             return filterEpisodes;
         }
