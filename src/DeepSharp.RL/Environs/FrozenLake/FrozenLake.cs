@@ -6,7 +6,8 @@ namespace DeepSharp.RL.Environs
 {
     public class Frozenlake : Environ
     {
-        public Frozenlake() : base("Frozenlake")
+        public Frozenlake(torch.Device device)
+            : base("Frozenlake", device)
         {
             LakeUnits = new List<LakeUnit>();
             LakeUnits = CreateLake4();
@@ -15,21 +16,9 @@ namespace DeepSharp.RL.Environs
             ActionSpace = 4;
         }
 
-
-        internal List<LakeUnit> CreateLake4()
+        public Frozenlake(DeviceType device)
+            : this(new torch.Device(device))
         {
-            foreach (var r in Enumerable.Range(0, 4))
-            foreach (var c in Enumerable.Range(0, 4))
-            {
-                var unit = new LakeUnit(r, c, r * 4 + c);
-                LakeUnits.Add(unit);
-            }
-
-            this[0].Role = LakeRole.Start;
-            this[6].Role = LakeRole.Hole;
-            this[15].Role = LakeRole.End;
-
-            return LakeUnits;
         }
 
         public int PlayID { set; get; }
@@ -49,6 +38,23 @@ namespace DeepSharp.RL.Environs
         }
 
 
+        internal List<LakeUnit> CreateLake4()
+        {
+            foreach (var r in Enumerable.Range(0, 4))
+            foreach (var c in Enumerable.Range(0, 4))
+            {
+                var unit = new LakeUnit(r, c, r * 4 + c);
+                LakeUnits.Add(unit);
+            }
+
+            this[0].Role = LakeRole.Start;
+            this[6].Role = this[11].Role = LakeRole.Hole;
+            this[15].Role = LakeRole.End;
+
+            return LakeUnits;
+        }
+
+
         /// <summary>
         ///     Change observation to Reward,
         ///     Only when at End Position will get reward:1
@@ -57,7 +63,7 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override Reward GetReward(Observation observation)
         {
-            var index = observation.Value.argmax().item<long>();
+            var index = observation.Value!.argmax().item<long>();
             var unit = this[(int) index];
             switch (unit.Role)
             {
@@ -80,7 +86,7 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override Observation UpdateEnviron(Action action)
         {
-            var banditSelectIndex = action.Value.item<long>();
+            var banditSelectIndex = action.Value!.item<long>();
 
             var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 1 / 3f, 1 / 3f}), 1);
             var moveAction = moveProb.item<long>();
@@ -126,11 +132,11 @@ namespace DeepSharp.RL.Environs
 
             var state = Enumerable.Repeat(0, LakeUnits.Count).ToArray();
             state[PlayID] = 1;
-            var stateTensor = torch.from_array(state, torch.ScalarType.Float32);
+            var stateTensor = torch.from_array(state, torch.ScalarType.Float32).to(Device);
             return new Observation(stateTensor);
         }
 
-        public override float DiscountReward(Episode episode, float Gamma)
+        public override float DiscountReward(Episode episode, float gamma)
         {
             var res = (float) Math.Pow(Gamma, episode.Oars.Count);
             return res;

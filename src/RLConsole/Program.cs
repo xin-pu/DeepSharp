@@ -3,15 +3,18 @@
 using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
 using RLConsole;
+using TorchSharp;
 
 Console.WriteLine("Hello, World!");
-
 
 var epoch = 10000;
 var episodesEachBatch = 100;
 
 /// Step 1 Create a 4-Armed Bandit
-var forFrozenLake = new Frozenlake {Gamma = 0.9f};
+var forFrozenLake = new Frozenlake(DeviceType.CUDA)
+{
+    Gamma = 0.90f
+};
 Utility.Print(forFrozenLake);
 
 /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default

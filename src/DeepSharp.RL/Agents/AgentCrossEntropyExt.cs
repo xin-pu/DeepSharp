@@ -11,22 +11,22 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public class AgentCrossEntropyExt : AgentCrossEntropy
     {
+        public int MemsEliteLength = 30;
+        public List<DateTime> Start = new();
+
         public AgentCrossEntropyExt(
             Environ environ,
             float percentElite = 0.7f,
-            int hiddenSize = 150)
+            int hiddenSize = 100)
             : base(environ, percentElite, hiddenSize)
         {
-            Optimizer = Adam(AgentNet.parameters());
+            Optimizer = Adam(AgentNet.parameters(), 0.01);
         }
 
         /// <summary>
         ///     增加记忆功能，记录历史的精英片段
         /// </summary>
-        public List<Episode> MemeSteps { set; get; } = new();
-
-        public int MemsLength = 50;
-        public List<DateTime> Start = new();
+        internal List<Episode> MemeSteps { set; get; } = new();
 
         /// <summary>
         ///     Get Elite
@@ -38,7 +38,7 @@ namespace DeepSharp.RL.Agents
         {
             var current = episodes.Select(a => a.DateTime).ToList();
             Start.Add(current.Min());
-            if (Start.Count > 10)
+            if (Start.Count >= 10)
                 Start.RemoveAt(0);
 
             var combine = episodes.Concat(MemeSteps).ToList();
@@ -53,10 +53,9 @@ namespace DeepSharp.RL.Agents
                 .Where(e => e.SumReward.Value > rewardP)
                 .ToArray();
 
-
             MemeSteps = filterEpisodes.Where(a => a.DateTime > Start.Min())
                 .OrderByDescending(a => a.SumReward.Value)
-                .Take(MemsLength)
+                .Take(MemsEliteLength)
                 .ToList();
 
             return filterEpisodes;
@@ -70,7 +69,7 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Action PredictAction(Observation observation)
         {
-            var input = observation.Value.unsqueeze(0);
+            var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
             var nextAction = torch.multinomial(actionProbs, SampleActionSpace);

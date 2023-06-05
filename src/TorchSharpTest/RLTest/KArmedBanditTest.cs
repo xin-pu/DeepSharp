@@ -29,7 +29,7 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void KArmedBanditCreateTest()
         {
-            var kArmedBandit = new KArmedBandit(5);
+            var kArmedBandit = new KArmedBandit(5, new torch.Device(DeviceType.CUDA));
             Print(kArmedBandit);
         }
 
@@ -51,9 +51,10 @@ namespace TorchSharpTest.RLTest
         {
             var epoch = 100;
             var episodesEachBatch = 20;
+            var device = new torch.Device(DeviceType.CUDA);
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2);
+            var kArmedBandit = new KArmedBandit(2, device);
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default

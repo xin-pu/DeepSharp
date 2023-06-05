@@ -6,9 +6,9 @@
     public class Observation : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor _value = torch.zeros(1);
+        private torch.Tensor? _value;
 
-        public Observation(torch.Tensor state)
+        public Observation(torch.Tensor? state)
         {
             Value = state;
             TimeStamp = DateTime.Now;
@@ -17,7 +17,7 @@
         /// <summary>
         ///     观察的张量格式
         /// </summary>
-        public torch.Tensor Value
+        public torch.Tensor? Value
         {
             set => SetProperty(ref _value, value);
             get => _value;
@@ -32,10 +32,16 @@
             get => _timeStamp;
         }
 
+        public Observation To(torch.Device device)
+        {
+            return new Observation(Value?.to(device));
+        }
 
         public override string ToString()
         {
-            var data = Value.data<float>().ToArray();
+            if (Value is null)
+                return string.Empty;
+            var data = Value.data<float>().ToList();
             var dataStr = string.Join(",", data);
             return $"Observation:{dataStr}\t@{TimeStamp}";
         }

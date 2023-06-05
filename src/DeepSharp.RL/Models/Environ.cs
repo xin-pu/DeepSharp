@@ -9,13 +9,19 @@ namespace DeepSharp.RL.Models
     public abstract class Environ : ObservableObject
     {
         private string _name;
-        private Observation _observation = new(torch.empty(0));
+        private Observation? _observation;
         private List<Observation> _observationList = new();
         private Reward _reward = new(0);
 
-        protected Environ(string name)
+        protected Environ(string name, torch.Device device)
         {
             _name = name;
+            Device = device;
+        }
+
+        protected Environ(string name, DeviceType device)
+            : this(name, new torch.Device(device))
+        {
         }
 
         public string Name
@@ -24,12 +30,13 @@ namespace DeepSharp.RL.Models
             get => _name;
         }
 
+        public torch.Device Device { set; get; }
         public int ActionSpace { protected set; get; }
         public int SampleActionSpace { protected set; get; }
         public int ObservationSpace { protected set; get; }
         public float Gamma { set; get; } = 0.9f;
 
-        public Observation Observation
+        public Observation? Observation
         {
             set => SetProperty(ref _observation, value);
             get => _observation;
@@ -56,7 +63,7 @@ namespace DeepSharp.RL.Models
         public virtual void Reset()
         {
             ObservationList.Clear();
-            Observation = new Observation(torch.zeros(ObservationSpace));
+            Observation = new Observation(torch.zeros(ObservationSpace, device: Device));
             Reward = new Reward(0);
         }
 
@@ -99,13 +106,14 @@ namespace DeepSharp.RL.Models
         public virtual Episode GetEpisode(IPolicy policy)
         {
             Reset();
+
             var episode = new Episode();
             var epoch = 0;
             while (StopEpoch(epoch) == false)
             {
                 epoch++;
-                var action = policy.PredictAction(Observation);
-                var obs = UpdateEnviron(action);
+                var action = policy.PredictAction(Observation!).To(Device);
+                var obs = UpdateEnviron(action!).To(Device);
                 Observation = obs;
                 Reward = GetReward(Observation);
                 episode.Oars.Add(new Step {Action = action, Observation = Observation, Reward = Reward});
@@ -116,10 +124,9 @@ namespace DeepSharp.RL.Models
             return episode;
         }
 
-        public abstract float DiscountReward(Episode episode, float Gamma = 0.95f);
+        public abstract float DiscountReward(Episode episode, float gamma);
 
         public abstract bool StopEpoch(int epoch);
-
 
         public override string ToString()
         {

@@ -10,17 +10,19 @@ namespace TorchSharpTest.RLTest
         {
         }
 
+        public torch.Device Device => new(DeviceType.CUDA);
+
         [Fact]
         public void FrozenLakeCreateTest()
         {
-            var pro = new Frozenlake();
+            var pro = new Frozenlake(Device);
             Print(pro);
         }
 
         [Fact]
         public void FrozenLakeCreate2Test()
         {
-            var pro = new Frozenlake
+            var pro = new Frozenlake(Device)
             {
                 PlayID = 15
             };
@@ -32,17 +34,20 @@ namespace TorchSharpTest.RLTest
         public void Main()
         {
             var epoch = 5000;
-            var episodesEachBatch = 200;
+            var episodesEachBatch = 100;
 
             /// Step 1 Create a 4-Armed Bandit
-            var forFrozenLake = new Frozenlake
+            var forFrozenLake = new Frozenlake(Device)
             {
                 Gamma = 0.90f
             };
             Print(forFrozenLake);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentCrossEntropyExt(forFrozenLake);
+            var agent = new AgentCrossEntropyExt(forFrozenLake)
+            {
+                MemsEliteLength = 30
+            };
 
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))

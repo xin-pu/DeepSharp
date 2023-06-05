@@ -3,9 +3,9 @@
     public class Action : ObservableObject
     {
         private DateTime _timeStamp;
-        private torch.Tensor _value = torch.zeros(1);
+        private torch.Tensor? _value;
 
-        public Action(torch.Tensor action)
+        public Action(torch.Tensor? action)
         {
             Value = action;
             TimeStamp = DateTime.Now;
@@ -14,7 +14,7 @@
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public torch.Tensor Value
+        public torch.Tensor? Value
         {
             set => SetProperty(ref _value, value);
             get => _value;
@@ -29,6 +29,10 @@
             get => _timeStamp;
         }
 
+        public Action To(torch.Device device)
+        {
+            return new Action(Value?.to(device));
+        }
 
         public override string ToString()
         {

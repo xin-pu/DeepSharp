@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="libtorch-cuda-11.7-win-x64" Version="2.0.1.1" />
+    <PackageReference Include="TorchSharp" Version="0.100.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DeepSharp.RL\DeepSharp.RL.csproj" />
   </ItemGroup>
 

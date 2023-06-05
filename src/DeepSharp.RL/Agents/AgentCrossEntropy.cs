@@ -12,12 +12,14 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public class AgentCrossEntropy : Agent
     {
-        public AgentCrossEntropy(Environ environ, float percentElite = 0.7f, int hiddenSize = 100) : base(environ)
+        public AgentCrossEntropy(Environ environ,
+            float percentElite = 0.7f,
+            int hiddenSize = 100) : base(environ)
         {
             PercentElite = percentElite;
             SampleActionSpace = 1;
             AgentNet = new Net(ObservationSize, hiddenSize, ActionSize);
-            Optimizer = Adam(AgentNet.parameters());
+            Optimizer = Adam(AgentNet.parameters(), 0.01);
             Loss = CrossEntropyLoss();
         }
 
@@ -37,7 +39,7 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Action PredictAction(Observation observation)
         {
-            var input = observation.Value.unsqueeze(0);
+            var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
             var nextAction = torch.multinomial(actionProbs, SampleActionSpace);
@@ -49,15 +51,19 @@ namespace DeepSharp.RL.Agents
         {
             if (steps.Length == 0) return float.MaxValue;
 
-            var observations = steps
-                .SelectMany(a => a.Oars.Select(d => d.Observation.Value))
-                .ToList();
-            var actions = steps
-                .SelectMany(a => a.Oars.Select(d => d.Action.Value))
+
+            var oars = steps.SelectMany(a => a.Oars)
                 .ToList();
 
-            var observation = torch.vstack(observations);
-            var action = torch.vstack(actions);
+            var observations = oars
+                .Select(a => a.Observation.Value)
+                .ToList();
+            var actions = oars
+                .Select(a => a.Action.Value)
+                .ToList();
+
+            var observation = torch.vstack(observations!);
+            var action = torch.vstack(actions!);
 
             return Learn(observation, action);
         }
@@ -133,6 +139,7 @@ namespace DeepSharp.RL.Agents
                     ("line2", Linear(hiddenSize, actionNum))
                 };
                 layers = Sequential(modules);
+                layers.to(new torch.Device(DeviceType.CUDA));
                 RegisterComponents();
             }
 
