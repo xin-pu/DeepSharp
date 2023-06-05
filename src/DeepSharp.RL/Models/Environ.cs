@@ -82,6 +82,13 @@ namespace DeepSharp.RL.Models
         /// <returns>new observation</returns>
         public abstract Observation UpdateEnviron(Action action);
 
+        public virtual Action Sample()
+        {
+            var actionProbs = torch.from_array(Enumerable.Repeat(1, ActionSpace).ToArray());
+            var a = torch.multinomial(actionProbs, 1);
+            return new Action(a);
+        }
+
         /// <summary>
         ///     Get Multi Episodes by one policy.
         /// </summary>
