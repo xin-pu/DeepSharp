@@ -32,10 +32,13 @@ namespace TorchSharpTest.RLTest
         public void Main()
         {
             var epoch = 5000;
-            var episodesEachBatch = 100;
+            var episodesEachBatch = 200;
 
             /// Step 1 Create a 4-Armed Bandit
-            var forFrozenLake = new Frozenlake();
+            var forFrozenLake = new Frozenlake
+            {
+                Gamma = 0.90f
+            };
             Print(forFrozenLake);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
@@ -54,8 +57,6 @@ namespace TorchSharpTest.RLTest
                 var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
 
                 Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
-                if (success > 75)
-                    break;
             }
         }
     }

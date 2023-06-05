@@ -38,7 +38,7 @@ namespace DeepSharp.RL.Agents
         {
             var current = episodes.Select(a => a.DateTime).ToList();
             Start.Add(current.Min());
-            if (Start.Count > 20)
+            if (Start.Count > 10)
                 Start.RemoveAt(0);
 
             var combine = episodes.Concat(MemeSteps).ToList();
@@ -55,6 +55,7 @@ namespace DeepSharp.RL.Agents
 
 
             MemeSteps = filterEpisodes.Where(a => a.DateTime > Start.Min())
+                .OrderByDescending(a => a.SumReward.Value)
                 .Take(MemsLength)
                 .ToList();
 

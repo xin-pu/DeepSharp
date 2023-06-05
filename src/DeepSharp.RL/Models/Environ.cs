@@ -27,6 +27,7 @@ namespace DeepSharp.RL.Models
         public int ActionSpace { protected set; get; }
         public int SampleActionSpace { protected set; get; }
         public int ObservationSpace { protected set; get; }
+        public float Gamma { set; get; } = 0.9f;
 
         public Observation Observation
         {
@@ -105,14 +106,12 @@ namespace DeepSharp.RL.Models
                 epoch++;
                 var action = policy.PredictAction(Observation);
                 var obs = UpdateEnviron(action);
-                //if ((Observation.Value.argmax() - obs.Value.argmax()).item<long>() == 0)
-                //    continue;
                 Observation = obs;
                 Reward = GetReward(Observation);
                 episode.Oars.Add(new Step {Action = action, Observation = Observation, Reward = Reward});
             }
 
-            var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode);
+            var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);
             episode.SumReward = new Reward(sumReward);
             return episode;
         }

@@ -17,7 +17,7 @@ namespace DeepSharp.RL.Agents
             PercentElite = percentElite;
             SampleActionSpace = 1;
             AgentNet = new Net(ObservationSize, hiddenSize, ActionSize);
-            Optimizer = Adam(AgentNet.parameters(), 0.01);
+            Optimizer = Adam(AgentNet.parameters());
             Loss = CrossEntropyLoss();
         }
 
@@ -49,11 +49,15 @@ namespace DeepSharp.RL.Agents
         {
             if (steps.Length == 0) return float.MaxValue;
 
-            var observations = steps.SelectMany(a => a.Oars.Select(d => d.Observation.Value));
-            var actions = steps.SelectMany(a => a.Oars.Select(d => d.Action.Value));
+            var observations = steps
+                .SelectMany(a => a.Oars.Select(d => d.Observation.Value))
+                .ToList();
+            var actions = steps
+                .SelectMany(a => a.Oars.Select(d => d.Action.Value))
+                .ToList();
 
-            var observation = torch.vstack(observations.ToList());
-            var action = torch.vstack(actions.ToList());
+            var observation = torch.vstack(observations);
+            var action = torch.vstack(actions);
 
             return Learn(observation, action);
         }
@@ -85,7 +89,6 @@ namespace DeepSharp.RL.Agents
             var filterEpisodes = episodes
                 .Where(e => e.SumReward.Value > rewardP)
                 .ToArray();
-
 
             return filterEpisodes;
         }
@@ -132,7 +135,6 @@ namespace DeepSharp.RL.Agents
                 layers = Sequential(modules);
                 RegisterComponents();
             }
-
 
             public override torch.Tensor forward(torch.Tensor input)
             {

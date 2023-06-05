@@ -26,8 +26,7 @@ namespace DeepSharp.RL.Environs
             }
 
             this[0].Role = LakeRole.Start;
-            //this[5].Role = this[7].Role = this[11].Role = this[12].Role = LakeRole.Hole;
-            this[5].Role = this[11].Role = this[12].Role = LakeRole.Hole;
+            this[6].Role = LakeRole.Hole;
             this[15].Role = LakeRole.End;
 
             return LakeUnits;
@@ -63,9 +62,9 @@ namespace DeepSharp.RL.Environs
             switch (unit.Role)
             {
                 case LakeRole.End:
-                    return new Reward(1);
+                    return new Reward(1f);
                 default:
-                    return new Reward(0);
+                    return new Reward(0f);
             }
         }
 
@@ -73,49 +72,54 @@ namespace DeepSharp.RL.Environs
         /// </summary>
         /// <param name="action">
         ///     0,1,2,3
-        ///     0 => 上
-        ///     1 => 下
-        ///     2 => 左
-        ///     3 => 右
+        ///     0 => Up
+        ///     1 => Down
+        ///     2 => Left
+        ///     3 => Right
         /// </param>
         /// <returns></returns>
         public override Observation UpdateEnviron(Action action)
         {
             var banditSelectIndex = action.Value.item<long>();
-            var random = new Random();
-            var p = random.NextDouble();
+
+            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 1 / 3f, 1 / 3f}), 1);
+            var moveAction = moveProb.item<long>();
             var rowCurrent = this[PlayID].Row;
             var columnCurrent = this[PlayID].Column;
-            p = 0.2;
+
             PlayID = banditSelectIndex switch
             {
                 /// 往上走
-                0 => p switch
+                0 => moveAction switch
                 {
-                    < 1f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
-                    < 2f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
-                    _ => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index
+                    0 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    1 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    2 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
+                    _ => throw new ArgumentOutOfRangeException()
                 },
                 ///往下走
-                1 => p switch
+                1 => moveAction switch
                 {
-                    < 1f / 3 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
-                    < 2f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
-                    _ => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index
+                    0 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
+                    1 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    2 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
+                    _ => throw new ArgumentOutOfRangeException()
                 },
                 ///往左走
-                2 => p switch
+                2 => moveAction switch
                 {
-                    < 1f / 3 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
-                    < 2f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
-                    _ => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index
+                    0 => this[rowCurrent, new[] {0, columnCurrent - 1}.Max()].Index,
+                    1 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    2 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
+                    _ => throw new ArgumentOutOfRangeException()
                 },
                 ///往右走
-                3 => p switch
+                3 => moveAction switch
                 {
-                    < 1f / 3 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
-                    < 2f / 3 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
-                    _ => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index
+                    0 => this[rowCurrent, new[] {3, columnCurrent + 1}.Min()].Index,
+                    1 => this[new[] {0, rowCurrent - 1}.Max(), columnCurrent].Index,
+                    2 => this[new[] {3, rowCurrent + 1}.Min(), columnCurrent].Index,
+                    _ => throw new ArgumentOutOfRangeException()
                 },
                 _ => PlayID
             };
