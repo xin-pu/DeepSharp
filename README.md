@@ -157,3 +157,35 @@ foreach (var i in Enumerable.Range(0, epoch))
     Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
 }
 ```
+
+### QLearning
+
+
+```C#
+var device = new torch.Device(DeviceType.CUDA);
+
+/// Step 1 Create a 4-Armed Bandit
+var kArmedBandit = new KArmedBandit(2, device)
+{
+[0] = {Prob = 0.5},
+[1] = {Prob = 0.8}
+};
+/// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
+var agent = new AgentQLearning(kArmedBandit);
+Print(kArmedBandit);
+
+var i = 0;
+var bestReward = 0f;
+while (true)
+{
+agent.RunRandom(kArmedBandit, 100);
+agent.ValueIteration();
+
+var episode = kArmedBandit.GetEpisode(agent);
+var sum = episode.SumReward;
+bestReward = new[] {bestReward, sum.Value}.Max();
+Print($"{i++}\t reward:{sum.Value}");
+if (sum.Value > 18)
+              
+}
+```

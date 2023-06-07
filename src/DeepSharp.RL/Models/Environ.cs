@@ -87,7 +87,7 @@ namespace DeepSharp.RL.Models
         {
             var prob = Enumerable.Repeat(1, ActionSpace).Select(a => 1f * a / ActionSpace).ToArray();
             var actionProbs = torch.from_array(prob, torch.ScalarType.Float32);
-            var a = torch.multinomial(actionProbs, 1);
+            var a = torch.multinomial(actionProbs, 1).to(Device);
             return new Action(a);
         }
 
@@ -117,7 +117,7 @@ namespace DeepSharp.RL.Models
             Reset();
 
             var episode = new Episode();
-            var epoch = 0;
+            var epoch = 1;
             while (StopEpoch(epoch) == false)
             {
                 epoch++;

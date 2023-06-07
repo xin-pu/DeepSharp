@@ -28,9 +28,15 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         public Dictionary<Observation, float> Values { set; get; }
 
-        public override Action PredictAction(Observation reward)
+        public override Action PredictAction(Observation state)
         {
-            throw new NotImplementedException();
+            var actionSpace = Enumerable.Range(0, ActionSize)
+                .Select(a => new Action(torch.from_array(new long[] {a}).to(Device)))
+                .ToList();
+
+            var value = actionSpace.MaxBy(a => GetActionValue(new TrasitKey(state, a)));
+
+            return value!;
         }
 
         public override float Learn(Episode[] steps)
@@ -54,6 +60,67 @@ namespace DeepSharp.RL.Agents
                 if (environ.StopEpoch(i))
                     environ.Reset();
             }
+        }
+
+
+        public void ValueIteration()
+        {
+            var stateList = Rewards
+                .Select(a => a.Key.State)
+                .Distinct();
+            var actionList = Enumerable.Range(0, ActionSize)
+                .Select(a => new Action(torch.from_array(new long[] {a}).to(Device)))
+                .ToList();
+            foreach (var state in stateList)
+            {
+                var maxStateValue = actionList
+                    .Select(a => GetActionValue(new TrasitKey(state, a)))
+                    .Max();
+
+                Values[state] = maxStateValue;
+            }
+        }
+
+
+        private void UpdateTables(Observation state, Action action, Observation newState, Reward reward)
+        {
+            ///Step 1 更新奖励表
+            var rewardKey = new RewardKey(state, action, newState);
+            var existRewardKey = Rewards.Keys.Where(a =>
+                    a.Action.Value!.Equals(action.Value!) &&
+                    a.State.Value!.Equals(state.Value!) &&
+                    a.NewState.Value!.Equals(newState.Value!))
+                .ToList();
+
+            var finalRewardKey = existRewardKey.Any() ? existRewardKey.First() : rewardKey;
+            Rewards[finalRewardKey] = reward;
+
+
+            var transitsKey = new TrasitKey(state, action);
+            var existTransitKey = Transits.Keys.Where(a =>
+                    a.Action.Value!.Equals(action.Value!) &&
+                    a.State.Value!.Equals(state.Value!))
+                .ToList();
+
+            /// Step 2 更新转移表
+            Dictionary<Observation, int> sonDict;
+            if (existTransitKey.Any())
+            {
+                sonDict = Transits[existTransitKey.First()];
+            }
+            else
+            {
+                sonDict = new Dictionary<Observation, int>();
+                Transits[transitsKey] = sonDict;
+            }
+
+            var newStateKeys = sonDict.Keys
+                .Where(a => a.Value!.Equals(newState.Value!))
+                .ToList();
+            if (newStateKeys.Any())
+                sonDict[newStateKeys.First()]++;
+            else
+                sonDict[newState] = 1;
         }
 
         /// <summary>
@@ -99,78 +166,6 @@ namespace DeepSharp.RL.Agents
 
             Values[observation] = 0;
             return Values[observation];
-        }
-
-        public void ValueIteration()
-        {
-            var stateList = Rewards
-                .Select(a => a.Key.State)
-                .Distinct();
-            var actionList = Enumerable.Range(0, ActionSize)
-                .Select(a => new Action(torch.from_array(new long[] {a})))
-                .ToList();
-            foreach (var state in stateList)
-            {
-                var maxStateValue = actionList
-                    .Select(a => GetActionValue(new TrasitKey(state, a)))
-                    .Max();
-
-                Values[state] = maxStateValue;
-            }
-        }
-
-
-        private Action SelectAction(Observation state)
-        {
-            var actionSpace = Enumerable.Range(1, ActionSize)
-                .Select(a => new Action(torch.from_array(new[] {a})))
-                .ToList();
-
-            var value = actionSpace.MaxBy(a => GetActionValue(new TrasitKey(state, a)));
-
-            return value!;
-        }
-
-
-        private void UpdateTables(Observation state, Action action, Observation newState, Reward reward)
-        {
-            ///Step 1 更新奖励表
-            var rewardKey = new RewardKey(state, action, newState);
-            var existRewardKey = Rewards.Keys.Where(a =>
-                    a.Action.Value!.Equals(action.Value!) &&
-                    a.State.Value!.Equals(state.Value!) &&
-                    a.NewState.Value!.Equals(newState.Value!))
-                .ToList();
-
-            var finalRewardKey = existRewardKey.Any() ? existRewardKey.First() : rewardKey;
-            Rewards[finalRewardKey] = reward;
-
-
-            var transitsKey = new TrasitKey(state, action);
-            var existTransitKey = Transits.Keys.Where(a =>
-                    a.Action.Value!.Equals(action.Value!) &&
-                    a.State.Value!.Equals(state.Value!))
-                .ToList();
-
-            /// Step 2 更新转移表
-            Dictionary<Observation, int> sonDict;
-            if (existTransitKey.Any())
-            {
-                sonDict = Transits[existTransitKey.First()];
-            }
-            else
-            {
-                sonDict = new Dictionary<Observation, int>();
-                Transits[transitsKey] = sonDict;
-            }
-
-            var newStateKeys = sonDict.Keys
-                .Where(a => a.Value!.Equals(newState.Value!))
-                .ToList();
-            if (newStateKeys.Any())
-                sonDict[newStateKeys.First()]++;
-            else
-                sonDict[newState] = 1;
         }
     }
 }
