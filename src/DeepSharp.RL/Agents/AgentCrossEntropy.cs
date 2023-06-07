@@ -17,7 +17,6 @@ namespace DeepSharp.RL.Agents
             int hiddenSize = 100) : base(environ)
         {
             PercentElite = percentElite;
-            SampleActionSpace = 1;
             AgentNet = new Net(ObservationSize, hiddenSize, ActionSize);
             Optimizer = Adam(AgentNet.parameters(), 0.01);
             Loss = CrossEntropyLoss();

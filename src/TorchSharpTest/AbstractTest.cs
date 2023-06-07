@@ -14,7 +14,7 @@
             _testOutputHelper.WriteLine(obj?.ToString());
         }
 
-        internal void Print(object[] objs)
+        internal void Print(string[] objs)
         {
             foreach (var o in objs) Print(o);
         }

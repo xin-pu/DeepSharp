@@ -22,7 +22,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Dataset", "DeepSh
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Core", "DeepSharp.Core\DeepSharp.Core.csproj", "{BAAFB244-1F3C-4A1A-AF1D-DBAD116F8CFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLConsole", "RLConsole\RLConsole.csproj", "{96E80CDB-2323-44BD-8D48-225313319E35}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RLConsole", "RLConsole\RLConsole.csproj", "{96E80CDB-2323-44BD-8D48-225313319E35}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,7 +10,7 @@ namespace DeepSharp.RL.Agents
         {
             Rewards = new Dictionary<RewardKey, Reward>();
             Transits = new Dictionary<TrasitKey, Dictionary<Observation, int>>();
-            Values = new Dictionary<TrasitKey, float>();
+            Values = new Dictionary<Observation, float>();
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace DeepSharp.RL.Agents
         /// <summary>
         ///     价值表
         /// </summary>
-        public Dictionary<TrasitKey, float> Values { set; get; }
+        public Dictionary<Observation, float> Values { set; get; }
 
         public override Action PredictAction(Observation reward)
         {
@@ -55,6 +55,82 @@ namespace DeepSharp.RL.Agents
                     environ.Reset();
             }
         }
+
+        /// <summary>
+        ///     状态和动作的近似价值Q(s,a) = 每个状态的概率乘以状态价值
+        ///     根据Bellman方程，它也等于立即奖励和折扣长期状态价值之和
+        /// </summary>
+        /// <param name="trasitKey"></param>
+        /// <returns></returns>
+        private float GetActionValue(TrasitKey trasitKey)
+        {
+            var targetCounts = getTransit(trasitKey);
+            var total = targetCounts.Sum(a => a.Value);
+            var activaValue = 0f;
+            foreach (var i in targetCounts)
+            {
+                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Action, i.Key));
+                var value = reward.Value + Environ.Gamma * getValue(i.Key);
+                activaValue += 1f * i.Value / total * value;
+            }
+
+            return activaValue;
+        }
+
+        private Dictionary<Observation, int> getTransit(TrasitKey traitKey)
+        {
+            var key = Transits.Keys.First(a => a.Action.Value.Equals(traitKey.Action.Value) &&
+                                               a.State.Value.Equals(traitKey.State.Value));
+            return Transits[key];
+        }
+
+        private Reward getReward(RewardKey rewardKey)
+        {
+            var key = Rewards.Keys.First(a => a.Action.Value.Equals(rewardKey.Action.Value) &&
+                                              a.State.Value.Equals(rewardKey.State.Value) &&
+                                              a.NewState.Value.Equals(rewardKey.NewState.Value));
+            return Rewards[key];
+        }
+
+        private float getValue(Observation observation)
+        {
+            var key = Values.Keys.FirstOrDefault(a => a.Value.Equals(observation.Value));
+            if (key != null) return Values[key];
+
+            Values[observation] = 0;
+            return Values[observation];
+        }
+
+        public void ValueIteration()
+        {
+            var stateList = Rewards
+                .Select(a => a.Key.State)
+                .Distinct();
+            var actionList = Enumerable.Range(0, ActionSize)
+                .Select(a => new Action(torch.from_array(new long[] {a})))
+                .ToList();
+            foreach (var state in stateList)
+            {
+                var maxStateValue = actionList
+                    .Select(a => GetActionValue(new TrasitKey(state, a)))
+                    .Max();
+
+                Values[state] = maxStateValue;
+            }
+        }
+
+
+        private Action SelectAction(Observation state)
+        {
+            var actionSpace = Enumerable.Range(1, ActionSize)
+                .Select(a => new Action(torch.from_array(new[] {a})))
+                .ToList();
+
+            var value = actionSpace.MaxBy(a => GetActionValue(new TrasitKey(state, a)));
+
+            return value!;
+        }
+
 
         private void UpdateTables(Observation state, Action action, Observation newState, Reward reward)
         {

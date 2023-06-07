@@ -9,16 +9,15 @@ namespace DeepSharp.RL.Models
     {
         protected Agent(Environ env)
         {
+            Environ = env;
             Device = env.Device;
-            ObservationSize = env.ObservationSpace;
-            ActionSize = env.ActionSpace;
-            SampleActionSpace = env.SampleActionSpace;
         }
 
         public torch.Device Device { protected set; get; }
-        public int ObservationSize { protected set; get; }
-        public int ActionSize { protected set; get; }
-        public int SampleActionSpace { protected set; get; }
+        public int ObservationSize => Environ.ObservationSpace;
+        public int ActionSize => Environ.ActionSpace;
+        public int SampleActionSpace => Environ.SampleActionSpace;
+        public Environ Environ { protected set; get; }
 
 
         public abstract Action PredictAction(Observation reward);
