@@ -71,7 +71,7 @@ namespace DeepSharp.RL.Environs
 
         public override bool StopEpoch(int epoch)
         {
-            return epoch >= 20;
+            return epoch % 20 == 0;
         }
 
 

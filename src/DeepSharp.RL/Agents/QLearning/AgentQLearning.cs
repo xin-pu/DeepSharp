@@ -49,9 +49,10 @@ namespace DeepSharp.RL.Agents
                 var reward = environ.GetReward(newObservation);
 
                 UpdateTables(observation!, action, newObservation, reward);
-                environ.Observation = newObservation;
+                environ.Observation = (Observation) newObservation.Clone();
 
-                if (environ.StopEpoch(i)) environ.Reset();
+                if (environ.StopEpoch(i))
+                    environ.Reset();
             }
         }
 
@@ -93,7 +94,7 @@ namespace DeepSharp.RL.Agents
             if (newStateKeys.Any())
                 sonDict[newStateKeys.First()]++;
             else
-                sonDict[state] = 1;
+                sonDict[newState] = 1;
         }
     }
 }

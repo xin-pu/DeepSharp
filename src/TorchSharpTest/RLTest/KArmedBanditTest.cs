@@ -84,15 +84,15 @@ namespace TorchSharpTest.RLTest
             /// Step 1 Create a 4-Armed Bandit
             var kArmedBandit = new KArmedBandit(2, device);
 
-            kArmedBandit[0].Prob = 1;
-            kArmedBandit[1].Prob = 1;
+            kArmedBandit[0].Prob = 0.8;
+            kArmedBandit[1].Prob = 0.8;
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
 
 
-            agent.RunRandom(kArmedBandit, 200);
+            agent.RunRandom(kArmedBandit, 500);
             Print(agent.Rewards.Keys.Count);
             Print(string.Join("\r\n", agent.Rewards.Keys));
             Print(agent.Transits

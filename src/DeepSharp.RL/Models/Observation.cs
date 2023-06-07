@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Models
+﻿using DeepSharp.Utility.Operations;
+
+namespace DeepSharp.RL.Models
 {
     /// <summary>
     ///     观察
@@ -41,6 +43,11 @@
         public object Clone()
         {
             return new Observation(Value) {TimeStamp = TimeStamp};
+        }
+
+        public override string ToString()
+        {
+            return OpTensor.ToArrString(Value!);
         }
     }
 }

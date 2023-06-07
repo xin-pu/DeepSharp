@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Models
+﻿using DeepSharp.Utility.Operations;
+
+namespace DeepSharp.RL.Models
 {
     public class Action : ObservableObject, IEqualityComparer<Action>
     {
@@ -36,7 +38,7 @@
 
         public override string ToString()
         {
-            return $"{TimeStamp}\t{Value}";
+            return $"{TimeStamp}\t{OpTensor.ToLongArrString(Value!)}";
         }
 
         public bool Equals(Action x, Action y)
