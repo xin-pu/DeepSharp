@@ -147,10 +147,11 @@ namespace DeepSharp.RL.Environs
             return this[PlayID].Role == LakeRole.End || this[PlayID].Role == LakeRole.Hole;
         }
 
-        public override void Reset()
+        public override Observation Reset()
         {
             base.Reset();
             PlayID = 0;
+            return Observation!;
         }
 
         public override string ToString()

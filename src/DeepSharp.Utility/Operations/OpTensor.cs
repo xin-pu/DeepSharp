@@ -16,5 +16,17 @@ namespace DeepSharp.Utility.Operations
             strBuild.AppendLine($"[{string.Join(",", dims)}]\t{dtype}\t{tensor.device}");
             return strBuild.ToString();
         }
+
+        public static string ToArrString(torch.Tensor tensor)
+        {
+            var array = tensor.data<float>().ToArray();
+            return string.Join(",", array);
+        }
+
+        public static string ToLongArrString(torch.Tensor tensor)
+        {
+            var array = tensor.data<long>().ToArray();
+            return string.Join(",", array);
+        }
     }
 }

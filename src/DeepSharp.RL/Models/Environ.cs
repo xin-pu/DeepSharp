@@ -60,11 +60,12 @@ namespace DeepSharp.RL.Models
         /// <summary>
         ///     恢复初始
         /// </summary>
-        public virtual void Reset()
+        public virtual Observation Reset()
         {
             ObservationList.Clear();
             Observation = new Observation(torch.zeros(ObservationSpace, device: Device));
             Reward = new Reward(0);
+            return Observation;
         }
 
 
@@ -84,7 +85,8 @@ namespace DeepSharp.RL.Models
 
         public virtual Action Sample()
         {
-            var actionProbs = torch.from_array(Enumerable.Repeat(1, ActionSpace).ToArray());
+            var prob = Enumerable.Repeat(1, ActionSpace).Select(a => 1f * a / ActionSpace).ToArray();
+            var actionProbs = torch.from_array(prob, torch.ScalarType.Float32);
             var a = torch.multinomial(actionProbs, 1);
             return new Action(a);
         }

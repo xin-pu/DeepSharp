@@ -28,6 +28,8 @@ namespace DeepSharp.RL.Environs
         {
         }
 
+        public Bandit this[int k] => bandits[k];
+
         private Bandit[] bandits { get; }
 
         /// <summary>

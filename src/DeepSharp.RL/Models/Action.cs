@@ -1,6 +1,6 @@
 ﻿namespace DeepSharp.RL.Models
 {
-    public class Action : ObservableObject
+    public class Action : ObservableObject, IEqualityComparer<Action>
     {
         private DateTime _timeStamp;
         private torch.Tensor? _value;
@@ -37,6 +37,20 @@
         public override string ToString()
         {
             return $"{TimeStamp}\t{Value}";
+        }
+
+        public bool Equals(Action x, Action y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (ReferenceEquals(x, null)) return false;
+            if (ReferenceEquals(y, null)) return false;
+            if (x.GetType() != y.GetType()) return false;
+            return x._timeStamp.Equals(y._timeStamp) && Equals(x._value, y._value);
+        }
+
+        public int GetHashCode(Action obj)
+        {
+            return HashCode.Combine(obj._timeStamp, obj._value);
         }
     }
 }

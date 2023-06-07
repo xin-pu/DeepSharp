@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Environs
+﻿using MathNet.Numerics.Random;
+
+namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     简化的赌博机，以Prob 概率吐出一枚硬币
@@ -11,14 +13,14 @@
             Prob = prob;
         }
 
-        public double Prob { internal set; get; }
+        public double Prob { set; get; }
 
         public string Name { get; set; }
 
 
         public float Step()
         {
-            var d = new Random();
+            var d = new SystemRandomSource();
             var pro = d.NextDouble();
             return pro <= Prob ? 1 : 0;
         }

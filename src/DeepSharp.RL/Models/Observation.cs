@@ -37,13 +37,10 @@
             return new Observation(Value?.to(device));
         }
 
-        public override string ToString()
+
+        public object Clone()
         {
-            if (Value is null)
-                return string.Empty;
-            var data = Value.data<float>().ToList();
-            var dataStr = string.Join(",", data);
-            return $"Observation:{dataStr}\t@{TimeStamp}";
+            return new Observation(Value) {TimeStamp = TimeStamp};
         }
     }
 }
