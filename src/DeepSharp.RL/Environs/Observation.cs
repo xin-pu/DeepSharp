@@ -1,6 +1,4 @@
-﻿using DeepSharp.Utility.Operations;
-
-namespace DeepSharp.RL.Models
+﻿namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     观察
@@ -47,7 +45,7 @@ namespace DeepSharp.RL.Models
 
         public override string ToString()
         {
-            return OpTensor.ToArrString(Value!);
+            return $"{TimeStamp:HH:mm:ss zz}\r\n{Value?.ToString(torch.numpy)}";
         }
     }
 }

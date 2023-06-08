@@ -1,5 +1,5 @@
-﻿using DeepSharp.RL.Models;
-using DeepSharp.RL.Policies;
+﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.Models;
 using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
@@ -7,7 +7,7 @@ namespace DeepSharp.RL.Agents
     /// <summary>
     ///     智能体
     /// </summary>
-    public abstract class Agent : ObservableObject, IPolicy
+    public abstract class Agent : ObservableObject
     {
         protected Agent(Environ env)
         {

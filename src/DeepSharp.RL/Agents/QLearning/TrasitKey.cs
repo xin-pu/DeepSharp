@@ -1,4 +1,4 @@
-﻿using DeepSharp.RL.Models;
+﻿using DeepSharp.RL.Environs;
 using DeepSharp.Utility.Operations;
 using Action = DeepSharp.RL.Models.Action;
 

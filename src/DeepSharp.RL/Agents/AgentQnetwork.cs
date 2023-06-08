@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Models;
+﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.Models;
 using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents

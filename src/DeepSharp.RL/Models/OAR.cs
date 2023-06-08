@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Models
+﻿using DeepSharp.RL.Environs;
+
+namespace DeepSharp.RL.Models
 {
     /// <summary>
     ///     Step

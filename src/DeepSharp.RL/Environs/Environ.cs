@@ -1,6 +1,8 @@
-﻿using DeepSharp.RL.Policies;
+﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Models;
+using Action = DeepSharp.RL.Models.Action;
 
-namespace DeepSharp.RL.Models
+namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     环境
@@ -97,7 +99,7 @@ namespace DeepSharp.RL.Models
         /// <param name="policy">Agent</param>
         /// <param name="episodesSize">the size of episodes need return</param>
         /// <returns></returns>
-        public virtual Episode[] GetMultiEpisodes(IPolicy policy, int episodesSize)
+        public virtual Episode[] GetMultiEpisodes(Agent policy, int episodesSize)
         {
             var episodes = Enumerable.Repeat(0, episodesSize)
                 .Select(_ => GetEpisode(policy))
@@ -112,7 +114,7 @@ namespace DeepSharp.RL.Models
         /// <param name="policy"></param>
         /// <param name="maxPeriod">limit size of a episode</param>
         /// <returns></returns>
-        public virtual Episode GetEpisode(IPolicy policy)
+        public virtual Episode GetEpisode(Agent policy)
         {
             Reset();
 

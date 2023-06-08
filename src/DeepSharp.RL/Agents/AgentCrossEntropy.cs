@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Models;
+﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.Models;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
 using Action = DeepSharp.RL.Models.Action;
