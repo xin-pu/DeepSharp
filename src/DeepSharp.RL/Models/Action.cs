@@ -41,13 +41,12 @@ namespace DeepSharp.RL.Models
             return $"{TimeStamp}\t{OpTensor.ToLongArrString(Value!)}";
         }
 
-        public bool Equals(Action x, Action y)
+        public bool Equals(Action? x, Action? y)
         {
             if (ReferenceEquals(x, y)) return true;
             if (ReferenceEquals(x, null)) return false;
             if (ReferenceEquals(y, null)) return false;
-            if (x.GetType() != y.GetType()) return false;
-            return x._timeStamp.Equals(y._timeStamp) && Equals(x._value, y._value);
+            return x.GetType() == y.GetType() && x.Value!.Equals(y.Value!);
         }
 
         public int GetHashCode(Action obj)

@@ -101,7 +101,6 @@ namespace TorchSharpTest.RLTest
         public void QLearningMain()
         {
             var device = new torch.Device(DeviceType.CUDA);
-
             /// Step 1 Create a 4-Armed Bandit
             var kArmedBandit = new KArmedBandit(2, device)
             {
