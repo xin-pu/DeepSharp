@@ -1,3 +1,5 @@
+using FluentAssertions;
+
 namespace TorchSharpTest.TorchTests
 {
     public class TensorTest : AbstractTest
@@ -27,6 +29,15 @@ namespace TorchSharpTest.TorchTests
         {
             var tensor = torch.ones(2, 3).to(DeviceType.CUDA);
             Print(tensor);
+        }
+
+
+        [Fact]
+        public void TestAnyAndAll()
+        {
+            var a = torch.tensor(new long[] {1, 2, 3});
+            var b = torch.tensor(new long[] {0, 0, 0});
+            torch.all(b < a).Equals(torch.tensor(true)).Should().Be(true);
         }
     }
 }

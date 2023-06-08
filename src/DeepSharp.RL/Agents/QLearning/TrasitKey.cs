@@ -1,6 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
 using DeepSharp.Utility.Operations;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
 {
@@ -9,20 +8,20 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public struct TrasitKey
     {
-        public TrasitKey(Observation state, Action action)
+        public TrasitKey(Observation state, Act act)
         {
             State = state;
-            Action = action;
+            Act = act;
         }
 
         public Observation State { set; get; }
-        public Action Action { set; get; }
+        public Act Act { set; get; }
 
 
         public override string ToString()
         {
             var state = OpTensor.ToArrString(State.Value);
-            var action = OpTensor.ToLongArrString(Action.Value);
+            var action = OpTensor.ToLongArrString(Act.Value);
 
             return $"{state} \t {action}";
         }

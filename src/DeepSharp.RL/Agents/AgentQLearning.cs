@@ -1,6 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
 using DeepSharp.RL.Models;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
 {
@@ -29,10 +28,10 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         public Dictionary<Observation, float> Values { set; get; }
 
-        public override Action PredictAction(Observation state)
+        public override Act PredictAction(Observation state)
         {
             var actionSpace = Enumerable.Range(0, ActionSize)
-                .Select(a => new Action(torch.from_array(new long[] {a}).to(Device)))
+                .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
                 .ToList();
 
             var value = actionSpace.MaxBy(a => GetActionValue(new TrasitKey(state, a)));
@@ -70,7 +69,7 @@ namespace DeepSharp.RL.Agents
                 .Select(a => a.Key.State)
                 .Distinct();
             var actionList = Enumerable.Range(0, ActionSize)
-                .Select(a => new Action(torch.from_array(new long[] {a}).to(Device)))
+                .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
                 .ToList();
             foreach (var state in stateList)
             {
@@ -83,12 +82,12 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        private void UpdateTables(Observation state, Action action, Observation newState, Reward reward)
+        private void UpdateTables(Observation state, Act act, Observation newState, Reward reward)
         {
             ///Step 1 更新奖励表
-            var rewardKey = new RewardKey(state, action, newState);
+            var rewardKey = new RewardKey(state, act, newState);
             var existRewardKey = Rewards.Keys.Where(a =>
-                    a.Action.Value!.Equals(action.Value!) &&
+                    a.Act.Value!.Equals(act.Value!) &&
                     a.State.Value!.Equals(state.Value!) &&
                     a.NewState.Value!.Equals(newState.Value!))
                 .ToList();
@@ -97,9 +96,9 @@ namespace DeepSharp.RL.Agents
             Rewards[finalRewardKey] = reward;
 
 
-            var transitsKey = new TrasitKey(state, action);
+            var transitsKey = new TrasitKey(state, act);
             var existTransitKey = Transits.Keys.Where(a =>
-                    a.Action.Value!.Equals(action.Value!) &&
+                    a.Act.Value!.Equals(act.Value!) &&
                     a.State.Value!.Equals(state.Value!))
                 .ToList();
 
@@ -137,7 +136,7 @@ namespace DeepSharp.RL.Agents
             var activaValue = 0f;
             foreach (var i in targetCounts)
             {
-                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Action, i.Key));
+                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Act, i.Key));
                 var value = reward.Value + Environ.Gamma * getValue(i.Key);
                 activaValue += 1f * i.Value / total * value;
             }
@@ -147,14 +146,14 @@ namespace DeepSharp.RL.Agents
 
         private Dictionary<Observation, int> getTransit(TrasitKey traitKey)
         {
-            var key = Transits.Keys.First(a => a.Action.Value.Equals(traitKey.Action.Value) &&
+            var key = Transits.Keys.First(a => a.Act.Value.Equals(traitKey.Act.Value) &&
                                                a.State.Value.Equals(traitKey.State.Value));
             return Transits[key];
         }
 
         private Reward getReward(RewardKey rewardKey)
         {
-            var key = Rewards.Keys.First(a => a.Action.Value.Equals(rewardKey.Action.Value) &&
+            var key = Rewards.Keys.First(a => a.Act.Value.Equals(rewardKey.Act.Value) &&
                                               a.State.Value.Equals(rewardKey.State.Value) &&
                                               a.NewState.Value.Equals(rewardKey.NewState.Value));
             return Rewards[key];

@@ -1,6 +1,5 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Models;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Environs
 {
@@ -81,16 +80,16 @@ namespace DeepSharp.RL.Environs
         /// <summary>
         ///     Update Environ Observation according  with one action from Agent
         /// </summary>
-        /// <param name="action">Action from Policy</param>
+        /// <param name="act">Action from Policy</param>
         /// <returns>new observation</returns>
-        public abstract Observation UpdateEnviron(Action action);
+        public abstract Observation UpdateEnviron(Act act);
 
-        public virtual Action Sample()
+        public virtual Act Sample()
         {
             var prob = Enumerable.Repeat(1, ActionSpace).Select(a => 1f * a / ActionSpace).ToArray();
             var actionProbs = torch.from_array(prob, torch.ScalarType.Float32);
             var a = torch.multinomial(actionProbs, 1).to(Device);
-            return new Action(a);
+            return new Act(a);
         }
 
         /// <summary>

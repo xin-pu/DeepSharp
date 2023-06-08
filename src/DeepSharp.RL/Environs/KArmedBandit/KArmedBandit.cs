@@ -1,5 +1,4 @@
 ﻿using DeepSharp.RL.Models;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Environs
 {
@@ -45,13 +44,13 @@ namespace DeepSharp.RL.Environs
 
         /// <summary>
         /// </summary>
-        /// <param name="action">动作，该环境下包含智能体选择的赌博机索引</param>
+        /// <param name="act">动作，该环境下包含智能体选择的赌博机索引</param>
         /// <returns>返回选择的赌博机当次执行后获得的金币数量 0 或 1</returns>
-        public override Observation UpdateEnviron(Action action)
+        public override Observation UpdateEnviron(Act act)
         {
             var obs = new float[ObservationSpace];
 
-            var banditSelectIndex = action.Value!.data<long>().ToArray();
+            var banditSelectIndex = act.Value!.data<long>().ToArray();
 
             foreach (var index in banditSelectIndex)
             {

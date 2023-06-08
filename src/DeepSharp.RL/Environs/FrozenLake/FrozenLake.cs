@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using DeepSharp.RL.Models;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Environs
 {
@@ -76,7 +75,7 @@ namespace DeepSharp.RL.Environs
 
         /// <summary>
         /// </summary>
-        /// <param name="action">
+        /// <param name="act">
         ///     0,1,2,3
         ///     0 => Up
         ///     1 => Down
@@ -84,9 +83,9 @@ namespace DeepSharp.RL.Environs
         ///     3 => Right
         /// </param>
         /// <returns></returns>
-        public override Observation UpdateEnviron(Action action)
+        public override Observation UpdateEnviron(Act act)
         {
-            var banditSelectIndex = action.Value!.item<long>();
+            var banditSelectIndex = act.Value!.item<long>();
 
             var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 1 / 3f, 1 / 3f}), 1);
             var moveAction = moveProb.item<long>();

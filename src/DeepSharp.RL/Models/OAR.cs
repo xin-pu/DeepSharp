@@ -10,7 +10,7 @@ namespace DeepSharp.RL.Models
         /// <summary>
         ///     动作
         /// </summary>
-        public Action Action { set; get; }
+        public Act Action { set; get; }
 
         /// <summary>
         ///     动作后的观察

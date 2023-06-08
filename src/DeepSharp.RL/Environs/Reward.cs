@@ -31,5 +31,10 @@
             set => SetProperty(ref _timeStamp, value);
             get => _timeStamp;
         }
+
+        public override string ToString()
+        {
+            return $"Reward:\t{Value}";
+        }
     }
 }

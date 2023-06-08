@@ -1,6 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
 using DeepSharp.RL.Models;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
 {
@@ -10,7 +9,7 @@ namespace DeepSharp.RL.Agents
         {
         }
 
-        public override Action PredictAction(Observation reward)
+        public override Act PredictAction(Observation reward)
         {
             throw new NotImplementedException();
         }

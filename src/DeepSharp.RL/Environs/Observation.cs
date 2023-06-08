@@ -45,7 +45,7 @@
 
         public override string ToString()
         {
-            return $"{TimeStamp:HH:mm:ss zz}\r\n{Value?.ToString(torch.numpy)}";
+            return $"Observation\r\n{Value?.ToString(torch.numpy)}";
         }
     }
 }

@@ -2,7 +2,6 @@
 using DeepSharp.RL.Models;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
-using Action = DeepSharp.RL.Models.Action;
 
 namespace DeepSharp.RL.Agents
 {
@@ -37,13 +36,13 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public override Action PredictAction(Observation observation)
+        public override Act PredictAction(Observation observation)
         {
             var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
-            var nextAction = torch.multinomial(actionProbs, SampleActionSpace);
-            return new Action(nextAction);
+            var nextAction = torch.multinomial(actionProbs, 1);
+            return new Act(nextAction);
         }
 
 
