@@ -1,6 +1,8 @@
-﻿using DeepSharp.RL.Policies;
+﻿using DeepSharp.RL.Models;
+using DeepSharp.RL.Policies;
+using Action = DeepSharp.RL.Models.Action;
 
-namespace DeepSharp.RL.Models
+namespace DeepSharp.RL.Agents
 {
     /// <summary>
     ///     智能体

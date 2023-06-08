@@ -24,10 +24,6 @@
             writeLint(obj);
         }
 
-        protected void Print(Array array)
-        {
-            writeLint(array);
-        }
 
         /// <summary>
         ///     Todo optimize print Tensor
@@ -35,7 +31,7 @@
         /// <param name="tensor"></param>
         internal void Print(torch.Tensor tensor)
         {
-            writeLint(tensor);
+            writeLint(tensor.ToString(torch.numpy));
         }
 
         /// <summary>
