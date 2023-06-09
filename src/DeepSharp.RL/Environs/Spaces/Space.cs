@@ -2,6 +2,9 @@
 
 namespace DeepSharp.RL.Environs.Spaces
 {
+    /// <summary>
+    ///     空间 动作空间和观察空间父类
+    /// </summary>
     public abstract class Space : IDisposable
     {
         protected Space(
@@ -10,8 +13,9 @@ namespace DeepSharp.RL.Environs.Spaces
             DeviceType deviceType = DeviceType.CUDA,
             long seed = 1)
         {
-            CheckInitParameter(shape, type);
             (Shape, Type, DeviceType) = (shape, type, deviceType);
+            CheckInitParameter(shape, type);
+            CheckType();
             Generator = torch.random.manual_seed(seed);
         }
 
@@ -19,6 +23,7 @@ namespace DeepSharp.RL.Environs.Spaces
         public torch.ScalarType Type { get; }
         public DeviceType DeviceType { get; }
         internal torch.Generator Generator { get; }
+        internal torch.Device Device => new(DeviceType);
 
         public void Dispose()
         {
@@ -31,13 +36,15 @@ namespace DeepSharp.RL.Environs.Spaces
         /// <returns></returns>
         public abstract torch.Tensor Sample();
 
+        public abstract void CheckType();
+
         /// <summary>
         ///     Generates a tensor whose shape and type are consistent with the space definition.
         /// </summary>
         /// <returns></returns>
         public virtual torch.Tensor Generate()
         {
-            return torch.zeros(Shape, Type, new torch.Device(DeviceType));
+            return torch.zeros(Shape, Type, Device);
         }
 
         public override string ToString()

@@ -9,7 +9,7 @@
             _testOutputHelper = testOutputHelper;
         }
 
-        protected void writeLint(object? obj)
+        protected void writeLine(object? obj)
         {
             _testOutputHelper.WriteLine(obj?.ToString());
         }
@@ -21,7 +21,7 @@
 
         internal void Print(object obj)
         {
-            writeLint(obj);
+            writeLine(obj);
         }
 
 
@@ -31,7 +31,9 @@
         /// <param name="tensor"></param>
         internal void Print(torch.Tensor tensor)
         {
-            writeLint(tensor.ToString(torch.numpy));
+            writeLine(tensor.ToString(torch.numpy));
+            writeLine(tensor);
+            writeLine("");
         }
 
         /// <summary>
@@ -40,7 +42,7 @@
         /// <param name="tensor"></param>
         internal void Print(float tensor)
         {
-            writeLint(tensor);
+            writeLine(tensor);
         }
     }
 }
