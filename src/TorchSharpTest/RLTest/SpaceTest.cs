@@ -77,5 +77,18 @@ namespace TorchSharpTest.RLTest
         }
 
         #endregion
+
+
+        #region Binary
+
+        [Fact]
+        public void CreateBinary()
+        {
+            var binary = new Binary();
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        #endregion
     }
 }
