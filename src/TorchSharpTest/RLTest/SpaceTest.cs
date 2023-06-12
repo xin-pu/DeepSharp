@@ -90,5 +90,45 @@ namespace TorchSharpTest.RLTest
         }
 
         #endregion
+
+
+        #region Box
+
+        [Fact]
+        public void CreateInt32Box()
+        {
+            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
+                torch.tensor(new[,] {{5, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
+                new long[] {2, 2},
+                torch.ScalarType.Int32);
+            var r = binary.Sample();
+            Print(r);
+        }
+
+
+        [Fact]
+        public void CreateFloatBox()
+        {
+            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
+                torch.tensor(new[,] {{1, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
+                new long[] {2, 2},
+                torch.ScalarType.Float32);
+            var r = binary.Sample();
+            Print(r);
+        }
+
+
+        [Fact]
+        public void CreateDoubleBox()
+        {
+            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
+                torch.tensor(new[,] {{1, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
+                new long[] {2, 2},
+                torch.ScalarType.Float64);
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        #endregion
     }
 }

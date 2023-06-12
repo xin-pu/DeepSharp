@@ -12,8 +12,8 @@ namespace DeepSharp.RL.Environs.Spaces
 
         public Disperse(long length, long start, torch.ScalarType dtype = torch.ScalarType.Int64,
             DeviceType deviceType = DeviceType.CUDA, long seed = 1)
-            : base(torch.tensor(new[] {start}, dtype).to(new torch.Device(deviceType)),
-                torch.tensor(new[] {start + length - 1}, dtype).to(new torch.Device(deviceType)),
+            : base(torch.tensor(new[] {start}, dtype),
+                torch.tensor(new[] {start + length - 1}, dtype),
                 new long[] {1},
                 dtype, deviceType, seed)
         {

@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using MathNet.Numerics.Random;
 
 namespace DeepSharp.RL.Environs.Spaces
 {
@@ -10,13 +11,13 @@ namespace DeepSharp.RL.Environs.Spaces
         protected Space(
             long[] shape,
             torch.ScalarType type,
-            DeviceType deviceType = DeviceType.CUDA,
-            long seed = 1)
+            DeviceType deviceType,
+            long seed)
         {
             (Shape, Type, DeviceType) = (shape, type, deviceType);
             CheckInitParameter(shape, type);
             CheckType();
-            Generator = torch.random.manual_seed(seed);
+            Generator = torch.random.manual_seed(new SystemRandomSource().NextInt64(0, 1000));
         }
 
         public long[] Shape { get; }
@@ -46,6 +47,7 @@ namespace DeepSharp.RL.Environs.Spaces
         {
             return torch.zeros(Shape, Type, Device);
         }
+
 
         public override string ToString()
         {
