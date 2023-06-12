@@ -11,19 +11,6 @@ namespace TorchSharpTest.RLTest
         }
 
 
-        #region Binary
-
-        [Fact]
-        public void CreateBinary()
-        {
-            var binary = new Binary();
-            var r = binary.Sample();
-            Print(r);
-        }
-
-        #endregion
-
-
         #region Disperse Test
 
         [Fact]
@@ -97,16 +84,16 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void CreateFloatBox()
         {
-            var binary = new Box(0f, 1f, new long[] {2, 2});
-            var r = binary.Sample();
+            var box = new Box(0f, 1f, new long[] {2, 2});
+            var r = box.Sample();
             Print(r);
         }
 
         [Fact]
         public void CreateDoubleBox()
         {
-            var binary = new Box(0d, 1d, new long[] {2, 2});
-            var r = binary.Sample();
+            var box = new Box(0d, 1d, new long[] {2, 2});
+            var r = box.Sample();
             Print(r);
         }
 
@@ -114,34 +101,76 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void CreateInt32Box()
         {
-            var binary = new Box(1, 5, new long[] {10});
-            var r = binary.Sample();
+            var box = new Box(1, 5, new long[] {10});
+            var r = box.Sample();
             Print(r);
         }
 
         [Fact]
         public void CreateInt64Box()
         {
-            var binary = new Box(1L, 5L, new long[] {10});
-            var r = binary.Sample();
+            var box = new Box(1L, 5L, new long[] {10});
+            var r = box.Sample();
             Print(r);
         }
 
         [Fact]
         public void CreateByteBox()
         {
-            var binary = new Box((byte) 0, (byte) 1, new long[] {10});
-            var r = binary.Sample();
+            var box = new Box((byte) 0, (byte) 1, new long[] {10});
+            var r = box.Sample();
             Print(r);
         }
 
         [Fact]
         public void CreateInt16Box()
         {
-            var binary = new Box((short) 1, (short) 5, new long[] {10});
-            var r = binary.Sample();
+            var box = new Box((short) 1, (short) 5, new long[] {10});
+            var r = box.Sample();
             Print(r);
         }
+
+        #endregion
+
+
+        #region MyRegion
+
+        #region Other Space
+
+        [Fact]
+        public void CreateMultiDisperse()
+        {
+            var multiDisperse = new MultiDisperse(
+                torch.tensor(new long[] {0, 0}),
+                torch.tensor(new long[] {3, 4}),
+                new long[2], torch.ScalarType.Int32
+            );
+            var r = multiDisperse.Sample();
+            Print(r);
+            Print(multiDisperse);
+        }
+
+
+        [Fact]
+        public void CreateBinary()
+        {
+            var binary = new Binary(torch.ScalarType.Int64);
+            var r = binary.Sample();
+            Print(r);
+            Print(binary);
+        }
+
+
+        [Fact]
+        public void CreateMultiBinary()
+        {
+            var binary = new MultiBinary(2);
+            var r = binary.Sample();
+            Print(r);
+            Print(binary);
+        }
+
+        #endregion
 
         #endregion
     }

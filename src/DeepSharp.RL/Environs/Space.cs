@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using MathNet.Numerics.Random;
 
-namespace DeepSharp.RL.Environs.Spaces
+namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     空间 动作空间和观察空间父类
@@ -18,8 +18,10 @@ namespace DeepSharp.RL.Environs.Spaces
             CheckInitParameter(shape, type);
             CheckType();
             Generator = torch.random.manual_seed(new SystemRandomSource().NextInt64(0, 1000));
+            N = shape.Aggregate(1, (a, b) => (int) (a * b));
         }
 
+        public long N { get; init; }
         public long[] Shape { get; }
         public torch.ScalarType Type { get; }
         public DeviceType DeviceType { get; }
@@ -51,7 +53,7 @@ namespace DeepSharp.RL.Environs.Spaces
 
         public override string ToString()
         {
-            return $"Space Type: {GetType().Name}\nShape: {Shape}\ndType: {Type}";
+            return $"Space Type: {GetType().Name}\nShape: {Shape}\ndType: {Type} \nN:{N}";
         }
 
         private static void CheckInitParameter(long[] shape, torch.ScalarType type)

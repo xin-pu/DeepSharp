@@ -3,9 +3,11 @@ using DeepSharp.RL.Models;
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentQnetwork : Agent
+    public class AgentQnetwork<T1, T2> : Agent<T1, T2>
+        where T1 : Space
+        where T2 : Space
     {
-        public AgentQnetwork(Environ env) : base(env)
+        public AgentQnetwork(Environ<T1, T2> env) : base(env)
         {
         }
 

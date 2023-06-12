@@ -1,17 +1,18 @@
-﻿using DeepSharp.RL.Models;
+﻿using DeepSharp.RL.Environs.Spaces;
+using DeepSharp.RL.Models;
 
 namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     多臂赌博机,每个赌博机以 0,0.1到1 的概率随机生成
     /// </summary>
-    public sealed class KArmedBandit : Environ
+    public sealed class KArmedBandit : Environ<Space, Space>
     {
         public KArmedBandit(int k, torch.Device device)
             : base("KArmedBandit", device)
         {
-            ObservationSpace = k;
-            ActionSpace = k;
+            ObservationSpace = new Box(0, 1, new long[] {k});
+            ActionSpace = new Box(0, 1, new long[] {k});
             var random = new Random();
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
@@ -48,7 +49,7 @@ namespace DeepSharp.RL.Environs
         /// <returns>返回选择的赌博机当次执行后获得的金币数量 0 或 1</returns>
         public override Observation UpdateEnviron(Act act)
         {
-            var obs = new float[ObservationSpace];
+            var obs = new float[ObservationSpace.N];
 
             var banditSelectIndex = act.Value!.data<long>().ToArray();
 
@@ -61,6 +62,11 @@ namespace DeepSharp.RL.Environs
 
             var obsTensor = torch.from_array(obs, torch.ScalarType.Float32).to(Device);
             return new Observation(obsTensor);
+        }
+
+        public override Act Sample()
+        {
+            throw new NotImplementedException();
         }
 
         public override float DiscountReward(Episode episode, float gamma)

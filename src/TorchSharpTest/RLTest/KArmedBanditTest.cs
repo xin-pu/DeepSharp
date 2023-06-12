@@ -58,7 +58,7 @@ namespace TorchSharpTest.RLTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentCrossEntropy(kArmedBandit);
+            var agent = new AgentCrossEntropy<Space, Space>(kArmedBandit);
 
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
@@ -90,7 +90,7 @@ namespace TorchSharpTest.RLTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning(kArmedBandit);
+            var agent = new AgentQLearning<Space, Space>(kArmedBandit);
             agent.RunRandom(kArmedBandit, 500);
             agent.ValueIteration();
 
@@ -108,7 +108,7 @@ namespace TorchSharpTest.RLTest
                 [1] = {Prob = 0.8}
             };
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning(kArmedBandit);
+            var agent = new AgentQLearning<Space, Space>(kArmedBandit);
             Print(kArmedBandit);
 
             var i = 0;

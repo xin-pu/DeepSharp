@@ -7,7 +7,9 @@ namespace DeepSharp.RL.Environs
     ///     环境
     ///     提供观察 并给与奖励
     /// </summary>
-    public abstract class Environ : ObservableObject
+    public abstract class Environ<T1, T2> : ObservableObject
+        where T1 : Space
+        where T2 : Space
     {
         private string _name;
         private Observation? _observation;
@@ -32,9 +34,8 @@ namespace DeepSharp.RL.Environs
         }
 
         public torch.Device Device { set; get; }
-        public int ActionSpace { protected set; get; }
-        public int SampleActionSpace { protected set; get; }
-        public int ObservationSpace { protected set; get; }
+        public T1 ActionSpace { protected set; get; }
+        public T2 ObservationSpace { protected set; get; }
         public float Gamma { set; get; } = 0.9f;
 
         public Observation? Observation
@@ -64,7 +65,7 @@ namespace DeepSharp.RL.Environs
         public virtual Observation Reset()
         {
             ObservationList.Clear();
-            Observation = new Observation(torch.zeros(ObservationSpace, device: Device));
+            Observation = new Observation(ObservationSpace.Generate());
             Reward = new Reward(0);
             return Observation;
         }
@@ -84,13 +85,8 @@ namespace DeepSharp.RL.Environs
         /// <returns>new observation</returns>
         public abstract Observation UpdateEnviron(Act act);
 
-        public virtual Act Sample()
-        {
-            var prob = Enumerable.Repeat(1, ActionSpace).Select(a => 1f * a / ActionSpace).ToArray();
-            var actionProbs = torch.from_array(prob, torch.ScalarType.Float32);
-            var a = torch.multinomial(actionProbs, 1).to(Device);
-            return new Act(a);
-        }
+        public abstract Act Sample();
+
 
         /// <summary>
         ///     Get Multi Episodes by one policy.
@@ -98,7 +94,7 @@ namespace DeepSharp.RL.Environs
         /// <param name="policy">Agent</param>
         /// <param name="episodesSize">the size of episodes need return</param>
         /// <returns></returns>
-        public virtual Episode[] GetMultiEpisodes(Agent policy, int episodesSize)
+        public virtual Episode[] GetMultiEpisodes(Agent<T1, T2> policy, int episodesSize)
         {
             var episodes = Enumerable.Repeat(0, episodesSize)
                 .Select(_ => GetEpisode(policy))
@@ -113,7 +109,7 @@ namespace DeepSharp.RL.Environs
         /// <param name="policy"></param>
         /// <param name="maxPeriod">limit size of a episode</param>
         /// <returns></returns>
-        public virtual Episode GetEpisode(Agent policy)
+        public virtual Episode GetEpisode(Agent<T1, T2> policy)
         {
             Reset();
 

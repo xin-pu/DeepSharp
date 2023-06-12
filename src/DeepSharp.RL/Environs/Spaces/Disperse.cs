@@ -1,6 +1,4 @@
-﻿using FluentAssertions;
-
-namespace DeepSharp.RL.Environs.Spaces
+﻿namespace DeepSharp.RL.Environs.Spaces
 {
     /// <summary>
     ///     Discrete(2)            # {0, 1}
@@ -8,8 +6,6 @@ namespace DeepSharp.RL.Environs.Spaces
     /// </summary>
     public class Disperse : DigitalSpace
     {
-        public long N { get; init; }
-
         public Disperse(long length, long start, torch.ScalarType dtype = torch.ScalarType.Int64,
             DeviceType deviceType = DeviceType.CUDA, long seed = 1)
             : base(torch.tensor(new[] {start}, dtype),
@@ -17,7 +13,6 @@ namespace DeepSharp.RL.Environs.Spaces
                 new long[] {1},
                 dtype, deviceType, seed)
         {
-            N = length;
         }
 
         public Disperse(long length, torch.ScalarType dtype = torch.ScalarType.Int64,
@@ -29,21 +24,12 @@ namespace DeepSharp.RL.Environs.Spaces
         public override torch.Tensor Sample()
         {
             var device = new torch.Device(DeviceType);
-            var high = High + 1;
-            var sample = torch.randint(Low.item<long>(), high.item<long>(), Shape, Type, device);
-            return sample;
-        }
+            var low = Low.to_type(torch.ScalarType.Int64).item<long>();
+            var high = (High + 1).to_type(torch.ScalarType.Int64).item<long>();
 
-        public override void CheckType()
-        {
-            var acceptType = new[]
-            {
-                torch.ScalarType.Int8,
-                torch.ScalarType.Int16,
-                torch.ScalarType.Int32,
-                torch.ScalarType.Int64
-            };
-            Type.Should().BeOneOf(acceptType, $"Disperse accept Type in {string.Join(",", acceptType)}");
+            var sample = torch.randint(low, high, Shape, device: device).to_type(Type);
+
+            return sample;
         }
     }
 }

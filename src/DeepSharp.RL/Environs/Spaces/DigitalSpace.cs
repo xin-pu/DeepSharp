@@ -36,5 +36,18 @@ namespace DeepSharp.RL.Environs.Spaces
             high.Should().NotBeNull();
             torch.all(low < high).Equals(torch.tensor(true)).Should().Be(true);
         }
+
+
+        public override void CheckType()
+        {
+            var acceptType = new[]
+            {
+                torch.ScalarType.Int8,
+                torch.ScalarType.Int16,
+                torch.ScalarType.Int32,
+                torch.ScalarType.Int64
+            };
+            Type.Should().BeOneOf(acceptType, $"Disperse accept Type in {string.Join(",", acceptType)}");
+        }
     }
 }

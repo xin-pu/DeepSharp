@@ -3,9 +3,12 @@ using DeepSharp.RL.Models;
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentQLearning : Agent
+    public class AgentQLearning<T1, T2> : Agent<T1, T2>
+        where T1 : Space
+        where T2 : Space
+
     {
-        public AgentQLearning(Environ env)
+        public AgentQLearning(Environ<T1, T2> env)
             : base(env)
         {
             Rewards = new Dictionary<RewardKey, Reward>();
@@ -30,7 +33,7 @@ namespace DeepSharp.RL.Agents
 
         public override Act PredictAction(Observation state)
         {
-            var actionSpace = Enumerable.Range(0, ActionSize)
+            var actionSpace = Enumerable.Range(0, (int) ActionSize)
                 .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
                 .ToList();
 
@@ -45,7 +48,7 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public void RunRandom(Environ environ, int count)
+        public void RunRandom(Environ<T1, T2> environ, int count)
         {
             foreach (var i in Enumerable.Range(0, count))
             {
@@ -68,7 +71,7 @@ namespace DeepSharp.RL.Agents
             var stateList = Rewards
                 .Select(a => a.Key.State)
                 .Distinct();
-            var actionList = Enumerable.Range(0, ActionSize)
+            var actionList = Enumerable.Range(0, (int) ActionSize)
                 .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
                 .ToList();
             foreach (var state in stateList)
