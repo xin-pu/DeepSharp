@@ -10,8 +10,44 @@ namespace DeepSharp.RL.Environs.Spaces
             CoculateBounded();
         }
 
-        public torch.Tensor BoundedBelow { get; private set; } = null!;
-        public torch.Tensor BoundedAbove { get; private set; } = null!;
+        public Box(float low, float high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Float32, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(double low, double high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Float64, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(long low, long high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int64, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(int low, int high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int32, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(short low, short high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int16, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(byte low, byte high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Byte, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        protected torch.Tensor BoundedBelow { get; private set; } = null!;
+        protected torch.Tensor BoundedAbove { get; private set; } = null!;
 
         public override torch.Tensor Sample()
         {
@@ -26,18 +62,21 @@ namespace DeepSharp.RL.Environs.Spaces
 
             sample[unbounded] = torch.distributions.Normal(torch.zeros(Shape, torch.ScalarType.Float32),
                     torch.ones(Shape, torch.ScalarType.Float32))
-                .sample(1).reshape(Shape)[unbounded];
+                .sample(1).reshape(Shape)[unbounded].to_type(Type);
 
             sample[lowBounded] = (Low + torch.distributions.Exponential(torch.ones(Shape, torch.ScalarType.Float32))
                 .sample(1)
-                .reshape(Shape))[lowBounded];
+                .reshape(Shape))[lowBounded].to_type(Type);
 
             sample[uppBounded] =
                 (high - torch.distributions.Exponential(torch.ones(Shape, torch.ScalarType.Float32)).sample(1)
-                    .reshape(Shape))[uppBounded];
+                    .reshape(Shape))[uppBounded].to_type(Type);
 
-            sample[bounded] = torch.distributions.Uniform(Low, high).sample(1).reshape(Shape)[bounded]
-                .to_type(Type);
+            sample[bounded] =
+                torch.distributions
+                    .Uniform(Low.to_type(torch.ScalarType.Float32), high.to_type(torch.ScalarType.Float32)).sample(1)
+                    .reshape(Shape)[bounded]
+                    .to_type(Type);
 
             return sample.to(Device);
         }
@@ -46,6 +85,7 @@ namespace DeepSharp.RL.Environs.Spaces
         {
             var acceptType = new[]
             {
+                torch.ScalarType.Byte,
                 torch.ScalarType.Int8,
                 torch.ScalarType.Int16,
                 torch.ScalarType.Int32,

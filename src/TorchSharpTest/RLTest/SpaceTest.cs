@@ -11,6 +11,19 @@ namespace TorchSharpTest.RLTest
         }
 
 
+        #region Binary
+
+        [Fact]
+        public void CreateBinary()
+        {
+            var binary = new Binary();
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        #endregion
+
+
         #region Disperse Test
 
         [Fact]
@@ -79,52 +92,53 @@ namespace TorchSharpTest.RLTest
         #endregion
 
 
-        #region Binary
-
-        [Fact]
-        public void CreateBinary()
-        {
-            var binary = new Binary();
-            var r = binary.Sample();
-            Print(r);
-        }
-
-        #endregion
-
-
         #region Box
-
-        [Fact]
-        public void CreateInt32Box()
-        {
-            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
-                torch.tensor(new[,] {{5, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
-                new long[] {2, 2},
-                torch.ScalarType.Int32);
-            var r = binary.Sample();
-            Print(r);
-        }
-
 
         [Fact]
         public void CreateFloatBox()
         {
-            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
-                torch.tensor(new[,] {{1, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
-                new long[] {2, 2},
-                torch.ScalarType.Float32);
+            var binary = new Box(0f, 1f, new long[] {2, 2});
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        [Fact]
+        public void CreateDoubleBox()
+        {
+            var binary = new Box(0d, 1d, new long[] {2, 2});
             var r = binary.Sample();
             Print(r);
         }
 
 
         [Fact]
-        public void CreateDoubleBox()
+        public void CreateInt32Box()
         {
-            var binary = new Box(torch.tensor(new[,] {{0, float.NegativeInfinity}, {100, float.NegativeInfinity}}),
-                torch.tensor(new[,] {{1, 5}, {float.PositiveInfinity, float.PositiveInfinity}}),
-                new long[] {2, 2},
-                torch.ScalarType.Float64);
+            var binary = new Box(1, 5, new long[] {10});
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        [Fact]
+        public void CreateInt64Box()
+        {
+            var binary = new Box(1L, 5L, new long[] {10});
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        [Fact]
+        public void CreateByteBox()
+        {
+            var binary = new Box((byte) 0, (byte) 1, new long[] {10});
+            var r = binary.Sample();
+            Print(r);
+        }
+
+        [Fact]
+        public void CreateInt16Box()
+        {
+            var binary = new Box((short) 1, (short) 5, new long[] {10});
             var r = binary.Sample();
             Print(r);
         }
