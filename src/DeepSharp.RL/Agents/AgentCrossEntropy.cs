@@ -16,7 +16,7 @@ namespace DeepSharp.RL.Agents
             int hiddenSize = 100) : base(environ)
         {
             PercentElite = percentElite;
-            AgentNet = new Net((int) environ.ObservationSpace.N, hiddenSize, (int) environ.ActionSpace.N);
+            AgentNet = new Net((int) environ.ObservationSpace!.N, hiddenSize, (int) environ.ActionSpace!.N);
             Optimizer = Adam(AgentNet.parameters(), 0.01);
             Loss = CrossEntropyLoss();
         }
@@ -40,6 +40,10 @@ namespace DeepSharp.RL.Agents
             var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
+            //var nextAction = new ProbabilityActionSelector().Select(actionProbs);
+            //var action = new Act(nextAction);
+            //return action;
+
             var nextAction = torch.multinomial(actionProbs, 1);
             return new Act(nextAction);
         }

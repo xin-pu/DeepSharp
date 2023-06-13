@@ -53,7 +53,11 @@ namespace TorchSharpTest.RLTest
             var episodesEachBatch = 20;
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2);
+            var kArmedBandit = new KArmedBandit(2)
+            {
+                [0] = {Prob = 0.4},
+                [1] = {Prob = 0.75}
+            };
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default

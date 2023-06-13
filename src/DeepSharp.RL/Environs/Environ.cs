@@ -80,9 +80,22 @@ namespace DeepSharp.RL.Environs
         /// </summary>
         /// <param name="act"></param>
         /// <returns></returns>
-        public virtual Step Step(int epoch)
+        public virtual Step SampleStep(int epoch)
         {
             var act = Sample();
+            var observation = Update(act);
+            var reward = GetReward(observation);
+            var complete = IsComplete(epoch);
+            return new Step(act, observation, reward, complete);
+        }
+
+        /// <summary>
+        ///     执行单步
+        /// </summary>
+        /// <param name="act"></param>
+        /// <returns></returns>
+        public virtual Step Step(Act act, int epoch)
+        {
             var observation = Update(act);
             var reward = GetReward(observation);
             var complete = IsComplete(epoch);
@@ -160,15 +173,14 @@ namespace DeepSharp.RL.Environs
             Reset();
 
             var episode = new Episode();
-            var epoch = 1;
+            var epoch = 0;
             while (IsComplete(epoch) == false)
             {
                 epoch++;
                 var action = policy.PredictAction(Observation!).To(Device);
-                var obs = Update(action).To(Device);
-                Observation = obs;
-                Reward = GetReward(Observation);
-                episode.Steps.Add(new Step(action, Observation, Reward));
+                var step = Step(action, epoch);
+                episode.Steps.Add(step);
+                Observation = step.Observation; /// It's import for Update Observation
             }
 
             var sumReward = episode.Steps.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);

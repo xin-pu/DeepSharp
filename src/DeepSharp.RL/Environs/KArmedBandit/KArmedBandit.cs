@@ -85,7 +85,7 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override bool IsComplete(int epoch)
         {
-            return epoch % 20 == 0;
+            return epoch >= 20;
         }
 
 
