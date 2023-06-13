@@ -15,10 +15,10 @@ namespace DeepSharp.RL.Environs
         private List<Observation> _observationList = new();
         private Reward _reward = new(0);
 
-        protected Environ(string name, torch.Device device)
+        protected Environ(string name, DeviceType deviceType = DeviceType.CUDA)
         {
             _name = name;
-            Device = device;
+            Device = new torch.Device(deviceType);
         }
 
 
@@ -29,22 +29,32 @@ namespace DeepSharp.RL.Environs
         }
 
         public torch.Device Device { set; get; }
-        public T1 ActionSpace { protected set; get; }
-        public T2 ObservationSpace { protected set; get; }
+        public T1? ActionSpace { protected set; get; }
+        public T2? ObservationSpace { protected set; get; }
         public float Gamma { set; get; } = 0.9f;
 
+
+        /// <summary>
+        ///     Observation Current
+        /// </summary>
         public Observation? Observation
         {
             set => SetProperty(ref _observation, value);
             get => _observation;
         }
 
+        /// <summary>
+        ///     Reward Current
+        /// </summary>
         public Reward Reward
         {
             set => SetProperty(ref _reward, value);
             get => _reward;
         }
 
+        /// <summary>
+        ///     Observation Temp List
+        /// </summary>
         public List<Observation> ObservationList
         {
             internal set => SetProperty(ref _observationList, value);
@@ -60,27 +70,68 @@ namespace DeepSharp.RL.Environs
         public virtual Observation Reset()
         {
             ObservationList.Clear();
-            Observation = new Observation(ObservationSpace.Generate());
+            Observation = new Observation(ObservationSpace!.Generate());
             Reward = new Reward(0);
             return Observation;
         }
 
+        /// <summary>
+        ///     执行单步
+        /// </summary>
+        /// <param name="act"></param>
+        /// <returns></returns>
+        public virtual Step Step(int epoch)
+        {
+            var act = Sample();
+            var observation = Update(act);
+            var reward = GetReward(observation);
+            var complete = IsComplete(epoch);
+            return new Step(act, observation, reward, complete);
+        }
 
         /// <summary>
-        ///     Calculate one reward from one observation
+        ///     随机单步
         /// </summary>
-        /// <param name="observation">one observation</param>
-        /// <returns>one reward</returns>
-        public abstract Reward GetReward(Observation observation);
+        /// <returns></returns>
+        public virtual Act Sample()
+        {
+            var sampleAction = ActionSpace!.Sample();
+            return new Act(sampleAction);
+        }
+
 
         /// <summary>
         ///     Update Environ Observation according  with one action from Agent
         /// </summary>
         /// <param name="act">Action from Policy</param>
         /// <returns>new observation</returns>
-        public abstract Observation UpdateEnviron(Act act);
+        public abstract Observation Update(Act act);
 
-        public abstract Act Sample();
+
+        /// <summary>
+        ///     Cal Reward from Observation
+        ///     从观察获取奖励的计算方法
+        /// </summary>
+        /// <param name="observation">one observation</param>
+        /// <returns>one reward</returns>
+        public abstract Reward GetReward(Observation observation);
+
+        /// <summary>
+        ///     Discount Reward
+        ///     长期奖励折扣
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <param name="gamma"></param>
+        /// <returns></returns>
+        public abstract float DiscountReward(Episode episode, float gamma);
+
+        /// <summary>
+        ///     Check Environ is Complete
+        ///     判断探索是否结束
+        /// </summary>
+        /// <param name="epoch"></param>
+        /// <returns></returns>
+        public abstract bool IsComplete(int epoch);
 
 
         /// <summary>
@@ -110,24 +161,21 @@ namespace DeepSharp.RL.Environs
 
             var episode = new Episode();
             var epoch = 1;
-            while (StopEpoch(epoch) == false)
+            while (IsComplete(epoch) == false)
             {
                 epoch++;
                 var action = policy.PredictAction(Observation!).To(Device);
-                var obs = UpdateEnviron(action!).To(Device);
+                var obs = Update(action).To(Device);
                 Observation = obs;
                 Reward = GetReward(Observation);
-                episode.Oars.Add(new Step(action, Observation, Reward));
+                episode.Steps.Add(new Step(action, Observation, Reward));
             }
 
-            var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);
+            var sumReward = episode.Steps.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);
             episode.SumReward = new Reward(sumReward);
             return episode;
         }
 
-        public abstract float DiscountReward(Episode episode, float gamma);
-
-        public abstract bool StopEpoch(int epoch);
 
         public override string ToString()
         {

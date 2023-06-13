@@ -51,13 +51,13 @@ namespace DeepSharp.RL.Agents
             {
                 var observation = environ.Observation;
                 var action = environ.Sample();
-                var newObservation = environ.UpdateEnviron(action);
+                var newObservation = environ.Update(action);
                 var reward = environ.GetReward(newObservation);
 
                 UpdateTables(observation!, action, newObservation, reward);
                 environ.Observation = (Observation) newObservation.Clone();
 
-                if (environ.StopEpoch(i))
+                if (environ.IsComplete(i))
                     environ.Reset();
             }
         }

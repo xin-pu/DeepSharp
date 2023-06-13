@@ -7,7 +7,7 @@
     {
         public Binary(torch.ScalarType dtype = torch.ScalarType.Int32,
             DeviceType deviceType = DeviceType.CUDA, long seed = 1)
-            : base(2, 0, dtype, deviceType, seed)
+            : base(2, dtype, deviceType, seed)
         {
             N = 1;
         }

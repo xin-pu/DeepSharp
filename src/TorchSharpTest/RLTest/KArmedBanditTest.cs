@@ -15,12 +15,12 @@ namespace TorchSharpTest.RLTest
         {
             var count = 0;
             var bandit = new Bandit("A");
+            Print(bandit);
             var range = 100;
-            foreach (var i in Enumerable.Range(0, range))
+            foreach (var _ in Enumerable.Range(0, range))
             {
                 var res = bandit.Step();
                 if (res > 0) count++;
-                Print($"{i:D4}:{res}");
             }
 
             Print(count * 1f / range);
@@ -29,7 +29,7 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void KArmedBanditCreateTest()
         {
-            var kArmedBandit = new KArmedBandit(5, new torch.Device(DeviceType.CUDA));
+            var kArmedBandit = new KArmedBandit(5);
             Print(kArmedBandit);
         }
 
@@ -47,14 +47,13 @@ namespace TorchSharpTest.RLTest
         }
 
         [Fact]
-        public void Main()
+        public void AgentCrossEntropy()
         {
             var epoch = 100;
             var episodesEachBatch = 20;
-            var device = new torch.Device(DeviceType.CUDA);
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2, device);
+            var kArmedBandit = new KArmedBandit(2);
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
@@ -78,11 +77,8 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void QLearningRunRandom()
         {
-            var device = new torch.Device(DeviceType.CUDA);
-
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2, device);
-
+            var kArmedBandit = new KArmedBandit(2);
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
@@ -94,9 +90,8 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void QLearningMain()
         {
-            var device = new torch.Device(DeviceType.CUDA);
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2, device)
+            var kArmedBandit = new KArmedBandit(2)
             {
                 [0] = {Prob = 0.5},
                 [1] = {Prob = 0.8}

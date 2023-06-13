@@ -7,15 +7,17 @@
     {
         public Episode()
         {
-            Oars = new List<Step>();
+            Steps = new List<Step>();
             SumReward = new Reward(0);
             DateTime = DateTime.Now;
         }
 
-        public List<Step> Oars { set; get; }
+        public List<Step> Steps { set; get; }
         public Reward SumReward { set; get; }
         public DateTime DateTime { set; get; }
 
-        public int Steps => Oars.Count;
+        public Step this[int i] => Steps[i];
+
+        public int Length => Steps.Count;
     }
 }

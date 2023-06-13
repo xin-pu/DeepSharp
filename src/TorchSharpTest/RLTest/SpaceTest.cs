@@ -16,7 +16,7 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void DisperseCons()
         {
-            var disperse = new Disperse(5, 1);
+            var disperse = new Disperse(5);
             var s = disperse.Generate();
             Print(s);
 
@@ -28,22 +28,22 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void DisperseGenerate()
         {
-            var disperse = new Disperse(5, 1, torch.ScalarType.Int8);
+            var disperse = new Disperse(5, torch.ScalarType.Int8);
             var one = disperse.Generate();
             Print(one);
             one.dtype.Should().Be(torch.ScalarType.Int8);
 
-            disperse = new Disperse(5, 1, torch.ScalarType.Int16);
+            disperse = new Disperse(5, torch.ScalarType.Int16);
             one = disperse.Generate();
             Print(one);
             one.dtype.Should().Be(torch.ScalarType.Int16);
 
-            disperse = new Disperse(5, 1, torch.ScalarType.Int32);
+            disperse = new Disperse(5, torch.ScalarType.Int32);
             one = disperse.Generate();
             Print(one);
             one.dtype.Should().Be(torch.ScalarType.Int32);
 
-            disperse = new Disperse(5, 1);
+            disperse = new Disperse(5);
             one = disperse.Generate();
             Print(one);
             one.dtype.Should().Be(torch.ScalarType.Int64);
@@ -52,12 +52,12 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void DisperseDevice()
         {
-            var disperse = new Disperse(5, 1, deviceType: DeviceType.CUDA);
+            var disperse = new Disperse(5, deviceType: DeviceType.CUDA);
             var one = disperse.Generate();
             Print(one);
             one.device_type.Should().Be(DeviceType.CUDA);
 
-            disperse = new Disperse(5, 1, deviceType: DeviceType.CPU);
+            disperse = new Disperse(5, deviceType: DeviceType.CPU);
             one = disperse.Generate();
             Print(one);
             one.device_type.Should().Be(DeviceType.CPU);
@@ -67,7 +67,7 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void DisperseSample()
         {
-            var a = new Disperse(5, 1);
+            var a = new Disperse(5);
             foreach (var _ in Enumerable.Repeat(0, 10))
             {
                 var data = a.Sample();

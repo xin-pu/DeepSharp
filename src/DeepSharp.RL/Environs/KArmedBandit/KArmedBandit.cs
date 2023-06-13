@@ -8,30 +8,27 @@ namespace DeepSharp.RL.Environs
     /// </summary>
     public sealed class KArmedBandit : Environ<Space, Space>
     {
-        public KArmedBandit(int k, torch.Device device)
-            : base("KArmedBandit", device)
+        public KArmedBandit(int k, DeviceType deviceType = DeviceType.CUDA)
+            : base("KArmedBandit", deviceType)
         {
-            ActionSpace = new MultiBinary(k);
-            ObservationSpace = new MultiBinary(k);
-
-            var random = new SystemRandomSource();
             bandits = new Bandit[k];
-            foreach (var i in Enumerable.Range(0, k))
-                bandits[i] = new Bandit($"{i}", random.NextDouble());
-
-            Observation = new Observation(ObservationSpace.Generate());
-            Reward = new Reward(0);
+            ActionSpace = new Disperse(k);
+            ObservationSpace = new MultiBinary(k);
+            Create(k);
             Reset();
         }
 
-        public KArmedBandit(int k, DeviceType device)
-            : this(k, new torch.Device(device))
-        {
-        }
-
+        private Bandit[] bandits { get; }
         public Bandit this[int k] => bandits[k];
 
-        private Bandit[] bandits { get; }
+
+        private void Create(int k)
+        {
+            var random = new SystemRandomSource();
+            foreach (var i in Enumerable.Range(0, k))
+                bandits[i] = new Bandit($"{i}", random.NextDouble());
+        }
+
 
         /// <summary>
         ///     该环境下 当次奖励为赌博机的获得金币数量，无需转换
@@ -40,26 +37,24 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override Reward GetReward(Observation observation)
         {
-            var sum = observation.Value!.sum().item<float>();
-            return new Reward(sum);
+            var sum = observation.Value!.to_type(torch.ScalarType.Float32)
+                .sum()
+                .item<float>();
+            var reward = new Reward(sum);
+            return reward;
         }
 
         /// <summary>
         /// </summary>
         /// <param name="act">动作，该环境下包含智能体选择的赌博机索引</param>
         /// <returns>返回选择的赌博机当次执行后获得的金币数量 0 或 1</returns>
-        public override Observation UpdateEnviron(Act act)
+        public override Observation Update(Act act)
         {
-            var obs = new float[ObservationSpace.N];
-
-            var banditSelectIndex = act.Value!.data<long>().ToArray();
-
-            foreach (var index in banditSelectIndex)
-            {
-                var bandit = bandits[index];
-                var value = bandit.Step();
-                obs[index] = value;
-            }
+            var obs = new float[ObservationSpace!.N];
+            var index = act.Value!.ToInt64();
+            var bandit = bandits[index];
+            var value = bandit.Step();
+            obs[index] = value;
 
             var obsTensor = torch.from_array(obs, torch.ScalarType.Float32).to(Device);
             return new Observation(obsTensor);
@@ -67,16 +62,28 @@ namespace DeepSharp.RL.Environs
 
         public override Act Sample()
         {
-            var sample = ActionSpace.Sample();
-            return new Act(sample.to_type(torch.ScalarType.Int64));
+            var sample = ActionSpace!.Sample();
+            return new Act(sample);
         }
 
+        /// <summary>
+        ///     Discount Reward
+        ///     该环境无奖励折扣
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <param name="gamma"></param>
+        /// <returns></returns>
         public override float DiscountReward(Episode episode, float gamma)
         {
             return 1;
         }
 
-        public override bool StopEpoch(int epoch)
+        /// <summary>
+        ///     没满20次采样，环境关闭
+        /// </summary>
+        /// <param name="epoch"></param>
+        /// <returns></returns>
+        public override bool IsComplete(int epoch)
         {
             return epoch % 20 == 0;
         }

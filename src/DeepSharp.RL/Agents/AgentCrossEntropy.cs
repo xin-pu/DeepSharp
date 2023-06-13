@@ -50,7 +50,7 @@ namespace DeepSharp.RL.Agents
             if (steps.Length == 0) return float.MaxValue;
 
 
-            var oars = steps.SelectMany(a => a.Oars)
+            var oars = steps.SelectMany(a => a.Steps)
                 .ToList();
 
             var observations = oars
