@@ -11,15 +11,23 @@
         {
         }
 
+        public MultiDisperse(long low, long high, long[] shape, torch.ScalarType type,
+            DeviceType deviceType = DeviceType.CUDA, long seed = 1)
+            : base(low, high, shape, type, deviceType, seed)
+        {
+        }
+
         public override torch.Tensor Sample()
         {
-            var device = new torch.Device(DeviceType);
-            var low = Low.to_type(torch.ScalarType.Int64).item<long>();
-            var high = (High + 1).to_type(torch.ScalarType.Int64).item<long>();
+            var high = High + 1;
 
-            var sample = torch.randint(low, high, Shape, device: device).to_type(Type);
+            var sample = torch.distributions.Uniform(Low.to_type(torch.ScalarType.Float32),
+                    high.to_type(torch.ScalarType.Float32), Generator)
+                .sample(1)
+                .reshape(Shape)
+                .to_type(Type);
 
-            return sample;
+            return sample.to(Device);
         }
     }
 }

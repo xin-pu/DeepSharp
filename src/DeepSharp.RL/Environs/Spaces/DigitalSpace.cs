@@ -17,6 +17,19 @@ namespace DeepSharp.RL.Environs.Spaces
             High = high;
         }
 
+        protected DigitalSpace(
+            long low,
+            long high,
+            long[] shape,
+            torch.ScalarType type,
+            DeviceType deviceType = DeviceType.CUDA,
+            long seed = 471) : base(shape, type, deviceType, seed)
+        {
+            CheckParameters(low, high);
+            Low = torch.full(shape, low, type);
+            High = torch.full(shape, high, type);
+        }
+
         public torch.Tensor Low { get; }
         public torch.Tensor High { get; }
 

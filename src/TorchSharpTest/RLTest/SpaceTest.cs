@@ -133,18 +133,24 @@ namespace TorchSharpTest.RLTest
         #endregion
 
 
-        #region MyRegion
-
         #region Other Space
 
         [Fact]
-        public void CreateMultiDisperse()
+        public void CreateMultiDisperse1()
         {
-            var multiDisperse = new MultiDisperse(
-                torch.tensor(new long[] {0, 0}),
-                torch.tensor(new long[] {3, 4}),
-                new long[2], torch.ScalarType.Int32
-            );
+            var low = torch.tensor(new long[] {0, 0});
+            var high = torch.tensor(new long[] {3, 4});
+            var shape = new long[] {2};
+            var multiDisperse = new MultiDisperse(low, high, shape, torch.ScalarType.Int32);
+            var r = multiDisperse.Sample();
+            Print(r);
+            Print(multiDisperse);
+        }
+
+        [Fact]
+        public void CreateMultiDisperse2()
+        {
+            var multiDisperse = new MultiDisperse(0, 1, new long[] {2}, torch.ScalarType.Int64);
             var r = multiDisperse.Sample();
             Print(r);
             Print(multiDisperse);
@@ -162,15 +168,22 @@ namespace TorchSharpTest.RLTest
 
 
         [Fact]
-        public void CreateMultiBinary()
+        public void CreateMultiBinary1()
         {
-            var binary = new MultiBinary(2);
+            var binary = new MultiBinary(2L);
             var r = binary.Sample();
             Print(r);
             Print(binary);
         }
 
-        #endregion
+        [Fact]
+        public void CreateMultiBinary2()
+        {
+            var binary = new MultiBinary(new long[] {2, 2}, torch.ScalarType.Int64);
+            var r = binary.Sample();
+            Print(r);
+            Print(binary);
+        }
 
         #endregion
     }

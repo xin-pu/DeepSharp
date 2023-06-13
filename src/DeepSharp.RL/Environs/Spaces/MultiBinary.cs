@@ -2,16 +2,29 @@
 {
     public class MultiBinary : DigitalSpace
     {
-        public MultiBinary(long length, torch.ScalarType type = torch.ScalarType.Int32,
-            DeviceType deviceType = DeviceType.CUDA, long seed = 471)
-            : base(new[] {length}, type, deviceType, seed)
+        public MultiBinary(long[] shape, torch.ScalarType type = torch.ScalarType.Int32,
+            DeviceType deviceType = DeviceType.CUDA, long seed = 471) : base(0, 1, shape, type, deviceType, seed)
+        {
+        }
+
+        public MultiBinary(long shape, torch.ScalarType type = torch.ScalarType.Int32,
+            DeviceType deviceType = DeviceType.CUDA, long seed = 471) : base(0, 1, new[] {shape}, type, deviceType,
+            seed)
         {
         }
 
 
         public override torch.Tensor Sample()
         {
-            throw new ArgumentException();
+            var high = High + 1;
+
+            var sample = torch.distributions.Uniform(Low.to_type(torch.ScalarType.Float32),
+                    high.to_type(torch.ScalarType.Float32), Generator)
+                .sample(1)
+                .reshape(Shape)
+                .to_type(Type);
+
+            return sample.to(Device);
         }
     }
 }
