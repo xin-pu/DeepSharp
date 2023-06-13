@@ -23,7 +23,8 @@ namespace DeepSharp.RL.Environs.Spaces
         }
 
         public Box(int low, int high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
-            base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int32, deviceType, seed)
+            base(torch.full(shape, low, torch.ScalarType.Int32), torch.full(shape, high, torch.ScalarType.Int32), shape,
+                torch.ScalarType.Int32, deviceType, seed)
         {
             CoculateBounded();
         }
