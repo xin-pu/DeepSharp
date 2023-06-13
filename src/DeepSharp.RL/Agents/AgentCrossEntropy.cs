@@ -1,5 +1,4 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.RL.Models;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
 
@@ -10,11 +9,9 @@ namespace DeepSharp.RL.Agents
     ///     Cross-Entropy Method
     ///     http://people.smp.uq.edu.au/DirkKroese/ps/eormsCE.pdf
     /// </summary>
-    public class AgentCrossEntropy<T1, T2> : Agent<T1, T2>
-        where T1 : Space
-        where T2 : Space
+    public class AgentCrossEntropy : Agent
     {
-        public AgentCrossEntropy(Environ<T1, T2> environ,
+        public AgentCrossEntropy(Environ<Space, Space> environ,
             float percentElite = 0.7f,
             int hiddenSize = 100) : base(environ)
         {
@@ -146,7 +143,7 @@ namespace DeepSharp.RL.Agents
 
             public override torch.Tensor forward(torch.Tensor input)
             {
-                return layers.forward(input);
+                return layers.forward(input.to_type(torch.ScalarType.Float32));
             }
 
             protected override void Dispose(bool disposing)

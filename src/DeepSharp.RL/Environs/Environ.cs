@@ -1,5 +1,4 @@
 ﻿using DeepSharp.RL.Agents;
-using DeepSharp.RL.Models;
 
 namespace DeepSharp.RL.Environs
 {
@@ -22,10 +21,6 @@ namespace DeepSharp.RL.Environs
             Device = device;
         }
 
-        protected Environ(string name, DeviceType device)
-            : this(name, new torch.Device(device))
-        {
-        }
 
         public string Name
         {
@@ -94,7 +89,7 @@ namespace DeepSharp.RL.Environs
         /// <param name="policy">Agent</param>
         /// <param name="episodesSize">the size of episodes need return</param>
         /// <returns></returns>
-        public virtual Episode[] GetMultiEpisodes(Agent<T1, T2> policy, int episodesSize)
+        public virtual Episode[] GetMultiEpisodes(Agent policy, int episodesSize)
         {
             var episodes = Enumerable.Repeat(0, episodesSize)
                 .Select(_ => GetEpisode(policy))
@@ -109,7 +104,7 @@ namespace DeepSharp.RL.Environs
         /// <param name="policy"></param>
         /// <param name="maxPeriod">limit size of a episode</param>
         /// <returns></returns>
-        public virtual Episode GetEpisode(Agent<T1, T2> policy)
+        public virtual Episode GetEpisode(Agent policy)
         {
             Reset();
 
@@ -122,7 +117,7 @@ namespace DeepSharp.RL.Environs
                 var obs = UpdateEnviron(action!).To(Device);
                 Observation = obs;
                 Reward = GetReward(Observation);
-                episode.Oars.Add(new Step {Action = action, Observation = Observation, Reward = Reward});
+                episode.Oars.Add(new Step(action, Observation, Reward));
             }
 
             var sumReward = episode.Oars.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);

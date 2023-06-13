@@ -58,7 +58,7 @@ namespace TorchSharpTest.RLTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentCrossEntropy<Space, Space>(kArmedBandit);
+            var agent = new AgentCrossEntropy(kArmedBandit);
 
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
@@ -81,20 +81,14 @@ namespace TorchSharpTest.RLTest
             var device = new torch.Device(DeviceType.CUDA);
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2, device)
-            {
-                [0] = {Prob = 0.8},
-                [1] = {Prob = 0.8}
-            };
+            var kArmedBandit = new KArmedBandit(2, device);
 
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning<Space, Space>(kArmedBandit);
+            var agent = new AgentQLearning(kArmedBandit);
             agent.RunRandom(kArmedBandit, 500);
             agent.ValueIteration();
-
-            Print(agent.Values.Select(a => $"{a.Key}\t{a.Value}").ToArray());
         }
 
         [Fact]
@@ -108,7 +102,7 @@ namespace TorchSharpTest.RLTest
                 [1] = {Prob = 0.8}
             };
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning<Space, Space>(kArmedBandit);
+            var agent = new AgentQLearning(kArmedBandit);
             Print(kArmedBandit);
 
             var i = 0;

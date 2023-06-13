@@ -1,5 +1,4 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.RL.Models;
 using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
@@ -9,15 +8,14 @@ namespace DeepSharp.RL.Agents
     ///     Cross-Entropy Method
     ///     http://people.smp.uq.edu.au/DirkKroese/ps/eormsCE.pdf
     /// </summary>
-    public class AgentCrossEntropyExt<T1, T2> : AgentCrossEntropy<T1, T2>
-        where T1 : Space
-        where T2 : Space
+    public class AgentCrossEntropyExt : AgentCrossEntropy
+
     {
         public int MemsEliteLength = 30;
         public List<DateTime> Start = new();
 
         public AgentCrossEntropyExt(
-            Environ<T1, T2> environ,
+            Environ<Space, Space> environ,
             float percentElite = 0.7f,
             int hiddenSize = 100)
             : base(environ, percentElite, hiddenSize)

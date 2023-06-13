@@ -1,4 +1,4 @@
-﻿namespace DeepSharp.RL.Models
+﻿namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     Reward

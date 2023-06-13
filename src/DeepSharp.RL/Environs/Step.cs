@@ -1,12 +1,17 @@
-﻿using DeepSharp.RL.Environs;
-
-namespace DeepSharp.RL.Models
+﻿namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     Step
     /// </summary>
-    public struct Step
+    public class Step
     {
+        public Step(Act action, Observation observation, Reward reward)
+        {
+            Action = action;
+            Observation = observation;
+            Reward = reward;
+        }
+
         /// <summary>
         ///     动作
         /// </summary>

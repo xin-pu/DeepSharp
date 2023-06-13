@@ -1,14 +1,11 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.RL.Models;
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentQLearning<T1, T2> : Agent<T1, T2>
-        where T1 : Space
-        where T2 : Space
+    public class AgentQLearning : Agent
 
     {
-        public AgentQLearning(Environ<T1, T2> env)
+        public AgentQLearning(Environ<Space, Space> env)
             : base(env)
         {
             Rewards = new Dictionary<RewardKey, Reward>();
@@ -48,7 +45,7 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public void RunRandom(Environ<T1, T2> environ, int count)
+        public void RunRandom(Environ<Space, Space> environ, int count)
         {
             foreach (var i in Enumerable.Range(0, count))
             {

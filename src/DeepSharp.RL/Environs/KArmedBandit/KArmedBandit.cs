@@ -1,5 +1,5 @@
 ﻿using DeepSharp.RL.Environs.Spaces;
-using DeepSharp.RL.Models;
+using MathNet.Numerics.Random;
 
 namespace DeepSharp.RL.Environs
 {
@@ -11,14 +11,15 @@ namespace DeepSharp.RL.Environs
         public KArmedBandit(int k, torch.Device device)
             : base("KArmedBandit", device)
         {
-            ObservationSpace = new Box(0, 1, new long[] {k});
-            ActionSpace = new Box(0, 1, new long[] {k});
-            var random = new Random();
+            ActionSpace = new MultiBinary(k);
+            ObservationSpace = new MultiBinary(k);
+
+            var random = new SystemRandomSource();
             bandits = new Bandit[k];
             foreach (var i in Enumerable.Range(0, k))
-                bandits[i] = new Bandit($"{i}", random.Next(2, 8) * 1f / 10);
+                bandits[i] = new Bandit($"{i}", random.NextDouble());
 
-            Observation = new Observation(torch.zeros(k));
+            Observation = new Observation(ObservationSpace.Generate());
             Reward = new Reward(0);
             Reset();
         }
@@ -66,7 +67,8 @@ namespace DeepSharp.RL.Environs
 
         public override Act Sample()
         {
-            throw new NotImplementedException();
+            var sample = ActionSpace.Sample();
+            return new Act(sample.to_type(torch.ScalarType.Int64));
         }
 
         public override float DiscountReward(Episode episode, float gamma)

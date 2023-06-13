@@ -1,6 +1,4 @@
-﻿using DeepSharp.Utility.Operations;
-
-namespace DeepSharp.RL.Environs
+﻿namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     动作
@@ -49,12 +47,12 @@ namespace DeepSharp.RL.Environs
 
         public Act To(torch.Device device)
         {
-            return new Act(Value?.to(device));
+            return new Act(Value!.to(device));
         }
 
         public override string ToString()
         {
-            return $"{TimeStamp}\t{OpTensor.ToLongArrString(Value!)}";
+            return $"{TimeStamp}\t{Value!.ToString(torch.numpy)}";
         }
     }
 }
