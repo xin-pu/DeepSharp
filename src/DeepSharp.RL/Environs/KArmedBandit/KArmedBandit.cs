@@ -13,7 +13,7 @@ namespace DeepSharp.RL.Environs
         {
             bandits = new Bandit[k];
             ActionSpace = new Disperse(k);
-            ObservationSpace = new MultiBinary(k);
+            ObservationSpace = new Box(0, 1, new long[] {k});
             Create(k);
             Reset();
         }

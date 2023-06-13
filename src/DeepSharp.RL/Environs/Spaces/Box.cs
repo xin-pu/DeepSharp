@@ -4,12 +4,6 @@ namespace DeepSharp.RL.Environs.Spaces
 {
     public class Box : DigitalSpace
     {
-        public Box(torch.Tensor low, torch.Tensor high, long[] shape, torch.ScalarType type,
-            DeviceType deviceType = DeviceType.CUDA, long seed = 1) : base(low, high, shape, type, deviceType, seed)
-        {
-            CoculateBounded();
-        }
-
         public Box(float low, float high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
             base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Float32, deviceType, seed)
         {
@@ -42,6 +36,12 @@ namespace DeepSharp.RL.Environs.Spaces
 
         public Box(byte low, byte high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
             base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Byte, deviceType, seed)
+        {
+            CoculateBounded();
+        }
+
+        public Box(torch.Tensor low, torch.Tensor high, long[] shape, torch.ScalarType type,
+            DeviceType deviceType = DeviceType.CUDA, long seed = 1) : base(low, high, shape, type, deviceType, seed)
         {
             CoculateBounded();
         }

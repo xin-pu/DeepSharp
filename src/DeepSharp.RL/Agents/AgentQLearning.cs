@@ -9,8 +9,8 @@ namespace DeepSharp.RL.Agents
             : base(env)
         {
             Rewards = new Dictionary<RewardKey, Reward>();
-            Transits = new Dictionary<TrasitKey, Dictionary<Observation, int>>();
-            Values = new Dictionary<Observation, float>();
+            Transits = new Dictionary<TrasitKey, Dictionary<torch.Tensor, int>>();
+            Values = new Dictionary<torch.Tensor, float>();
         }
 
         /// <summary>
@@ -21,12 +21,12 @@ namespace DeepSharp.RL.Agents
         /// <summary>
         ///     转移表
         /// </summary>
-        public Dictionary<TrasitKey, Dictionary<Observation, int>> Transits { set; get; }
+        public Dictionary<TrasitKey, Dictionary<torch.Tensor, int>> Transits { set; get; }
 
         /// <summary>
         ///     价值表
         /// </summary>
-        public Dictionary<Observation, float> Values { set; get; }
+        public Dictionary<torch.Tensor, float> Values { set; get; }
 
         public override Act PredictAction(Observation state)
         {
@@ -50,12 +50,10 @@ namespace DeepSharp.RL.Agents
             foreach (var i in Enumerable.Range(0, count))
             {
                 var observation = environ.Observation;
-                var action = environ.Sample();
-                var newObservation = environ.Update(action);
-                var reward = environ.GetReward(newObservation);
+                var step = environ.SampleStep(i);
 
-                UpdateTables(observation!, action, newObservation, reward);
-                environ.Observation = (Observation) newObservation.Clone();
+                UpdateTables(observation!, step.Action, step.Observation, step.Reward);
+                environ.Observation = step.Observation;
 
                 if (environ.IsComplete(i))
                     environ.Reset();
@@ -65,11 +63,16 @@ namespace DeepSharp.RL.Agents
 
         public void ValueIteration()
         {
-            var stateList = Rewards
-                .Select(a => a.Key.State)
-                .Distinct();
+            var stateList = Enumerable.Range(0, (int) ObservationSize)
+                .Select(a =>
+                {
+                    var arr = new long[ObservationSize];
+                    arr[a] = 1;
+                    return torch.from_array(arr).to(Device);
+                })
+                .ToList();
             var actionList = Enumerable.Range(0, (int) ActionSize)
-                .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
+                .Select(a => torch.from_array(new long[] {a}).to(Device))
                 .ToList();
             foreach (var state in stateList)
             {
@@ -84,12 +87,16 @@ namespace DeepSharp.RL.Agents
 
         private void UpdateTables(Observation state, Act act, Observation newState, Reward reward)
         {
+            var startTensor = state.Value!;
+            var newTensor = newState.Value!;
+            var action = act.Value!;
+
             ///Step 1 更新奖励表
             var rewardKey = new RewardKey(state, act, newState);
             var existRewardKey = Rewards.Keys.Where(a =>
-                    a.Act.Value!.Equals(act.Value!) &&
-                    a.State.Value!.Equals(state.Value!) &&
-                    a.NewState.Value!.Equals(newState.Value!))
+                    a.Act.Equals(action) &&
+                    a.State.Equals(startTensor) &&
+                    a.NewState.Equals(newTensor))
                 .ToList();
 
             var finalRewardKey = existRewardKey.Any() ? existRewardKey.First() : rewardKey;
@@ -98,29 +105,29 @@ namespace DeepSharp.RL.Agents
 
             var transitsKey = new TrasitKey(state, act);
             var existTransitKey = Transits.Keys.Where(a =>
-                    a.Act.Value!.Equals(act.Value!) &&
-                    a.State.Value!.Equals(state.Value!))
+                    a.Act.Equals(act.Value!) &&
+                    a.State.Equals(state.Value!))
                 .ToList();
 
             /// Step 2 更新转移表
-            Dictionary<Observation, int> sonDict;
+            Dictionary<torch.Tensor, int> sonDict;
             if (existTransitKey.Any())
             {
                 sonDict = Transits[existTransitKey.First()];
             }
             else
             {
-                sonDict = new Dictionary<Observation, int>();
+                sonDict = new Dictionary<torch.Tensor, int>();
                 Transits[transitsKey] = sonDict;
             }
 
             var newStateKeys = sonDict.Keys
-                .Where(a => a.Value!.Equals(newState.Value!))
+                .Where(a => a!.Equals(newState.Value!))
                 .ToList();
             if (newStateKeys.Any())
                 sonDict[newStateKeys.First()]++;
             else
-                sonDict[newState] = 1;
+                sonDict[newTensor] = 1;
         }
 
         /// <summary>
@@ -136,7 +143,7 @@ namespace DeepSharp.RL.Agents
             var activaValue = 0f;
             foreach (var i in targetCounts)
             {
-                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Act, i.Key));
+                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Act, i.Key!));
                 var value = reward.Value + Environ.Gamma * getValue(i.Key);
                 activaValue += 1f * i.Value / total * value;
             }
@@ -144,25 +151,42 @@ namespace DeepSharp.RL.Agents
             return activaValue;
         }
 
-        private Dictionary<Observation, int> getTransit(TrasitKey traitKey)
+        private Dictionary<torch.Tensor, int> getTransit(TrasitKey traitKey)
         {
-            var key = Transits.Keys.First(a => a.Act.Value.Equals(traitKey.Act.Value) &&
-                                               a.State.Value.Equals(traitKey.State.Value));
-            return Transits[key];
+            try
+            {
+                var key = Transits.Keys.FirstOrDefault(a => a.Act!.Equals(traitKey.Act!) &&
+                                                            a.State!.Equals(traitKey.State!));
+
+
+                return Transits[key];
+            }
+            catch (Exception)
+            {
+                return new Dictionary<torch.Tensor, int> {[traitKey.State] = 0};
+            }
         }
 
         private Reward getReward(RewardKey rewardKey)
         {
-            var key = Rewards.Keys.First(a => a.Act.Value.Equals(rewardKey.Act.Value) &&
-                                              a.State.Value.Equals(rewardKey.State.Value) &&
-                                              a.NewState.Value.Equals(rewardKey.NewState.Value));
-            return Rewards[key];
+            try
+            {
+                var key = Rewards.Keys
+                    .First(a => a.Act!.Equals(rewardKey.Act!) &&
+                                a.State!.Equals(rewardKey.State!) &&
+                                a.NewState!.Equals(rewardKey.NewState!));
+                return Rewards[key];
+            }
+            catch (Exception)
+            {
+                return new Reward(0);
+            }
         }
 
-        private float getValue(Observation observation)
+        private float getValue(torch.Tensor observation)
         {
-            var key = Values.Keys.FirstOrDefault(a => a.Value.Equals(observation.Value));
-            if (key != null) return Values[key];
+            var key = Values.Keys.FirstOrDefault(a => a!.Equals(observation!));
+            if (key is not null) return Values[key];
 
             Values[observation] = 0;
             return Values[observation];

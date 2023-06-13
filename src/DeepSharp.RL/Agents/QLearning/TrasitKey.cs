@@ -10,18 +10,24 @@ namespace DeepSharp.RL.Agents
     {
         public TrasitKey(Observation state, Act act)
         {
+            State = state.Value!;
+            Act = act.Value!;
+        }
+
+        public TrasitKey(torch.Tensor state, torch.Tensor act)
+        {
             State = state;
             Act = act;
         }
 
-        public Observation State { set; get; }
-        public Act Act { set; get; }
+        public torch.Tensor State { set; get; }
+        public torch.Tensor Act { set; get; }
 
 
         public override string ToString()
         {
-            var state = OpTensor.ToArrString(State.Value);
-            var action = OpTensor.ToLongArrString(Act.Value);
+            var state = OpTensor.ToArrString(State);
+            var action = OpTensor.ToLongArrString(Act);
 
             return $"{state} \t {action}";
         }

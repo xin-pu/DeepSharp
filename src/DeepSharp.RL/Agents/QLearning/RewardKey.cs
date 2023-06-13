@@ -8,23 +8,30 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public struct RewardKey
     {
-        public RewardKey(Observation state, Act act, Observation newState)
+        public RewardKey(torch.Tensor state, torch.Tensor act, torch.Tensor newState)
         {
             State = state;
             Act = act;
             NewState = newState;
         }
 
-        public Observation State { set; get; }
-        public Act Act { set; get; }
-        public Observation NewState { set; get; }
+        public RewardKey(Observation state, Act act, Observation newState)
+        {
+            State = state.Value!;
+            Act = act.Value!;
+            NewState = newState.Value!;
+        }
+
+        public torch.Tensor State { set; get; }
+        public torch.Tensor Act { set; get; }
+        public torch.Tensor NewState { set; get; }
 
 
         public override string ToString()
         {
-            var state = OpTensor.ToArrString(State.Value);
-            var action = OpTensor.ToLongArrString(Act.Value);
-            var newState = OpTensor.ToArrString(NewState.Value);
+            var state = OpTensor.ToArrString(State);
+            var action = OpTensor.ToLongArrString(Act);
+            var newState = OpTensor.ToArrString(NewState);
 
             return $"{state} \t {action} \t {newState}";
         }
