@@ -79,7 +79,7 @@ namespace DeepSharp.RL.Environs
             Probs = new float[] {1, 0, 0};
         }
 
-        private float[] Probs = {1, 0.2f, 0.2f};
+        private float[] Probs = {0.7f, 0.15f, 0.15f};
 
         /// <summary>
         /// </summary>

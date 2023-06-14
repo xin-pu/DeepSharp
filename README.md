@@ -158,34 +158,45 @@ foreach (var i in Enumerable.Range(0, epoch))
 }
 ```
 
-### QLearning
+### QLearning (Frozen Lake)
 
+1. Create a Forzen Lake wihch smooth Probs is [0.7,0.15,0.15]
+2. Learn By Sample 100 Episodes
+3. Test by 10 Episodes also add to Agent's experience
+4. When Reward is fine. Stop Learn else go to step 2.
+5. Set smooth Probs  to [1,0,0], means will to targer without fail.
+6. Get a Episode to show a best path to the goal of Lake.
 
 ```C#
-var device = new torch.Device(DeviceType.CUDA);
+ /// Step 1 Create a 4-Armed Bandit
+var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
 
-/// Step 1 Create a 4-Armed Bandit
-var kArmedBandit = new KArmedBandit(2, device)
-{
-[0] = {Prob = 0.5},
-[1] = {Prob = 0.8}
-};
 /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-var agent = new AgentQLearning(kArmedBandit);
-Print(kArmedBandit);
+var agent = new AgentQLearning(frozenLake);
+Print(frozenLake);
 
 var i = 0;
+var testEpisode = 10;
 var bestReward = 0f;
 while (true)
 {
-agent.RunRandom(kArmedBandit, 100);
-agent.ValueIteration();
+    agent.Learn(100);
 
-var episode = kArmedBandit.GetEpisode(agent);
-var sum = episode.SumReward;
-bestReward = new[] {bestReward, sum.Value}.Max();
-Print($"{i++}\t reward:{sum.Value}");
-if (sum.Value > 18)
-              
+    var episode = agent.PlayEpisode(testEpisode);
+
+    var episodeLevel = frozenLake.GetReward(episode);
+
+    bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
+    Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+    if (bestReward > 0.6)
+        break;
 }
+
+frozenLake.ChangeToRough();
+frozenLake.CallBack = s => { Print(frozenLake); };
+var e = agent.PlayEpisode();
+var act = e.Steps.Select(a => a.Action);
+Print(string.Join("\r\n", act));
 ```
+
+![Frozen Lake](images/FrozenLake.png)
