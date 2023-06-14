@@ -47,7 +47,7 @@ namespace DeepSharp.RL.Environs
             }
 
             units[0].Role = LakeRole.Start;
-            units[6].Role = LakeRole.Hole;
+            units[6].Role = units[12].Role = LakeRole.Hole;
             units[15].Role = LakeRole.End;
 
             return units;
@@ -73,6 +73,14 @@ namespace DeepSharp.RL.Environs
             }
         }
 
+
+        public void ChangeToRough()
+        {
+            Probs = new float[] {1, 0, 0};
+        }
+
+        private float[] Probs = {1, 0.2f, 0.2f};
+
         /// <summary>
         /// </summary>
         /// <param name="act">
@@ -87,7 +95,8 @@ namespace DeepSharp.RL.Environs
         {
             var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
-            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0, 0}), 1)
+            var moveProb = torch
+                .multinomial(torch.from_array(Probs), 1)
                 .to_type(ActionSpace!.Type);
             var moveAction = moveProb.ToInt32();
             var rowCurrent = this[PlayID].Row;

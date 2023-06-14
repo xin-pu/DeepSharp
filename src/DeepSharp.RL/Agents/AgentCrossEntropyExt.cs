@@ -67,7 +67,7 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public override Act PredictAction(Observation observation)
+        public override Act SelectAct(Observation observation)
         {
             var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);

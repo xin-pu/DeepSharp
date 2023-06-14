@@ -1,4 +1,4 @@
-﻿using DeepSharp.RL.Agents;
+﻿using System.Text;
 
 namespace DeepSharp.RL.Environs
 {
@@ -15,7 +15,7 @@ namespace DeepSharp.RL.Environs
         private List<Observation> _observationList = new();
         private Reward _reward = new(0);
 
-        public Action<Step> CallBack;
+        public Action<Step>? CallBack;
 
         protected Environ(string name, DeviceType deviceType = DeviceType.CUDA)
         {
@@ -71,47 +71,32 @@ namespace DeepSharp.RL.Environs
         /// </summary>
         public virtual Observation Reset()
         {
-            ObservationList.Clear();
             Observation = new Observation(ObservationSpace!.Generate());
+            ObservationList = new List<Observation> {Observation};
             Reward = new Reward(0);
             return Observation;
         }
 
-        /// <summary>
-        ///     执行单步
-        /// </summary>
-        /// <param name="act"></param>
-        /// <returns></returns>
-        public virtual Step SampleStep(int epoch)
+
+        public virtual Act SampleAct()
         {
-            var act = Sample();
-            var observation = Update(act);
-            var reward = GetReward(observation);
-            var complete = IsComplete(epoch);
-            return new Step(act, observation, reward, complete);
+            return new Act(ActionSpace!.Sample());
         }
 
         /// <summary>
-        ///     执行单步
+        ///     Agent provide Act
         /// </summary>
         /// <param name="act"></param>
         /// <returns></returns>
         public virtual Step Step(Act act, int epoch)
         {
-            var observation = Update(act);
-            var reward = GetReward(observation);
+            var state = Observation!;
+            var stateNew = Update(act);
+            var reward = GetReward(stateNew);
             var complete = IsComplete(epoch);
-            return new Step(act, observation, reward, complete);
-        }
-
-        /// <summary>
-        ///     随机单步
-        /// </summary>
-        /// <returns></returns>
-        public virtual Act Sample()
-        {
-            var sampleAction = ActionSpace!.Sample();
-            return new Act(sampleAction);
+            var step = new Step(state, act, stateNew, reward, complete);
+            ObservationList.Add(stateNew);
+            return step;
         }
 
 
@@ -125,11 +110,25 @@ namespace DeepSharp.RL.Environs
 
         /// <summary>
         ///     Cal Reward from Observation
-        ///     从观察获取奖励的计算方法
+        ///     从观察获取单步奖励的计算方法
         /// </summary>
         /// <param name="observation">one observation</param>
         /// <returns>one reward</returns>
         public abstract Reward GetReward(Observation observation);
+
+        /// <summary>
+        ///     Cal Summary Reward from Episode
+        ///     从一个片段计算长期奖励的计算方法
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <returns></returns>
+        public virtual EpisodeLevel GetReward(Episode[] episode)
+        {
+            var reward = episode.Average(a => a.SumReward.Value);
+            var length = (float) episode.Average(a => a.Length);
+            return new EpisodeLevel {Length = length, Reward = reward};
+        }
+
 
         /// <summary>
         ///     Discount Reward
@@ -149,52 +148,13 @@ namespace DeepSharp.RL.Environs
         public abstract bool IsComplete(int epoch);
 
 
-        /// <summary>
-        ///     Get Multi Episodes by one policy.
-        /// </summary>
-        /// <param name="policy">Agent</param>
-        /// <param name="episodesSize">the size of episodes need return</param>
-        /// <returns></returns>
-        public virtual Episode[] GetMultiEpisodes(Agent policy, int episodesSize)
-        {
-            var episodes = Enumerable.Repeat(0, episodesSize)
-                .Select(_ => GetEpisode(policy))
-                .ToArray();
-
-            return episodes;
-        }
-
-        /// <summary>
-        ///     Get episode by one policy without reset Environ
-        /// </summary>
-        /// <param name="policy"></param>
-        /// <param name="maxPeriod">limit size of a episode</param>
-        /// <returns></returns>
-        public virtual Episode GetEpisode(Agent policy)
-        {
-            Reset();
-
-            var episode = new Episode();
-            var epoch = 0;
-            while (IsComplete(epoch) == false)
-            {
-                epoch++;
-                var action = policy.PredictAction(Observation!).To(Device);
-                var step = Step(action, epoch);
-                episode.Steps.Add(step);
-                CallBack?.Invoke(step);
-                Observation = step.Observation; /// It's import for Update Observation
-            }
-
-            var sumReward = episode.Steps.Sum(a => a.Reward.Value) * DiscountReward(episode, Gamma);
-            episode.SumReward = new Reward(sumReward);
-            return episode;
-        }
-
-
         public override string ToString()
         {
-            return $"{Name}\tLife:{Life}";
+            var str = new StringBuilder();
+            str.AppendLine($"{Name}\tLife:{Life}");
+            str.AppendLine(new string('-', 30));
+            str.Append($"State:\t{Observation!.Value!.ToString(torch.numpy)}");
+            return str.ToString();
         }
     }
 }

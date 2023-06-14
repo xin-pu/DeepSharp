@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
+using FluentAssertions;
 
 namespace DeepSharp.RL.Agents
 {
@@ -29,8 +30,19 @@ namespace DeepSharp.RL.Agents
         public Dictionary<torch.Tensor, float> Values { set; get; }
 
 
-        public override Act PredictAction(Observation state)
+        /// <summary>
+        ///     Select  Action According with Latest Observation
+        ///     选择动作
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public override Act SelectAct(Observation state)
         {
+            Rewards.Count.Should().BeGreaterThan(0, "Rewards Table is Empty, You should learn first.");
+            Transits.Count.Should().BeGreaterThan(0, "Transits Table is Empty, You should learn first.");
+            Values.Count.Should().BeGreaterThan(0, "Values Table is Empty, You should learn first.");
+
+            /// Step 1 Get Action Space According Current State from Transits
             var actionSpace = Transits.Keys
                 .Where(a => a.State.Equals(state.Value!))
                 .ToList();
@@ -50,27 +62,24 @@ namespace DeepSharp.RL.Agents
             return new Act(maxActs[actIndex]);
         }
 
-        public override float Learn(Episode[] steps)
+
+        public override float Learn(int count)
         {
-            throw new NotImplementedException();
+            var episodes = PlayEpisode(count, PlayMode.Sample, true);
+            ValueIteration();
+            return episodes.Length;
+        }
+
+        public override void Update(Episode episode)
+        {
+            episode.Steps.ForEach(UpdateTables);
         }
 
 
-        public void RunRandom(Environ<Space, Space> environ, int count)
-        {
-            foreach (var i in Enumerable.Range(0, count))
-            {
-                var observation = environ.Observation;
-                var step = environ.SampleStep(i);
-
-                UpdateTables(observation!, step.Action, step.Observation, step.Reward);
-                environ.Observation = step.Observation;
-
-                if (environ.IsComplete(0)) environ.Reset();
-            }
-        }
-
-
+        /// <summary>
+        ///     Update Value Iteration
+        ///     更新价值表
+        /// </summary>
         public void ValueIteration()
         {
             var stateList = Transits.Select(a => a.Key.State).Distinct();
@@ -87,32 +96,6 @@ namespace DeepSharp.RL.Agents
 
                 Values[state] = maxStateValue;
             }
-        }
-
-        /// <summary>
-        ///     以策略为主，运行得到一个完整片段
-        /// </summary>
-        /// <returns>奖励</returns>
-        public override Episode PlayEpisode()
-        {
-            Environ.Reset();
-            var episode = new Episode();
-            var epoch = 0;
-            while (Environ.IsComplete(epoch) == false)
-            {
-                epoch++;
-                var action = PredictAction(Environ.Observation!).To(Device);
-                var step = Environ.Step(action, epoch);
-                episode.Steps.Add(step);
-                UpdateTables(Environ.Observation!, step);
-                Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.Observation; /// It's import for Update Observation
-            }
-
-
-            var sumReward = episode.Steps.Sum(a => a.Reward.Value) * Environ.DiscountReward(episode, Environ.Gamma);
-            episode.SumReward = new Reward(sumReward);
-            return episode;
         }
 
 
@@ -161,9 +144,9 @@ namespace DeepSharp.RL.Agents
                 sonDict[newTensor] = 1;
         }
 
-        private void UpdateTables(Observation state, Step step)
+        private void UpdateTables(Step step)
         {
-            UpdateTables(state, step.Action, step.Observation, step.Reward);
+            UpdateTables(step.State, step.Action, step.StateNew, step.Reward);
         }
 
         /// <summary>

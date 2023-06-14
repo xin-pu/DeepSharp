@@ -5,13 +5,16 @@
     /// </summary>
     public class Step
     {
-        public Step(Act action, Observation observation, Reward reward, bool isComplete = false)
+        public Step(Observation state, Act action, Observation stateNew, Reward reward, bool isComplete = false)
         {
+            State = state;
             Action = action;
-            Observation = observation;
             Reward = reward;
+            StateNew = stateNew;
             IsComplete = isComplete;
         }
+
+        public Observation State { set; get; }
 
         /// <summary>
         ///     动作
@@ -21,7 +24,7 @@
         /// <summary>
         ///     动作后的观察
         /// </summary>
-        public Observation Observation { set; get; }
+        public Observation StateNew { set; get; }
 
         /// <summary>
         ///     动作后的奖励

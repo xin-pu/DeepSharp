@@ -7,30 +7,36 @@ using TorchSharp;
 
 Console.WriteLine("Hello, World!");
 
-var epoch = 10000;
+;
 var episodesEachBatch = 100;
 
 /// Step 1 Create a 4-Armed Bandit
-var forFrozenLake = new Frozenlake(DeviceType.CUDA)
-{
-    Gamma = 0.90f
-};
-Utility.Print(forFrozenLake);
+var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
+Utility.Print(frozenLake);
 
 /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-var agent = new AgentCrossEntropyExt(forFrozenLake);
+var agent = new AgentQLearning(frozenLake);
 
 /// Step 3 Learn and Optimize
-foreach (var i in Enumerable.Range(0, epoch))
+var i = 0;
+var testEpisode = 10;
+var bestReward = 0f;
+while (true)
 {
-    var batch = forFrozenLake.GetMultiEpisodes(agent, episodesEachBatch);
-    var success = batch.Count(a => a.SumReward.Value > 0);
+    agent.Learn(episodesEachBatch);
 
-    var eliteOars = agent.GetElite(batch); /// Get eliteOars 
+    var episode = agent.PlayEpisode(testEpisode);
 
-    /// Agent Learn by elite observation & action
-    var loss = agent.Learn(eliteOars);
-    var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
+    var episodeLevel = frozenLake.GetReward(episode);
 
-    Utility.Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
+    bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
+    Utility.Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+    if (bestReward > 0.55)
+        break;
 }
+
+frozenLake.ChangeToRough();
+frozenLake.CallBack = s => { Utility.Print(frozenLake); };
+var e = agent.PlayEpisode();
+var act = e.Steps.Select(a => a.Action);
+Utility.Print(string.Join("\r\n", act));

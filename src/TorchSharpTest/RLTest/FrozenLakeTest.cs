@@ -48,14 +48,14 @@ namespace TorchSharpTest.RLTest
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
             {
-                var batch = agent.PlayEpisode(episodesEachBatch);
-                var success = batch.Count(a => a.SumReward.Value > 0);
-
-                var eliteOars = agent.GetElite(batch); /// Get eliteOars 
-
                 /// Agent Learn by elite observation & action
-                var loss = agent.Learn(eliteOars);
-                var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
+                var loss = agent.Learn(episodesEachBatch);
+
+                /// Test
+                var test = agent.PlayEpisode(episodesEachBatch);
+
+                var success = test.Count(a => a.SumReward.Value > 1);
+                var rewardMean = test.Select(a => a.SumReward.Value).Sum();
 
                 Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
             }
@@ -70,7 +70,7 @@ namespace TorchSharpTest.RLTest
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
-            agent.RunRandom(kArmedBandit, 100);
+            agent.PlayEpisode(100);
             agent.ValueIteration();
         }
 
@@ -89,21 +89,23 @@ namespace TorchSharpTest.RLTest
             var bestReward = 0f;
             while (true)
             {
-                agent.RunRandom(frozenLake, 100);
-                agent.ValueIteration();
+                agent.Learn(100);
 
-                var episodes = Enumerable.Range(0, testEpisode)
-                    .Select(i1 => agent.PlayEpisode())
-                    .ToList();
-                var sum = episodes.Average(a => a.SumReward.Value);
-                bestReward = new[] {bestReward, sum}.Max();
-                Print($"{agent} Play:{++i:D3}\t reward:{sum:F2}");
-                if (i > 100)
+                var episode = agent.PlayEpisode(testEpisode);
+
+                var episodeLevel = frozenLake.GetReward(episode);
+
+                bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
+                Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+                if (bestReward > 0.6)
                     break;
             }
 
+            frozenLake.ChangeToRough();
             frozenLake.CallBack = s => { Print(frozenLake); };
-            agent.PlayEpisode();
+            var e = agent.PlayEpisode();
+            var act = e.Steps.Select(a => a.Action);
+            Print(string.Join("\r\n", act));
         }
     }
 }

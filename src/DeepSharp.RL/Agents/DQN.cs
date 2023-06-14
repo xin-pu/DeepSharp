@@ -8,12 +8,17 @@ namespace DeepSharp.RL.Agents
         {
         }
 
-        public override Act PredictAction(Observation reward)
+        public override Act SelectAct(Observation state)
         {
             throw new NotImplementedException();
         }
 
-        public override float Learn(Episode[] steps)
+        public override void Update(Episode episode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override float Learn(int count)
         {
             throw new NotImplementedException();
         }

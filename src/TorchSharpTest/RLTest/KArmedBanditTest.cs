@@ -53,7 +53,7 @@ namespace TorchSharpTest.RLTest
             var episodesEachBatch = 20;
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2)
+            var kArmedBandit = new KArmedBandit(2, DeviceType.CPU)
             {
                 [0] = {Prob = 0.4},
                 [1] = {Prob = 0.75}
@@ -66,12 +66,11 @@ namespace TorchSharpTest.RLTest
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
             {
-                var batch = kArmedBandit.GetMultiEpisodes(agent, episodesEachBatch);
-                var eliteOars = agent.GetElite(batch); /// Get eliteOars 
+                var loss = agent.Learn(episodesEachBatch);
 
-                /// Agent Learn by elite observation & action
-                var loss = agent.Learn(eliteOars);
-                var rewardMean = batch.Select(a => a.SumReward.Value).Average();
+                var test = agent.PlayEpisode(episodesEachBatch);
+
+                var rewardMean = test.Select(a => a.SumReward.Value).Average();
 
                 Print($"Epoch:{i:D4}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
             }
@@ -87,8 +86,8 @@ namespace TorchSharpTest.RLTest
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
-            agent.RunRandom(kArmedBandit, 500);
-            agent.ValueIteration();
+            agent.PlayEpisode(20, PlayMode.Sample);
+            Print(kArmedBandit);
         }
 
         [Fact]
@@ -110,14 +109,15 @@ namespace TorchSharpTest.RLTest
             var bestReward = 0f;
             while (i < 100)
             {
-                agent.RunRandom(kArmedBandit, 100);
-                agent.ValueIteration();
+                agent.Learn(100);
 
-                var episode = agent.PlayEpisode();
-                var sum = episode.SumReward;
-                bestReward = new[] {bestReward, sum.Value}.Max();
-                Print($"{agent} Play:{++i:D3}\t reward:{sum.Value}");
-                if (sum.Value > 20)
+                var episode = agent.PlayEpisode(10, updateAgent: true);
+
+                var episodeLevel = kArmedBandit.GetReward(episode);
+
+                bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
+                Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+                if (bestReward > 18)
                     break;
             }
         }

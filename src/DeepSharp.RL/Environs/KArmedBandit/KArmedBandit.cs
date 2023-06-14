@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs.Spaces;
+﻿using System.Text;
+using DeepSharp.RL.Environs.Spaces;
 using MathNet.Numerics.Random;
 
 namespace DeepSharp.RL.Environs
@@ -44,6 +45,7 @@ namespace DeepSharp.RL.Environs
             return reward;
         }
 
+
         /// <summary>
         /// </summary>
         /// <param name="act">动作，该环境下包含智能体选择的赌博机索引</param>
@@ -60,11 +62,6 @@ namespace DeepSharp.RL.Environs
             return new Observation(obsTensor);
         }
 
-        public override Act Sample()
-        {
-            var sample = ActionSpace!.Sample();
-            return new Act(sample);
-        }
 
         /// <summary>
         ///     Discount Reward
@@ -91,8 +88,10 @@ namespace DeepSharp.RL.Environs
 
         public override string ToString()
         {
-            var final = string.Join("\r\n", bandits.Select(a => a.ToString()));
-            return final;
+            var str = new StringBuilder();
+            str.AppendLine(base.ToString());
+            str.Append(string.Join("\r\n", bandits.Select(a => $"\t{a}")));
+            return str.ToString();
         }
     }
 }

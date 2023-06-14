@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs;
+﻿using DeepSharp.RL.ActionSelectors;
+using DeepSharp.RL.Environs;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
 
@@ -36,30 +37,31 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public override Act PredictAction(Observation observation)
+        public override Act SelectAct(Observation observation)
         {
             var input = observation.Value!.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
-            //var nextAction = new ProbabilityActionSelector().Select(actionProbs);
-            //var action = new Act(nextAction);
-            //return action;
+            var nextAction = new ProbabilityActionSelector().Select(actionProbs);
+            var action = new Act(nextAction);
+            return action;
+        }
 
-            var nextAction = torch.multinomial(actionProbs, 1);
-            return new Act(nextAction);
+        public override void Update(Episode episode)
+        {
         }
 
 
-        public override float Learn(Episode[] steps)
+        public override float Learn(int count)
         {
-            if (steps.Length == 0) return float.MaxValue;
+            var steps = PlayEpisode(count, PlayMode.Sample);
+            var eliteSteps = GetElite(steps);
 
-
-            var oars = steps.SelectMany(a => a.Steps)
+            var oars = eliteSteps.SelectMany(a => a.Steps)
                 .ToList();
 
             var observations = oars
-                .Select(a => a.Observation.Value)
+                .Select(a => a.StateNew.Value)
                 .ToList();
             var actions = oars
                 .Select(a => a.Action.Value)
@@ -108,7 +110,7 @@ namespace DeepSharp.RL.Agents
         /// <param name="observations">tensor from multi observations, size: [batch,observation size]</param>
         /// <param name="actions">tensor from multi actions, size: [batch,action size]</param>
         /// <returns>loss</returns>
-        public float Learn(torch.Tensor observations, torch.Tensor actions)
+        internal float Learn(torch.Tensor observations, torch.Tensor actions)
         {
             observations.shape.Last().Should()
                 .Be(ObservationSize, $"Agent observations tensor should be [B,{ObservationSize}]");

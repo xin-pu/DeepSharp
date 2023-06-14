@@ -20,4 +20,17 @@
 
         public int Length => Steps.Count;
     }
+
+
+    public class EpisodeLevel
+    {
+        public float Reward { set; get; }
+        public float Length { set; get; }
+
+
+        public override string ToString()
+        {
+            return $"{Reward}\t{Length}";
+        }
+    }
 }
