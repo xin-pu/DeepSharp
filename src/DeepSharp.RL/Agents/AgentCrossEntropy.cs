@@ -16,7 +16,8 @@ namespace DeepSharp.RL.Agents
             int hiddenSize = 100) : base(environ)
         {
             PercentElite = percentElite;
-            AgentNet = new Net((int) environ.ObservationSpace!.N, hiddenSize, (int) environ.ActionSpace!.N);
+            AgentNet = new Net((int) environ.ObservationSpace!.N, hiddenSize, (int) environ.ActionSpace!.N,
+                Device.type);
             Optimizer = Adam(AgentNet.parameters(), 0.01);
             Loss = CrossEntropyLoss();
         }
@@ -132,7 +133,8 @@ namespace DeepSharp.RL.Agents
         {
             private readonly Module<torch.Tensor, torch.Tensor> layers;
 
-            public Net(int obsSize, int hiddenSize, int actionNum) : base("Net")
+            public Net(int obsSize, int hiddenSize, int actionNum, DeviceType deviceType = DeviceType.CUDA) :
+                base("Net")
             {
                 var modules = new List<(string, Module<torch.Tensor, torch.Tensor>)>
                 {
@@ -141,7 +143,7 @@ namespace DeepSharp.RL.Agents
                     ("line2", Linear(hiddenSize, actionNum))
                 };
                 layers = Sequential(modules);
-                layers.to(new torch.Device(DeviceType.CUDA));
+                layers.to(new torch.Device(deviceType));
                 RegisterComponents();
             }
 

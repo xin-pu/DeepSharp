@@ -36,7 +36,7 @@ namespace TorchSharpTest.RLTest
             var episodesEachBatch = 100;
 
             /// Step 1 Create a 4-Armed Bandit
-            var forFrozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.90f};
+            var forFrozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.90f};
             Print(forFrozenLake);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
@@ -48,7 +48,7 @@ namespace TorchSharpTest.RLTest
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
             {
-                var batch = forFrozenLake.GetMultiEpisodes(agent, episodesEachBatch);
+                var batch = agent.PlayEpisode(episodesEachBatch);
                 var success = batch.Count(a => a.SumReward.Value > 0);
 
                 var eliteOars = agent.GetElite(batch); /// Get eliteOars 
@@ -78,7 +78,7 @@ namespace TorchSharpTest.RLTest
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.95f};
+            var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(frozenLake);
@@ -98,9 +98,12 @@ namespace TorchSharpTest.RLTest
                 var sum = episodes.Average(a => a.SumReward.Value);
                 bestReward = new[] {bestReward, sum}.Max();
                 Print($"{agent} Play:{++i:D3}\t reward:{sum:F2}");
-                if (sum > 18)
+                if (i > 100)
                     break;
             }
+
+            frozenLake.CallBack = s => { Print(frozenLake); };
+            agent.PlayEpisode();
         }
     }
 }

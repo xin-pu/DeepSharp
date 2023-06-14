@@ -2,9 +2,9 @@
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentQnetwork : Agent
+    public class DQN : Agent
     {
-        public AgentQnetwork(Environ<Space, Space> env) : base(env)
+        public DQN(Environ<Space, Space> env) : base(env)
         {
         }
 

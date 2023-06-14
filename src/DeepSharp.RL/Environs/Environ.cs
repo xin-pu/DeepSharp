@@ -15,6 +15,8 @@ namespace DeepSharp.RL.Environs
         private List<Observation> _observationList = new();
         private Reward _reward = new(0);
 
+        public Action<Step> CallBack;
+
         protected Environ(string name, DeviceType deviceType = DeviceType.CUDA)
         {
             _name = name;
@@ -188,8 +190,6 @@ namespace DeepSharp.RL.Environs
             episode.SumReward = new Reward(sumReward);
             return episode;
         }
-
-        public Action<Step> CallBack;
 
 
         public override string ToString()

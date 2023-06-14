@@ -46,6 +46,15 @@ namespace DeepSharp.RL.Agents
             return episode;
         }
 
+        /// <summary>
+        ///     以策略为主，运行得到多个完整片段
+        /// </summary>
+        /// <returns>奖励</returns>
+        public virtual Episode[] PlayEpisode(int count)
+        {
+            return Enumerable.Repeat(1, count).Select(a => PlayEpisode()).ToArray();
+        }
+
         public abstract float Learn(Episode[] steps);
     }
 }

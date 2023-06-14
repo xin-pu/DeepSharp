@@ -13,8 +13,8 @@ namespace DeepSharp.RL.Environs
             Order = order;
             LakeUnits = CreateLake4();
             PlayID = 0;
-            ActionSpace = new Disperse(order, torch.ScalarType.Int32);
-            ObservationSpace = new Box(0, 1, new long[] {area});
+            ActionSpace = new Disperse(order, torch.ScalarType.Int32, deviceType);
+            ObservationSpace = new Box(0, 1, new long[] {area}, deviceType);
             Reset();
         }
 
@@ -87,7 +87,7 @@ namespace DeepSharp.RL.Environs
         {
             var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
-            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0f, 0f}), 1)
+            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0, 0}), 1)
                 .to_type(ActionSpace!.Type);
             var moveAction = moveProb.ToInt32();
             var rowCurrent = this[PlayID].Row;

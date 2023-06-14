@@ -66,10 +66,7 @@ namespace DeepSharp.RL.Agents
                 UpdateTables(observation!, step.Action, step.Observation, step.Reward);
                 environ.Observation = step.Observation;
 
-                if (environ.IsComplete(0))
-                {
-                    environ.Reset();
-                }
+                if (environ.IsComplete(0)) environ.Reset();
             }
         }
 

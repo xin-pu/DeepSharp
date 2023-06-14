@@ -95,7 +95,7 @@ namespace TorchSharpTest.RLTest
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(4)
+            var kArmedBandit = new KArmedBandit(4, DeviceType.CPU)
             {
                 [0] = {Prob = 0.5},
                 [1] = {Prob = 0.2},
@@ -108,7 +108,7 @@ namespace TorchSharpTest.RLTest
 
             var i = 0;
             var bestReward = 0f;
-            while (true)
+            while (i < 100)
             {
                 agent.RunRandom(kArmedBandit, 100);
                 agent.ValueIteration();
