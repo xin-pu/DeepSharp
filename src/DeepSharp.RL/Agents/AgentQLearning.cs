@@ -28,15 +28,26 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         public Dictionary<torch.Tensor, float> Values { set; get; }
 
+
         public override Act PredictAction(Observation state)
         {
             var actionSpace = Transits.Keys
                 .Where(a => a.State.Equals(state.Value!))
                 .ToList();
 
-            var trasitKey = actionSpace.MaxBy(a => GetActionValue(a));
+            var valueDict = actionSpace
+                .ToDictionary(a => a.Act, a => GetActionValue(a));
+            var maxValue = valueDict.Values.Max();
+            var maxActs = valueDict
+                .Where(a => Math.Abs(a.Value - maxValue) < 1E-4)
+                .Select(a => a.Key)
+                .ToList();
 
-            return new Act(trasitKey.Act);
+            if (maxActs.Count == 1) return new Act(maxActs.First());
+
+            var probs = Enumerable.Repeat(1f, maxActs.Count).ToArray();
+            var actIndex = torch.multinomial(torch.tensor(probs), 1).ToInt32();
+            return new Act(maxActs[actIndex]);
         }
 
         public override float Learn(Episode[] steps)
@@ -79,6 +90,32 @@ namespace DeepSharp.RL.Agents
 
                 Values[state] = maxStateValue;
             }
+        }
+
+        /// <summary>
+        ///     以策略为主，运行得到一个完整片段
+        /// </summary>
+        /// <returns>奖励</returns>
+        public override Episode PlayEpisode()
+        {
+            Environ.Reset();
+            var episode = new Episode();
+            var epoch = 0;
+            while (Environ.IsComplete(epoch) == false)
+            {
+                epoch++;
+                var action = PredictAction(Environ.Observation!).To(Device);
+                var step = Environ.Step(action, epoch);
+                episode.Steps.Add(step);
+                UpdateTables(Environ.Observation!, step);
+                Environ.CallBack?.Invoke(step);
+                Environ.Observation = step.Observation; /// It's import for Update Observation
+            }
+
+
+            var sumReward = episode.Steps.Sum(a => a.Reward.Value) * Environ.DiscountReward(episode, Environ.Gamma);
+            episode.SumReward = new Reward(sumReward);
+            return episode;
         }
 
 
@@ -125,6 +162,11 @@ namespace DeepSharp.RL.Agents
                 sonDict[newStateKeys.First()]++;
             else
                 sonDict[newTensor] = 1;
+        }
+
+        private void UpdateTables(Observation state, Step step)
+        {
+            UpdateTables(state, step.Action, step.Observation, step.Reward);
         }
 
         /// <summary>
@@ -191,6 +233,11 @@ namespace DeepSharp.RL.Agents
             {
                 return 0;
             }
+        }
+
+        public override string ToString()
+        {
+            return "AgentQLearning";
         }
     }
 }

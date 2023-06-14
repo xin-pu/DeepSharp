@@ -78,24 +78,27 @@ namespace TorchSharpTest.RLTest
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.90f};
+            var frozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(frozenLake);
             Print(frozenLake);
 
             var i = 0;
+            var testEpisode = 10;
             var bestReward = 0f;
             while (true)
             {
-                agent.RunRandom(frozenLake, 500);
+                agent.RunRandom(frozenLake, 100);
                 agent.ValueIteration();
 
-                var episode = frozenLake.GetEpisode(agent);
-                var sum = episode.SumReward;
-                bestReward = new[] {bestReward, sum.Value}.Max();
-                Print($"{i++}\t reward:{sum.Value}");
-                if (sum.Value > 18)
+                var episodes = Enumerable.Range(0, testEpisode)
+                    .Select(i1 => agent.PlayEpisode())
+                    .ToList();
+                var sum = episodes.Average(a => a.SumReward.Value);
+                bestReward = new[] {bestReward, sum}.Max();
+                Print($"{agent} Play:{++i:D3}\t reward:{sum:F2}");
+                if (sum > 18)
                     break;
             }
         }

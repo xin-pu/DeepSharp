@@ -87,7 +87,7 @@ namespace DeepSharp.RL.Environs
         {
             var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
-            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0 / 3f, 0 / 3f}), 1)
+            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0f, 0f}), 1)
                 .to_type(ActionSpace!.Type);
             var moveAction = moveProb.ToInt32();
             var rowCurrent = this[PlayID].Row;

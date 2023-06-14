@@ -98,10 +98,9 @@ namespace TorchSharpTest.RLTest
             var kArmedBandit = new KArmedBandit(4)
             {
                 [0] = {Prob = 0.5},
-                [1] = {Prob = 0.75},
-                [2] = {Prob = 0.74},
-                [3] = {Prob = 0.3},
-                CallBack = s => { Print(s.Action); }
+                [1] = {Prob = 0.2},
+                [2] = {Prob = 0.4},
+                [3] = {Prob = 0.8}
             };
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
@@ -114,10 +113,10 @@ namespace TorchSharpTest.RLTest
                 agent.RunRandom(kArmedBandit, 100);
                 agent.ValueIteration();
 
-                var episode = kArmedBandit.GetEpisode(agent);
+                var episode = agent.PlayEpisode();
                 var sum = episode.SumReward;
                 bestReward = new[] {bestReward, sum.Value}.Max();
-                Print($"{i++}\t reward:{sum.Value}");
+                Print($"{agent} Play:{++i:D3}\t reward:{sum.Value}");
                 if (sum.Value > 20)
                     break;
             }
