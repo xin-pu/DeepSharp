@@ -2,6 +2,9 @@
 
 namespace DeepSharp.RL.Environs.Spaces
 {
+    /// <summary>
+    ///     A N-dimensional box that contains every point in the action space.
+    /// </summary>
     public class Box : DigitalSpace
     {
         public Box(float low, float high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :

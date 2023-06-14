@@ -6,18 +6,19 @@ namespace DeepSharp.RL.Environs
     public class Frozenlake : Environ<Space, Space>
 
     {
-        public Frozenlake(DeviceType deviceType = DeviceType.CUDA)
+        public Frozenlake(int order = 4, DeviceType deviceType = DeviceType.CUDA)
             : base("Frozenlake", deviceType)
         {
-            LakeUnits = new List<LakeUnit>();
+            var area = (int) Math.Pow(order, 2);
+            Order = order;
             LakeUnits = CreateLake4();
             PlayID = 0;
-            ActionSpace = new Disperse(4);
-            ObservationSpace = new Box(0, 1, new long[] {16});
+            ActionSpace = new Disperse(order, torch.ScalarType.Int32);
+            ObservationSpace = new Box(0, 1, new long[] {area});
             Reset();
         }
 
-
+        public int Order { protected set; get; }
         public int PlayID { set; get; }
 
         public List<LakeUnit> LakeUnits { get; set; }
@@ -30,25 +31,26 @@ namespace DeepSharp.RL.Environs
 
         public LakeUnit this[int r, int c]
         {
-            get => LakeUnits[r * 4 + c];
-            set => LakeUnits[r * 4 + c] = value;
+            get => LakeUnits[r * Order + c];
+            set => LakeUnits[r * Order + c] = value;
         }
 
 
         internal List<LakeUnit> CreateLake4()
         {
-            foreach (var r in Enumerable.Range(0, 4))
-            foreach (var c in Enumerable.Range(0, 4))
+            var units = new List<LakeUnit>();
+            foreach (var r in Enumerable.Range(0, Order))
+            foreach (var c in Enumerable.Range(0, Order))
             {
-                var unit = new LakeUnit(r, c, r * 4 + c);
-                LakeUnits.Add(unit);
+                var unit = new LakeUnit(r, c, r * Order + c);
+                units.Add(unit);
             }
 
-            this[0].Role = LakeRole.Start;
-            this[6].Role = LakeRole.Hole;
-            this[15].Role = LakeRole.End;
+            units[0].Role = LakeRole.Start;
+            units[6].Role = LakeRole.Hole;
+            units[15].Role = LakeRole.End;
 
-            return LakeUnits;
+            return units;
         }
 
 
@@ -83,10 +85,11 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override Observation Update(Act act)
         {
-            var banditSelectIndex = act.Value!.item<long>();
+            var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
-            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 1 / 3f, 1 / 3f}), 1);
-            var moveAction = moveProb.item<long>();
+            var moveProb = torch.multinomial(torch.from_array(new[] {1 / 3f, 0 / 3f, 0 / 3f}), 1)
+                .to_type(ActionSpace!.Type);
+            var moveAction = moveProb.ToInt32();
             var rowCurrent = this[PlayID].Row;
             var columnCurrent = this[PlayID].Column;
 
@@ -151,16 +154,16 @@ namespace DeepSharp.RL.Environs
             var state = Enumerable.Repeat(0, LakeUnits.Count).ToArray();
             state[PlayID] = 1;
             var stateTensor = torch.from_array(state, ObservationSpace!.Type).to(Device);
-            var observation = new Observation(stateTensor);
+            var observation = Observation = new Observation(stateTensor);
             return observation;
         }
 
         public override string ToString()
         {
             var str = new StringBuilder();
-            foreach (var r in Enumerable.Range(0, 4))
+            foreach (var r in Enumerable.Range(0, Order))
             {
-                foreach (var c in Enumerable.Range(0, 4))
+                foreach (var c in Enumerable.Range(0, Order))
                 {
                     var lakeUnit = this[r, c];
                     var P = lakeUnit.Index == PlayID ? "P" : " ";

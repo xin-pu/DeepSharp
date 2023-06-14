@@ -95,10 +95,13 @@ namespace TorchSharpTest.RLTest
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2)
+            var kArmedBandit = new KArmedBandit(4)
             {
                 [0] = {Prob = 0.5},
-                [1] = {Prob = 0.8}
+                [1] = {Prob = 0.75},
+                [2] = {Prob = 0.74},
+                [3] = {Prob = 0.3},
+                CallBack = s => { Print(s.Action); }
             };
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
@@ -115,7 +118,7 @@ namespace TorchSharpTest.RLTest
                 var sum = episode.SumReward;
                 bestReward = new[] {bestReward, sum.Value}.Max();
                 Print($"{i++}\t reward:{sum.Value}");
-                if (sum.Value > 18)
+                if (sum.Value > 20)
                     break;
             }
         }

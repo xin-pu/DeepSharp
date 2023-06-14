@@ -180,6 +180,7 @@ namespace DeepSharp.RL.Environs
                 var action = policy.PredictAction(Observation!).To(Device);
                 var step = Step(action, epoch);
                 episode.Steps.Add(step);
+                CallBack?.Invoke(step);
                 Observation = step.Observation; /// It's import for Update Observation
             }
 
@@ -187,6 +188,8 @@ namespace DeepSharp.RL.Environs
             episode.SumReward = new Reward(sumReward);
             return episode;
         }
+
+        public Action<Step> CallBack;
 
 
         public override string ToString()

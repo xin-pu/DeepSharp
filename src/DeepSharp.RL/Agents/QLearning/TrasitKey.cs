@@ -1,5 +1,4 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.Utility.Operations;
 
 namespace DeepSharp.RL.Agents
 {
@@ -26,8 +25,8 @@ namespace DeepSharp.RL.Agents
 
         public override string ToString()
         {
-            var state = OpTensor.ToArrString(State);
-            var action = OpTensor.ToLongArrString(Act);
+            var state = State.ToString(torch.numpy);
+            var action = Act.ToString(torch.numpy);
 
             return $"{state} \t {action}";
         }

@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Environs.Spaces
 {
     /// <summary>
-    ///     Todo
+    ///     A list of possible actions, where each timestep only one action of each discrete set can be used.
     /// </summary>
     public class MultiDisperse : DigitalSpace
     {

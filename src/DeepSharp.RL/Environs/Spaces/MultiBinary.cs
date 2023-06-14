@@ -1,5 +1,8 @@
 ﻿namespace DeepSharp.RL.Environs.Spaces
 {
+    /// <summary>
+    ///     A list of possible actions, where each timestep any of the actions can be used in any combination.
+    /// </summary>
     public class MultiBinary : DigitalSpace
     {
         public MultiBinary(long[] shape, torch.ScalarType type = torch.ScalarType.Int32,

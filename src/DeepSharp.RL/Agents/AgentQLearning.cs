@@ -30,13 +30,13 @@ namespace DeepSharp.RL.Agents
 
         public override Act PredictAction(Observation state)
         {
-            var actionSpace = Enumerable.Range(0, (int) ActionSize)
-                .Select(a => new Act(torch.from_array(new long[] {a}).to(Device)))
+            var actionSpace = Transits.Keys
+                .Where(a => a.State.Equals(state.Value!))
                 .ToList();
 
-            var value = actionSpace.MaxBy(a => GetActionValue(new TrasitKey(state, a)));
+            var trasitKey = actionSpace.MaxBy(a => GetActionValue(a));
 
-            return value!;
+            return new Act(trasitKey.Act);
         }
 
         public override float Learn(Episode[] steps)
@@ -55,27 +55,24 @@ namespace DeepSharp.RL.Agents
                 UpdateTables(observation!, step.Action, step.Observation, step.Reward);
                 environ.Observation = step.Observation;
 
-                if (environ.IsComplete(i))
+                if (environ.IsComplete(0))
+                {
                     environ.Reset();
+                }
             }
         }
 
 
         public void ValueIteration()
         {
-            var stateList = Enumerable.Range(0, (int) ObservationSize)
-                .Select(a =>
-                {
-                    var arr = new long[ObservationSize];
-                    arr[a] = 1;
-                    return torch.from_array(arr).to(Device);
-                })
-                .ToList();
-            var actionList = Enumerable.Range(0, (int) ActionSize)
-                .Select(a => torch.from_array(new long[] {a}).to(Device))
-                .ToList();
+            var stateList = Transits.Select(a => a.Key.State).Distinct();
+
             foreach (var state in stateList)
             {
+                var actionList = Transits.Keys
+                    .Where(a => a.State.Equals(state))
+                    .Select(a => a.Act);
+
                 var maxStateValue = actionList
                     .Select(a => GetActionValue(new TrasitKey(state, a)))
                     .Max();
@@ -155,9 +152,9 @@ namespace DeepSharp.RL.Agents
         {
             try
             {
-                var key = Transits.Keys.FirstOrDefault(a => a.Act!.Equals(traitKey.Act!) &&
-                                                            a.State!.Equals(traitKey.State!));
-
+                var key = Transits.Keys
+                    .First(a => a.Act!.Equals(traitKey.Act!) &&
+                                a.State!.Equals(traitKey.State!));
 
                 return Transits[key];
             }
@@ -185,11 +182,15 @@ namespace DeepSharp.RL.Agents
 
         private float getValue(torch.Tensor observation)
         {
-            var key = Values.Keys.FirstOrDefault(a => a!.Equals(observation!));
-            if (key is not null) return Values[key];
-
-            Values[observation] = 0;
-            return Values[observation];
+            try
+            {
+                var key = Values.Keys.First(a => a!.Equals(observation!));
+                return Values[key];
+            }
+            catch
+            {
+                return 0;
+            }
         }
     }
 }

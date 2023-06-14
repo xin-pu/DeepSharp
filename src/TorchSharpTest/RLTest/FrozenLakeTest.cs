@@ -5,27 +5,24 @@ namespace TorchSharpTest.RLTest
 {
     public class FrozenLakeTest : AbstractTest
     {
+        public DeviceType DeviceType = DeviceType.CUDA;
+
         public FrozenLakeTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
 
-        public DeviceType DeviceType = DeviceType.CUDA;
-
         [Fact]
-        public void FrozenLakeCreateTest()
+        public void FrozenLakeCreateTest1()
         {
-            var pro = new Frozenlake(DeviceType);
+            var pro = new Frozenlake(deviceType: DeviceType);
             Print(pro);
         }
 
         [Fact]
         public void FrozenLakeCreate2Test()
         {
-            var pro = new Frozenlake(DeviceType)
-            {
-                PlayID = 15
-            };
+            var pro = new Frozenlake(deviceType: DeviceType) {PlayID = 15};
             Print(pro);
             var res = pro.IsComplete(1);
             Print($"{res}");
@@ -33,16 +30,13 @@ namespace TorchSharpTest.RLTest
 
 
         [Fact]
-        public void Main()
+        public void AgentCrossEntropyMain()
         {
             var epoch = 100;
             var episodesEachBatch = 100;
 
             /// Step 1 Create a 4-Armed Bandit
-            var forFrozenLake = new Frozenlake(DeviceType)
-            {
-                Gamma = 0.90f
-            };
+            var forFrozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.90f};
             Print(forFrozenLake);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
@@ -68,13 +62,23 @@ namespace TorchSharpTest.RLTest
         }
 
         [Fact]
+        public void QLearningRunRandom()
+        {
+            /// Step 1 Create a 4-Armed Bandit
+            var kArmedBandit = new Frozenlake(deviceType: DeviceType) {Gamma = 0.90f};
+            Print(kArmedBandit);
+
+            /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
+            var agent = new AgentQLearning(kArmedBandit);
+            agent.RunRandom(kArmedBandit, 100);
+            agent.ValueIteration();
+        }
+
+        [Fact]
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenLake = new Frozenlake(DeviceType)
-            {
-                Gamma = 0.90f
-            };
+            var frozenLake = new Frozenlake(deviceType: DeviceType) {Gamma = 0.90f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(frozenLake);
@@ -84,7 +88,7 @@ namespace TorchSharpTest.RLTest
             var bestReward = 0f;
             while (true)
             {
-                agent.RunRandom(frozenLake, 100);
+                agent.RunRandom(frozenLake, 500);
                 agent.ValueIteration();
 
                 var episode = frozenLake.GetEpisode(agent);

@@ -2,6 +2,7 @@
 {
     /// <summary>
     ///     一维 离散的动作空间， 采样为编码的动作序号
+    ///     A list of possible actions, where each timestep only one of the actions can be used.
     /// </summary>
     public class Disperse : DigitalSpace
     {
