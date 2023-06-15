@@ -32,23 +32,13 @@ while (true)
         break;
 }
 
-//frozenLake.ChangeToRough();
-//frozenLake.CallBack = s => { Utility.Print(frozenLake); };
+frozenLake.ChangeToRough();
+frozenLake.CallBack = s => { Utility.Print(frozenLake); };
 
+var e = agent.PlayEpisode();
 
-var verify = 100;
-var pass = 0;
-foreach (var index in Enumerable.Range(0, verify))
-{
-    var e = agent.PlayEpisode();
-    if (e.SumReward.Value > 0) pass++;
+var act = e.Steps.Select(a => a.Action);
+Utility.Print(string.Join("\r\n", act));
 
-    //var act = e.Steps.Select(a => a.Action);
-    //Utility.Print(string.Join("\r\n", act));
-}
-
-var per = 1f * pass / verify;
-
-Utility.Print($"Per:{per:P2}");
 
 
