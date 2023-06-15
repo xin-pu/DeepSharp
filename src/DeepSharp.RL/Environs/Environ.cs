@@ -33,7 +33,7 @@ namespace DeepSharp.RL.Environs
         public torch.Device Device { set; get; }
         public T1? ActionSpace { protected set; get; }
         public T2? ObservationSpace { protected set; get; }
-        public float Gamma { set; get; } = 0.9f;
+        public float Gamma { set; get; } = 1f;
 
 
         /// <summary>
@@ -115,19 +115,6 @@ namespace DeepSharp.RL.Environs
         /// <param name="observation">one observation</param>
         /// <returns>one reward</returns>
         public abstract Reward GetReward(Observation observation);
-
-        /// <summary>
-        ///     Cal Summary Reward from Episode
-        ///     从一个片段计算长期奖励的计算方法
-        /// </summary>
-        /// <param name="episode"></param>
-        /// <returns></returns>
-        public virtual EpisodeLevel GetReward(Episode[] episode)
-        {
-            var reward = episode.Average(a => a.SumReward.Value);
-            var length = (float) episode.Average(a => a.Length);
-            return new EpisodeLevel {Length = length, Reward = reward};
-        }
 
 
         /// <summary>

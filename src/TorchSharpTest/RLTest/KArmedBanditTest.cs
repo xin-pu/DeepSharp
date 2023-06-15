@@ -40,7 +40,7 @@ namespace TorchSharpTest.RLTest
 
             foreach (var _ in Enumerable.Repeat(0, 10))
             {
-                var res = torch.multinomial(torch.from_array(probs), 1);
+                var res = torch.multinomial(torch.from_array(probs), 1, true);
                 var index = res.item<long>();
                 Print(index);
             }
@@ -113,10 +113,9 @@ namespace TorchSharpTest.RLTest
 
                 var episode = agent.PlayEpisode(10, updateAgent: true);
 
-                var episodeLevel = kArmedBandit.GetReward(episode);
 
-                bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
-                Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+                bestReward = new[] {bestReward, episode.Average(a => a.SumReward.Value)}.Max();
+                Print($"{agent} Play:{++i:D3}\t {bestReward}");
                 if (bestReward > 18)
                     break;
             }

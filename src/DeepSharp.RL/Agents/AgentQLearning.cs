@@ -58,7 +58,7 @@ namespace DeepSharp.RL.Agents
             if (maxActs.Count == 1) return new Act(maxActs.First());
 
             var probs = Enumerable.Repeat(1f, maxActs.Count).ToArray();
-            var actIndex = torch.multinomial(torch.tensor(probs), 1).ToInt32();
+            var actIndex = torch.multinomial(torch.tensor(probs), 1, true).ToInt32();
             return new Act(maxActs[actIndex]);
         }
 

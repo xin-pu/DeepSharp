@@ -39,5 +39,19 @@ namespace TorchSharpTest.TorchTests
             var b = torch.tensor(new long[] {0, 0, 0});
             torch.all(b < a).Equals(torch.tensor(true)).Should().Be(true);
         }
+
+
+        [Fact]
+        public void TestM()
+        {
+            var probs = torch.tensor(new[] {1 / 3f, 1 / 3f, 1 / 3f});
+            var sample = torch.multinomial(probs, 1000, true);
+
+            var arr = sample.data<long>();
+            var a1 = arr.Count(a => a == 0);
+            var a2 = arr.Count(a => a == 1);
+            var a3 = arr.Count(a => a == 2);
+            Print($"{a1},{a2},{a3}");
+        }
     }
 }

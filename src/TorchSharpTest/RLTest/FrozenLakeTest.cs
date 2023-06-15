@@ -85,7 +85,7 @@ namespace TorchSharpTest.RLTest
             Print(frozenLake);
 
             var i = 0;
-            var testEpisode = 10;
+            var testEpisode = 20;
             var bestReward = 0f;
             while (true)
             {
@@ -93,10 +93,10 @@ namespace TorchSharpTest.RLTest
 
                 var episode = agent.PlayEpisode(testEpisode);
 
-                var episodeLevel = frozenLake.GetReward(episode);
+                var reward = episode.Max(a => a.SumReward.Value);
 
-                bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
-                Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
+                bestReward = new[] {bestReward, reward}.Max();
+                Print($"{agent} Play:{++i:D3}\t {reward}");
                 if (bestReward > 0.6)
                     break;
             }

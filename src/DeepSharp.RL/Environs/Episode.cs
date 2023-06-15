@@ -13,24 +13,12 @@
         }
 
         public List<Step> Steps { set; get; }
+        public Step this[int i] => Steps[i];
+
         public Reward SumReward { set; get; }
         public DateTime DateTime { set; get; }
 
-        public Step this[int i] => Steps[i];
-
+        public bool IsComplete { set; get; }
         public int Length => Steps.Count;
-    }
-
-
-    public class EpisodeLevel
-    {
-        public float Reward { set; get; }
-        public float Length { set; get; }
-
-
-        public override string ToString()
-        {
-            return $"{Reward}\t{Length}";
-        }
     }
 }

@@ -47,7 +47,7 @@ namespace DeepSharp.RL.Environs
             }
 
             units[0].Role = LakeRole.Start;
-            units[6].Role = units[12].Role = LakeRole.Hole;
+            units[5].Role = units[12].Role = LakeRole.Hole;
             units[15].Role = LakeRole.End;
 
             return units;
@@ -73,13 +73,41 @@ namespace DeepSharp.RL.Environs
             }
         }
 
-
+        /// <summary>
+        ///     Player will go to target without fail.
+        /// </summary>
         public void ChangeToRough()
         {
             Probs = new float[] {1, 0, 0};
         }
 
-        private float[] Probs = {0.7f, 0.15f, 0.15f};
+        /// <summary>
+        ///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
+        /// </summary>
+        private float[] Probs = {1f, 1f, 1f};
+
+        /// <summary>
+        ///     When Player can't move towards the wall
+        /// </summary>
+        /// <returns></returns>
+        public override Act SampleAct()
+        {
+            var rowCurrent = this[PlayID].Row;
+            var columnCurrent = this[PlayID].Column;
+            var probs = new List<float>
+            {
+                rowCurrent == 0 ? 0 : 1,
+                rowCurrent == Order - 1 ? 0 : 1,
+                columnCurrent == 0 ? 0 : 1,
+                columnCurrent == Order - 1 ? 0 : 1
+            };
+
+            var moveProb = torch
+                .multinomial(torch.from_array(probs.ToArray()), 1)
+                .to_type(ActionSpace!.Type);
+            return new Act(moveProb);
+        }
+
 
         /// <summary>
         /// </summary>
@@ -99,6 +127,8 @@ namespace DeepSharp.RL.Environs
                 .multinomial(torch.from_array(Probs), 1)
                 .to_type(ActionSpace!.Type);
             var moveAction = moveProb.ToInt32();
+
+
             var rowCurrent = this[PlayID].Row;
             var columnCurrent = this[PlayID].Column;
 
@@ -147,7 +177,7 @@ namespace DeepSharp.RL.Environs
 
         public override float DiscountReward(Episode episode, float gamma)
         {
-            var res = (float) Math.Pow(Gamma, episode.Steps.Count);
+            var res = 1f;
             return res;
         }
 
