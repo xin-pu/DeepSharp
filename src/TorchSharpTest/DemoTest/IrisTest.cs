@@ -21,7 +21,7 @@ namespace TorchSharpTest.DemoTest
         [Fact]
         public async void Train()
         {
-            var dataset = new Dataset<IrisOneHot>(@"F:\Iris\iris-train.txt");
+            var dataset = new Dataset<IrisOneHot>(@"..\..\..\..\..\Resources\iris-train.txt");
             var dataConfig = new DataLoaderConfig {BatchSize = 8};
             var dataloader = new DataLoader<IrisOneHot>(dataset, dataConfig);
 
