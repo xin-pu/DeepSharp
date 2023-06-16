@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Agents
+﻿
+
+namespace DeepSharp.RL.Agents
 {
     /// <summary>
     ///     DQN Dep Model
@@ -7,10 +9,16 @@
     {
         private readonly Module<torch.Tensor, torch.Tensor> conv;
         private readonly Module<torch.Tensor, torch.Tensor> fc;
+        public torch.Device Device { get; }
+        public torch.ScalarType ScalarType { get; }
 
-        public DQNNet(long[] inputShape, int actions, DeviceType deviceType = DeviceType.CUDA) :
+        public DQNNet(long[] inputShape, int actions,
+            torch.ScalarType scalar = torch.ScalarType.Float32,
+            DeviceType deviceType = DeviceType.CUDA) :
             base("DQNN")
         {
+            ScalarType = scalar;
+            Device = new torch.Device(deviceType);
             var modules = new List<(string, Module<torch.Tensor, torch.Tensor>)>
             {
                 ("Conv2d1", Conv2d(inputShape[0], 32, 8, 4)),
@@ -21,6 +29,8 @@
                 ("Relu3", ReLU())
             };
             conv = Sequential(modules);
+            conv.to(Device);
+
             var convOutSize = GetConvOut(inputShape);
             var modules2 = new List<(string, Module<torch.Tensor, torch.Tensor>)>
             {
@@ -29,10 +39,8 @@
                 ("Linear2", Linear(512, actions))
             };
             fc = Sequential(modules2);
+            fc.to(Device);
 
-
-            conv.to(new torch.Device(deviceType));
-            fc.to(new torch.Device(deviceType));
             RegisterComponents();
         }
 
@@ -48,7 +56,8 @@
         {
             var arr = new List<long> {1};
             arr.AddRange(inputShape);
-            var o = conv.forward(torch.zeros(arr.ToArray()));
+            var input = torch.zeros(arr.ToArray(), ScalarType, Device);
+            var o = conv.forward(input);
             var shapes = o.size();
             var outSize = shapes.Aggregate((a, b) => a * b);
             return (int) outSize;

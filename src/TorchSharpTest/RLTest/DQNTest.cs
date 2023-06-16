@@ -14,12 +14,17 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void TestDQNModel()
         {
-            var net = new DQNNet(new long[] {1, 416, 416}, 3, DeviceType.CPU);
+            var deviceType = DeviceType.CPU;
+            var scalarType = torch.ScalarType.Float32;
+
+            var net = new DQNNet(new long[] {1, 416, 416}, 3,
+                scalarType,
+                deviceType);
 
             var c = net.children();
             foreach (var module in c) Print(module.GetName());
 
-            var input = torch.randn(1, 1, 416, 416);
+            var input = torch.randn(1, 1, 416, 416, scalarType, new torch.Device(deviceType));
             var res = net.forward(input);
             Print(res);
 
