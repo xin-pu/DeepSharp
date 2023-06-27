@@ -9,7 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\README.md = ..\README.md
+		Reinforcement Learning.md = Reinforcement Learning.md
 		..\images\RL CrossEntroy Demo.png = ..\images\RL CrossEntroy Demo.png
+		..\images\强化学习.png = ..\images\强化学习.png
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DeepSharp.Utility", "DeepSharp.Utility\DeepSharp.Utility.csproj", "{93F876FF-1723-404F-9AA3-CD1D0873A3AB}"
