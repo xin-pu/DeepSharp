@@ -5,9 +5,9 @@ namespace DeepSharp.RL.Agents
     /// <summary>
     ///     State Action Value Table
     /// </summary>
-    public class QTable
+    public class ValueTable
     {
-        public QTable()
+        public ValueTable()
         {
             Return = new Dictionary<TrasitKey, float>();
         }
@@ -27,8 +27,9 @@ namespace DeepSharp.RL.Agents
 
         public float GetValue(torch.Tensor state, torch.Tensor action)
         {
-            var existKey = TrasitKeys.Where(a => a.State.Equals(state) &&
-                                                 a.Act.Equals(action)).ToList();
+            var existKey = TrasitKeys
+                .Where(a => a.State.Equals(state) &&
+                            a.Act.Equals(action)).ToList();
 
             var ret = existKey.Any()
                 ? Return[existKey.First()]
@@ -52,7 +53,8 @@ namespace DeepSharp.RL.Agents
             if (stateActions.Max(a => a.Value) == 0)
                 return null;
 
-            var argMax = stateActions.MaxBy(a => a.Value);
+            var argMax = stateActions
+                .MaxBy(a => a.Value);
             var act = argMax.Key.Act;
             return new Act(act);
         }

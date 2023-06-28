@@ -1,5 +1,6 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using FluentAssertions;
 
 namespace TorchSharpTest.RLTest
 {
@@ -22,10 +23,10 @@ namespace TorchSharpTest.RLTest
         [Fact]
         public void FrozenLakeCreate2Test()
         {
-            var pro = new Frozenlake(deviceType: DeviceType) {PlayID = 15};
+            var pro = new Frozenlake(deviceType: DeviceType);
+            pro.SetPlayID(15);
             Print(pro);
-            var res = pro.IsComplete(1);
-            Print($"{res}");
+            pro.IsComplete(1).Should().BeTrue();
         }
 
 
@@ -102,7 +103,7 @@ namespace TorchSharpTest.RLTest
             }
 
             frozenLake.ChangeToRough();
-            frozenLake.CallBack = s => { Print(frozenLake); };
+            frozenLake.CallBack = _ => { Print(frozenLake); };
             var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));

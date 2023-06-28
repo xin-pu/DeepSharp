@@ -15,9 +15,9 @@ namespace DeepSharp.RL.Agents
             Gamma = gamma;
         }
 
-        public float Epsilon { protected set; get; }
+        public float Epsilon { set; get; }
         public float Alpha { protected set; get; }
-        public float Gamma { set; get; }
+        public float Gamma { protected set; get; }
 
         /// <summary>
         ///     ε 贪心策略
@@ -27,7 +27,7 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Act GetPolicyAct(torch.Tensor state)
         {
-            var action = QTable.GetArgMax(state);
+            var action = ValueTable.GetArgMax(state);
             return action ?? GetSampleAct();
         }
 
@@ -42,12 +42,15 @@ namespace DeepSharp.RL.Agents
             var stateNew = step.StateNew.Value!;
             var reward = step.Reward.Value!;
 
-            var oldValue = QTable.GetValue(state, action);
-            var actNext = QTable.GetArgMax(state);
-            var qNext = actNext == null ? 0 : QTable.GetValue(stateNew, actNext.Value!);
+            var oldValue = ValueTable.GetValue(state, action);
+            var actNext = ValueTable.GetArgMax(state);
+            var qNext = actNext == null
+                ? 0
+                : ValueTable.GetValue(stateNew, actNext.Value!);
+
             var newValue = reward + Gamma * qNext;
             var finalValue = (1 - Alpha) * oldValue + Alpha * newValue;
-            QTable.Update(state, action, finalValue);
+            ValueTable.Update(state, action, finalValue);
         }
 
         public override float Learn(int count)

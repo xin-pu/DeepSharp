@@ -7,9 +7,9 @@ namespace DeepSharp.RL.Agents
         protected ValueAgent(Environ<Space, Space> env)
             : base(env)
         {
-            QTable = new QTable();
+            ValueTable = new ValueTable();
         }
 
-        public QTable QTable { set; get; }
+        public ValueTable ValueTable { set; get; }
     }
 }

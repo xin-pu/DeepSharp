@@ -18,8 +18,20 @@ namespace DeepSharp.RL.Environs
             Reset();
         }
 
+        public Frozenlake(float[] soomthing, int order = 4, DeviceType deviceType = DeviceType.CUDA)
+            : this(order, deviceType)
+        {
+            Smoothing = soomthing;
+        }
+
+
+        /// <summary>
+        ///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
+        /// </summary>
+        public float[] Smoothing { protected set; get; } = {1f, 0.5f, 0.5f};
+
         public int Order { protected set; get; }
-        public int PlayID { set; get; }
+        public int PlayID { protected set; get; }
 
         public List<LakeUnit> LakeUnits { get; set; }
 
@@ -79,13 +91,17 @@ namespace DeepSharp.RL.Environs
         /// </summary>
         public void ChangeToRough()
         {
-            Probs = new float[] {1, 0, 0};
+            Smoothing = new float[] {1, 0, 0};
         }
 
         /// <summary>
-        ///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
+        ///     Player will go to target without fail.
         /// </summary>
-        private float[] Probs = {1f, 1f, 1f};
+        public void SetPlayID(int playid)
+        {
+            PlayID = playid;
+        }
+
 
         /// <summary>
         ///     When Player can't move towards the wall
@@ -125,7 +141,7 @@ namespace DeepSharp.RL.Environs
             var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
             var moveProb = torch
-                .multinomial(torch.from_array(Probs), 1)
+                .multinomial(torch.from_array(Smoothing), 1)
                 .to_type(ActionSpace!.Type);
             var moveAction = moveProb.ToInt32();
 
