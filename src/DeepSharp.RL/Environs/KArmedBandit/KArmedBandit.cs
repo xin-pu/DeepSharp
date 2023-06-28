@@ -19,6 +19,18 @@ namespace DeepSharp.RL.Environs
             Reset();
         }
 
+
+        public KArmedBandit(double[] probs, DeviceType deviceType = DeviceType.CUDA)
+            : base("KArmedBandit", deviceType)
+        {
+            var k = probs.Length;
+            bandits = new Bandit[k];
+            ActionSpace = new Disperse(k, deviceType: deviceType);
+            ObservationSpace = new Box(0, 1, new long[] {k}, deviceType);
+            Create(probs);
+            Reset();
+        }
+
         private Bandit[] bandits { get; }
         public Bandit this[int k] => bandits[k];
 
@@ -28,6 +40,12 @@ namespace DeepSharp.RL.Environs
             var random = new SystemRandomSource();
             foreach (var i in Enumerable.Range(0, k))
                 bandits[i] = new Bandit($"{i}", random.NextDouble());
+        }
+
+        private void Create(double[] probs)
+        {
+            foreach (var i in Enumerable.Range(0, probs.Length))
+                bandits[i] = new Bandit($"{i}", probs[i]);
         }
 
 

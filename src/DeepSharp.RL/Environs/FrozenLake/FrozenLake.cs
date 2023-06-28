@@ -84,7 +84,7 @@ namespace DeepSharp.RL.Environs
         /// <summary>
         ///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
         /// </summary>
-        private float[] Probs = {1f, 1f, 1f};
+        private float[] Probs = {1f, 1 / 5f, 1 / 5f};
 
         /// <summary>
         ///     When Player can't move towards the wall

@@ -96,6 +96,7 @@ namespace DeepSharp.RL.Environs
             var complete = IsComplete(epoch);
             var step = new Step(state, act, stateNew, reward, complete);
             ObservationList.Add(stateNew);
+            Observation = stateNew;
             return step;
         }
 

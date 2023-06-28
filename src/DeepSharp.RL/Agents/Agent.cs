@@ -82,6 +82,7 @@ namespace DeepSharp.RL.Agents
     public enum PlayMode
     {
         Sample,
-        Agent
+        Agent,
+        EpsilonGreedy
     }
 }
