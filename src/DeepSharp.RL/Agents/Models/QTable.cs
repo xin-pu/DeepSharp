@@ -43,18 +43,18 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public Act? GetArgMax(torch.Tensor state)
         {
-            try
-            {
-                var row = TrasitKeys.Where(a => a.State.Equals(state));
-                var stateActions = Return.Where(a => row.Contains(a.Key)).ToList();
-                var argMax = stateActions.MaxBy(a => a.Value);
-                var act = argMax.Key.Act;
-                return new Act(act);
-            }
-            catch
-            {
+            var row = TrasitKeys.Where(a => a.State.Equals(state));
+            var stateActions = Return.Where(a => row.Contains(a.Key)).ToList();
+
+            if (!stateActions.Any())
                 return null;
-            }
+
+            if (stateActions.Max(a => a.Value) == 0)
+                return null;
+
+            var argMax = stateActions.MaxBy(a => a.Value);
+            var act = argMax.Key.Act;
+            return new Act(act);
         }
     }
 }

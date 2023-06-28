@@ -2,13 +2,14 @@
 
 namespace DeepSharp.RL.Agents
 {
-    public class DQN : Agent
+    public class AgentSARSA : ValueAgent
     {
-        public DQN(Environ<Space, Space> env) : base(env)
+        public AgentSARSA(Environ<Space, Space> env) : base(env)
         {
         }
 
-        public override Act SelectAct(Observation state)
+
+        public override Act GetPolicyAct(torch.Tensor state)
         {
             throw new NotImplementedException();
         }

@@ -5,7 +5,6 @@ using DeepSharp.RL.Environs;
 using RLConsole;
 using TorchSharp;
 
-var episodesEachBatch = 100;
 var testEpisode = 20;
 
 /// Step 1 Create a 4-Armed Bandit
@@ -13,7 +12,7 @@ var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.9f};
 Utility.Print(frozenLake);
 
 /// Step 2 Create AgentQLearning
-var agent = new AgentQLearning(frozenLake);
+var agent = new QLearning(frozenLake);
 
 /// Step 3 Learn and Optimize
 var i = 0;
@@ -21,22 +20,28 @@ var i = 0;
 var bestReward = 0f;
 while (true)
 {
-    agent.Learn(episodesEachBatch);
+    frozenLake.Reset();
+    var epoch = 0;
+    while (!frozenLake.IsComplete(epoch))
+    {
+        var action = agent.GetEpsilonAct(frozenLake.Observation!.Value!);
+        var step = frozenLake.Step(action, epoch++);
+        agent.Update(step);
+    }
 
-    var episode = agent.PlayEpisode(testEpisode, updateAgent: true);
 
-    var reward = episode.Count(a => a.SumReward.Value > 0) * 1f / testEpisode;
+    var episode = agent.RunEpisode(testEpisode);
+    var reward = episode.Average(a => a.SumReward.Value);
+
     bestReward = new[] {bestReward, reward}.Max();
-    Utility.Print($"{agent} Play:{++i:D3}\t {bestReward:P2}");
-    if (bestReward >= 0.75)
+    Utility.Print($"{agent} Play:{i++:D3}\t {reward}");
+    if (bestReward > 0.81)
         break;
 }
 
 frozenLake.ChangeToRough();
 frozenLake.CallBack = s => { Utility.Print(frozenLake); };
-
-var e = agent.PlayEpisode();
-
+var e = agent.RunEpisode();
 var act = e.Steps.Select(a => a.Action);
 Utility.Print(string.Join("\r\n", act));
 

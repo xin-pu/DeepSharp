@@ -30,13 +30,13 @@ namespace TorchSharpTest.RLTest
                 var epoch = 0;
                 while (!kArmedBandit.IsComplete(epoch))
                 {
-                    var action = agent.SelectAct(kArmedBandit.Observation!);
+                    var action = agent.GetEpsilonAct(kArmedBandit.Observation!.Value!);
                     var step = kArmedBandit.Step(action, epoch++);
                     agent.Update(step);
                 }
 
 
-                var episode = agent.PlayEpisode(testEpisode);
+                var episode = agent.RunEpisode(testEpisode);
                 var reward = episode.Average(a => a.SumReward.Value);
 
                 bestReward = new[] {bestReward, reward}.Max();
@@ -45,7 +45,7 @@ namespace TorchSharpTest.RLTest
                     break;
             }
 
-            var e = agent.PlayEpisode();
+            var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));
         }
@@ -71,13 +71,13 @@ namespace TorchSharpTest.RLTest
                 var epoch = 0;
                 while (!frozenlake.IsComplete(epoch))
                 {
-                    var action = agent.SelectAct(frozenlake.Observation!);
+                    var action = agent.GetEpsilonAct(frozenlake.Observation!.Value!);
                     var step = frozenlake.Step(action, epoch++);
                     agent.Update(step);
                 }
 
 
-                var episode = agent.PlayEpisode(testEpisode);
+                var episode = agent.RunEpisode(testEpisode);
                 var reward = episode.Average(a => a.SumReward.Value);
 
                 bestReward = new[] {bestReward, reward}.Max();
@@ -86,7 +86,7 @@ namespace TorchSharpTest.RLTest
                     break;
             }
 
-            var e = agent.PlayEpisode();
+            var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));
         }

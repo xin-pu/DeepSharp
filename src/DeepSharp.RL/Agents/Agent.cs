@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
+using MathNet.Numerics.Random;
 
 namespace DeepSharp.RL.Agents
 {
@@ -21,13 +22,42 @@ namespace DeepSharp.RL.Agents
 
         public Environ<Space, Space> Environ { protected set; get; }
 
+
         /// <summary>
-        ///     Select Action According with State
-        ///     根据策略选择动作
+        ///     Get a random Action
         /// </summary>
-        /// <param name="state"></param>
         /// <returns></returns>
-        public abstract Act SelectAct(Observation state);
+        public Act GetSampleAct()
+        {
+            return Environ.SampleAct();
+        }
+
+        /// <summary>
+        ///     Get a action by Policy
+        ///     π(s）
+        /// </summary>
+        /// <param name="state">current state</param>
+        /// <returns>a action provide by agent's policy</returns>
+        public abstract Act GetPolicyAct(torch.Tensor state);
+
+
+        /// <summary>
+        ///     Get a action by ε-greedy method
+        ///     π^ε(s）
+        /// </summary>
+        /// <param name="state">current state</param>
+        /// <param name="epsilon"></param>
+        /// <returns></returns>
+        public Act GetEpsilonAct(torch.Tensor state, double epsilon = 0.1)
+        {
+            var d = new SystemRandomSource();
+            var v = d.NextDouble();
+            var act = v < epsilon
+                ? GetSampleAct()
+                : GetPolicyAct(state);
+            return act;
+        }
+
 
         public abstract void Update(Episode episode);
 
@@ -39,7 +69,9 @@ namespace DeepSharp.RL.Agents
         ///     以策略为主，运行得到一个完整片段
         /// </summary>
         /// <returns>奖励</returns>
-        public virtual Episode PlayEpisode(PlayMode playMode = PlayMode.Agent, bool updateAgent = false)
+        public virtual Episode RunEpisode(
+            PlayMode playMode = PlayMode.Agent,
+            Action<Step>? stepUpdate = null)
         {
             Environ.Reset();
             var episode = new Episode();
@@ -49,22 +81,21 @@ namespace DeepSharp.RL.Agents
                 epoch++;
                 var act = playMode switch
                 {
-                    PlayMode.Sample => Environ.SampleAct(),
-                    PlayMode.Agent => SelectAct(Environ.Observation!),
+                    PlayMode.Sample => GetSampleAct(),
+                    PlayMode.Agent => GetPolicyAct(Environ.Observation!.Value!),
+                    PlayMode.EpsilonGreedy => GetEpsilonAct(Environ.Observation!.Value!),
                     _ => throw new ArgumentOutOfRangeException(nameof(playMode), playMode, null)
                 };
                 var step = Environ.Step(act, epoch);
+                stepUpdate?.Invoke(step);
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
                 Environ.Observation = step.StateNew; /// It's import for Update Observation
             }
 
             var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward * Environ.DiscountReward(episode, Environ.Gamma);
+            var sumReward = orginalReward;
             episode.SumReward = new Reward(sumReward);
-
-            if (updateAgent) Update(episode);
-
             return episode;
         }
 
@@ -73,9 +104,15 @@ namespace DeepSharp.RL.Agents
         ///     以策略为主，运行得到多个完整片段
         /// </summary>
         /// <returns>奖励</returns>
-        public virtual Episode[] PlayEpisode(int count, PlayMode playMode = PlayMode.Agent, bool updateAgent = false)
+        public virtual Episode[] RunEpisode(int count,
+            PlayMode playMode = PlayMode.Agent,
+            Action<Step>? stepUpdate = null)
         {
-            return Enumerable.Repeat(1, count).Select(a => PlayEpisode(playMode, updateAgent)).ToArray();
+            var episodes = new List<Episode>();
+            foreach (var _ in Enumerable.Repeat(1, count))
+                episodes.Add(RunEpisode(playMode, stepUpdate));
+
+            return episodes.ToArray();
         }
     }
 

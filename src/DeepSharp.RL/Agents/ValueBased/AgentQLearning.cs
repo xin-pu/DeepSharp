@@ -36,7 +36,7 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public override Act SelectAct(Observation state)
+        public override Act GetPolicyAct(torch.Tensor state)
         {
             Rewards.Count.Should().BeGreaterThan(0, "Rewards Table is Empty, You should learn first.");
             Transits.Count.Should().BeGreaterThan(0, "Transits Table is Empty, You should learn first.");
@@ -44,7 +44,7 @@ namespace DeepSharp.RL.Agents
 
             /// Step 1 Get Action Space According Current State from Transits
             var actionSpace = Transits.Keys
-                .Where(a => a.State.Equals(state.Value!))
+                .Where(a => a.State.Equals(state))
                 .ToList();
 
             var valueDict = actionSpace
@@ -65,7 +65,7 @@ namespace DeepSharp.RL.Agents
 
         public override float Learn(int count)
         {
-            var episodes = PlayEpisode(count, PlayMode.Sample, true);
+            var episodes = RunEpisode(count, PlayMode.Sample);
             ValueIteration();
             return episodes.Length;
         }

@@ -1,6 +1,4 @@
-﻿
-
-namespace DeepSharp.RL.Agents
+﻿namespace DeepSharp.RL.Agents
 {
     /// <summary>
     ///     DQN Dep Model

@@ -52,7 +52,7 @@ namespace TorchSharpTest.RLTest
                 var loss = agent.Learn(episodesEachBatch);
 
                 /// Test
-                var test = agent.PlayEpisode(episodesEachBatch);
+                var test = agent.RunEpisode(episodesEachBatch);
 
                 var success = test.Count(a => a.SumReward.Value > 1);
                 var rewardMean = test.Select(a => a.SumReward.Value).Sum();
@@ -70,7 +70,7 @@ namespace TorchSharpTest.RLTest
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new AgentQLearning(kArmedBandit);
-            agent.PlayEpisode(100);
+            agent.RunEpisode(100);
             agent.ValueIteration();
         }
 
@@ -91,7 +91,7 @@ namespace TorchSharpTest.RLTest
             {
                 agent.Learn(100);
 
-                var episode = agent.PlayEpisode(testEpisode);
+                var episode = agent.RunEpisode(testEpisode);
 
                 var reward = episode.Max(a => a.SumReward.Value);
 
@@ -103,7 +103,7 @@ namespace TorchSharpTest.RLTest
 
             frozenLake.ChangeToRough();
             frozenLake.CallBack = s => { Print(frozenLake); };
-            var e = agent.PlayEpisode();
+            var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));
         }

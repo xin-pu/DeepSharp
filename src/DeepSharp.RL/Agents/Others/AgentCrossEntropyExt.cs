@@ -60,20 +60,5 @@ namespace DeepSharp.RL.Agents
 
             return filterEpisodes;
         }
-
-
-        /// <summary>
-        ///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
-        /// </summary>
-        /// <param name="observation"></param>
-        /// <returns></returns>
-        public override Act SelectAct(Observation observation)
-        {
-            var input = observation.Value!.unsqueeze(0);
-            var sm = Softmax(1);
-            var actionProbs = sm.forward(AgentNet.forward(input));
-            var nextAction = torch.multinomial(actionProbs, 1);
-            return new Act(nextAction);
-        }
     }
 }

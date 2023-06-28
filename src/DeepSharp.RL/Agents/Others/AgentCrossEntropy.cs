@@ -37,9 +37,9 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="observation"></param>
         /// <returns></returns>
-        public override Act SelectAct(Observation observation)
+        public override Act GetPolicyAct(torch.Tensor state)
         {
-            var input = observation.Value!.unsqueeze(0);
+            var input = state.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
             var nextAction = new ProbabilityActionSelector().Select(actionProbs);
@@ -54,7 +54,7 @@ namespace DeepSharp.RL.Agents
 
         public override float Learn(int count)
         {
-            var steps = PlayEpisode(count, PlayMode.Sample);
+            var steps = RunEpisode(count, PlayMode.Sample);
             var eliteSteps = GetElite(steps);
 
             var oars = eliteSteps.SelectMany(a => a.Steps)
