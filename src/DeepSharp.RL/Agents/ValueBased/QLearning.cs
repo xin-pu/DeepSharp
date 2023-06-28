@@ -17,7 +17,7 @@ namespace DeepSharp.RL.Agents
 
         public float Epsilon { protected set; get; }
         public float Alpha { protected set; get; }
-        public float Gamma { protected set; get; }
+        public float Gamma { set; get; }
 
         /// <summary>
         ///     ε 贪心策略

@@ -12,14 +12,15 @@ var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.9f};
 Utility.Print(frozenLake);
 
 /// Step 2 Create AgentQLearning
-var agent = new QLearning(frozenLake);
+var agent = new QLearning(frozenLake, 1f);
 
 /// Step 3 Learn and Optimize
 var i = 0;
-
+var total = 10000;
 var bestReward = 0f;
-while (true)
+while (i < total)
 {
+    i++;
     frozenLake.Reset();
     var epoch = 0;
     while (!frozenLake.IsComplete(epoch))
@@ -29,14 +30,18 @@ while (true)
         agent.Update(step);
     }
 
+    agent.Gamma = (float) (1f / 2 * (1 + Math.Cos(i * Math.PI / total)));
 
-    var episode = agent.RunEpisode(testEpisode);
-    var reward = episode.Average(a => a.SumReward.Value);
+    if (i % 50 == 0)
+    {
+        var episode = agent.RunEpisode(testEpisode);
+        var reward = episode.Average(a => a.SumReward.Value);
 
-    bestReward = new[] {bestReward, reward}.Max();
-    Utility.Print($"{agent} Play:{i++:D3}\t {reward}");
-    if (bestReward > 0.81)
-        break;
+        bestReward = new[] {bestReward, reward}.Max();
+        Utility.Print($"{agent} Play:{i:D3}\t {reward}");
+        if (bestReward > 0.81)
+            break;
+    }
 }
 
 frozenLake.ChangeToRough();
