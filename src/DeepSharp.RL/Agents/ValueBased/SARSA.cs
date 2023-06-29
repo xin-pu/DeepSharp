@@ -4,6 +4,12 @@ namespace DeepSharp.RL.Agents
 {
     public class SARSA : ValueAgent
     {
+        /// <summary>
+        /// </summary>
+        /// <param name="env"></param>
+        /// <param name="epsilon">epsilon of ε-greedy Policy</param>
+        /// <param name="alpha">learning rate</param>
+        /// <param name="gamma">rate of discount</param>
         public SARSA(Environ<Space, Space> env,
             float epsilon = 0.1f,
             float alpha = 0.2f,
