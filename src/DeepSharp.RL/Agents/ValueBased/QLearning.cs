@@ -8,7 +8,7 @@ namespace DeepSharp.RL.Agents
             float epsilon = 0.1f,
             float alpha = 0.2f,
             float gamma = 0.9f) :
-            base(env)
+            base(env, "QLearning")
         {
             Epsilon = epsilon;
             Alpha = alpha;
@@ -26,16 +26,13 @@ namespace DeepSharp.RL.Agents
             return action ?? GetSampleAct();
         }
 
-        public override void Update(Episode episode)
-        {
-        }
 
         public void Update(Step step)
         {
             var state = step.State.Value!;
             var action = step.Action.Value!;
             var stateNew = step.StateNew.Value!;
-            var reward = step.Reward.Value!;
+            var reward = step.Reward.Value;
 
             var currentTransit = new TransitKey(state, action);
 
@@ -96,12 +93,6 @@ namespace DeepSharp.RL.Agents
             var sumReward = orginalReward;
             episode.SumReward = new Reward(sumReward);
             return episode;
-        }
-
-
-        public override string ToString()
-        {
-            return "QLearning";
         }
     }
 

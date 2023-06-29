@@ -3,11 +3,16 @@ using FluentAssertions;
 
 namespace DeepSharp.RL.Agents
 {
-    public class AgentQLearning : Agent
+    /// <summary>
+    ///     This is a demo of ValueIteration
+    ///     [Deep Reinforcement Learning Hands-On Second Edition](Russia,Maxim Lapan)
+    ///     [Chap5.5]
+    /// </summary>
+    public class ValueIteration : Agent
 
     {
-        public AgentQLearning(Environ<Space, Space> env)
-            : base(env)
+        public ValueIteration(Environ<Space, Space> env)
+            : base(env, "ValueIteration")
         {
             Rewards = new Dictionary<RewardKey, Reward>();
             Transits = new Dictionary<TransitKey, Dictionary<torch.Tensor, int>>();
@@ -66,11 +71,11 @@ namespace DeepSharp.RL.Agents
         public Episode[] Learns(int count)
         {
             var episodes = RunEpisodes(count, PlayMode.Sample);
-            ValueIteration();
+            UpdateValueIteration();
             return episodes;
         }
 
-        public override void Update(Episode episode)
+        public void Update(Episode episode)
         {
             episode.Steps.ForEach(UpdateTables);
         }
@@ -80,7 +85,7 @@ namespace DeepSharp.RL.Agents
         ///     Update Value Iteration
         ///     更新价值表
         /// </summary>
-        public void ValueIteration()
+        public void UpdateValueIteration()
         {
             var stateList = Transits.Select(a => a.Key.State).Distinct();
 
@@ -136,7 +141,7 @@ namespace DeepSharp.RL.Agents
             }
 
             var newStateKeys = sonDict.Keys
-                .Where(a => a!.Equals(newState.Value!))
+                .Where(a => a.Equals(newState.Value!))
                 .ToList();
             if (newStateKeys.Any())
                 sonDict[newStateKeys.First()]++;
@@ -162,7 +167,7 @@ namespace DeepSharp.RL.Agents
             var activaValue = 0f;
             foreach (var i in targetCounts)
             {
-                var reward = getReward(new RewardKey(transitKey.State, transitKey.Act, i.Key!));
+                var reward = getReward(new RewardKey(transitKey.State, transitKey.Act, i.Key));
                 var value = reward.Value + Environ.Gamma * getValue(i.Key);
                 activaValue += 1f * i.Value / total * value;
             }
@@ -175,8 +180,8 @@ namespace DeepSharp.RL.Agents
             try
             {
                 var key = Transits.Keys
-                    .First(a => a.Act!.Equals(traitKey.Act!) &&
-                                a.State!.Equals(traitKey.State!));
+                    .First(a => a.Act.Equals(traitKey.Act) &&
+                                a.State.Equals(traitKey.State));
 
                 return Transits[key];
             }
@@ -191,9 +196,9 @@ namespace DeepSharp.RL.Agents
             try
             {
                 var key = Rewards.Keys
-                    .First(a => a.Act!.Equals(rewardKey.Act!) &&
-                                a.State!.Equals(rewardKey.State!) &&
-                                a.NewState!.Equals(rewardKey.NewState!));
+                    .First(a => a.Act.Equals(rewardKey.Act) &&
+                                a.State.Equals(rewardKey.State) &&
+                                a.NewState.Equals(rewardKey.NewState));
                 return Rewards[key];
             }
             catch (Exception)
@@ -206,18 +211,13 @@ namespace DeepSharp.RL.Agents
         {
             try
             {
-                var key = Values.Keys.First(a => a!.Equals(observation!));
+                var key = Values.Keys.First(a => a.Equals(observation));
                 return Values[key];
             }
             catch
             {
                 return 0;
             }
-        }
-
-        public override string ToString()
-        {
-            return "AgentQLearning";
         }
     }
 }

@@ -75,10 +75,10 @@ namespace TorchSharpTest.RLTest
                     Print($"{agent} Play:{i:D3}\t {reward}");
                     if (bestReward > 0.8)
                         break;
-                    Print(agent.ValueTable);
                 }
             }
 
+            frozenlake.ChangeToRough();
             var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));

@@ -8,14 +8,13 @@ namespace DeepSharp.RL.Agents
     ///     Cross-Entropy Method
     ///     http://people.smp.uq.edu.au/DirkKroese/ps/eormsCE.pdf
     /// </summary>
-    public class AgentCrossEntropyExt : AgentCrossEntropy
+    public class CrossEntropyExt : CrossEntropy
 
     {
         public int MemsEliteLength = 30;
         public List<DateTime> Start = new();
 
-        public AgentCrossEntropyExt(
-            Environ<Space, Space> environ,
+        public CrossEntropyExt(Environ<Space, Space> environ,
             float percentElite = 0.7f,
             int hiddenSize = 100)
             : base(environ, percentElite, hiddenSize)

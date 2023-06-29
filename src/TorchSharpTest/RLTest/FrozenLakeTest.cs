@@ -41,7 +41,7 @@ namespace TorchSharpTest.RLTest
             Print(forFrozenLake);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentCrossEntropyExt(forFrozenLake)
+            var agent = new CrossEntropyExt(forFrozenLake)
             {
                 MemsEliteLength = 30
             };
@@ -70,9 +70,9 @@ namespace TorchSharpTest.RLTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning(kArmedBandit);
+            var agent = new ValueIteration(kArmedBandit);
             agent.RunEpisodes(100);
-            agent.ValueIteration();
+            agent.UpdateValueIteration();
         }
 
         [Fact]
@@ -82,7 +82,7 @@ namespace TorchSharpTest.RLTest
             var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new AgentQLearning(frozenLake);
+            var agent = new ValueIteration(frozenLake);
             Print(frozenLake);
 
             var i = 0;

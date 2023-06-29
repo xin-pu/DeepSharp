@@ -15,7 +15,7 @@ namespace TorchSharpTest.RLTest
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.78, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.72, 0.70}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new SARSA(kArmedBandit, 0.1f);
@@ -53,7 +53,7 @@ namespace TorchSharpTest.RLTest
             var frozenlake = new Frozenlake(new[] {1f, 0.2f, 0.2f}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new SARSA(frozenlake);
+            var agent = new SARSA(frozenlake, 0.1f);
             Print(frozenlake);
 
             var i = 0;
@@ -73,12 +73,12 @@ namespace TorchSharpTest.RLTest
 
                     bestReward = new[] {bestReward, reward}.Max();
                     Print($"{agent} Play:{i:D3}\t {reward}");
-                    if (bestReward > 0.8)
+                    if (bestReward > 0.7)
                         break;
-                    Print(agent.ValueTable);
                 }
             }
 
+            frozenlake.ChangeToRough();
             var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));

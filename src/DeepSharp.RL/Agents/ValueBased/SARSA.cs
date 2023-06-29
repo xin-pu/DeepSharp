@@ -5,9 +5,11 @@ namespace DeepSharp.RL.Agents
     public class SARSA : ValueAgent
     {
         public SARSA(Environ<Space, Space> env,
+            float epsilon = 0.1f,
             float alpha = 0.2f,
-            float gamma = 0.9f) : base(env)
+            float gamma = 0.9f) : base(env, "SARSA")
         {
+            Epsilon = epsilon;
             Alpha = alpha;
             Gamma = gamma;
         }
@@ -37,17 +39,13 @@ namespace DeepSharp.RL.Agents
             return episode;
         }
 
-        public override void Update(Episode episode)
-        {
-        }
-
 
         public Act Update(Step step)
         {
             var state = step.State.Value!;
             var action = step.Action.Value!;
             var stateNew = step.StateNew.Value!;
-            var reward = step.Reward.Value!;
+            var reward = step.Reward.Value;
 
             var currentTransit = new TransitKey(state, action);
 
@@ -59,12 +57,6 @@ namespace DeepSharp.RL.Agents
 
             ValueTable[currentTransit] = finalValue;
             return nextAct;
-        }
-
-
-        public override string ToString()
-        {
-            return "SARSA";
         }
     }
 }

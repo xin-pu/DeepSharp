@@ -4,8 +4,8 @@ namespace DeepSharp.RL.Agents
 {
     public abstract class ValueAgent : Agent
     {
-        protected ValueAgent(Environ<Space, Space> env)
-            : base(env)
+        protected ValueAgent(Environ<Space, Space> env, string name)
+            : base(env, name)
         {
             ValueTable = new ValueTable();
         }

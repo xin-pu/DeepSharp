@@ -8,12 +8,13 @@ namespace DeepSharp.RL.Agents
     /// </summary>
     public abstract class Agent : ObservableObject
     {
-        protected Agent(Environ<Space, Space> env)
+        protected Agent(Environ<Space, Space> env, string name)
         {
             Environ = env;
             Device = env.Device;
         }
 
+        public string Name { protected set; get; }
         public torch.Device Device { protected set; get; }
 
         public long ObservationSize => Environ.ObservationSpace!.N;
@@ -57,9 +58,6 @@ namespace DeepSharp.RL.Agents
                 : GetPolicyAct(state);
             return act;
         }
-
-
-        public abstract void Update(Episode episode);
 
 
         /// <summary>
@@ -109,6 +107,11 @@ namespace DeepSharp.RL.Agents
                 episodes.Add(RunEpisode(playMode));
 
             return episodes.ToArray();
+        }
+
+        public override string ToString()
+        {
+            return $"Agent[{Name}]";
         }
     }
 

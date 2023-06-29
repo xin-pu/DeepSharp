@@ -10,11 +10,11 @@ namespace DeepSharp.RL.Agents
     ///     Cross-Entropy Method
     ///     http://people.smp.uq.edu.au/DirkKroese/ps/eormsCE.pdf
     /// </summary>
-    public class AgentCrossEntropy : Agent
+    public class CrossEntropy : Agent
     {
-        public AgentCrossEntropy(Environ<Space, Space> environ,
+        public CrossEntropy(Environ<Space, Space> environ,
             float percentElite = 0.7f,
-            int hiddenSize = 100) : base(environ)
+            int hiddenSize = 100) : base(environ, "CrossEntropy")
         {
             PercentElite = percentElite;
             AgentNet = new Net((int) environ.ObservationSpace!.N, hiddenSize, (int) environ.ActionSpace!.N,
@@ -45,10 +45,6 @@ namespace DeepSharp.RL.Agents
             var nextAction = new ProbabilityActionSelector().Select(actionProbs);
             var action = new Act(nextAction);
             return action;
-        }
-
-        public override void Update(Episode episode)
-        {
         }
 
 
