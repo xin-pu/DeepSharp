@@ -3,9 +3,9 @@ using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest
 {
-    public class QLearningTest : AbstractTest
+    public class SARSATest : AbstractTest
     {
-        public QLearningTest(ITestOutputHelper testOutputHelper)
+        public SARSATest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
@@ -15,10 +15,10 @@ namespace TorchSharpTest.RLTest
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.78, 0.75}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new QLearning(kArmedBandit);
+            var agent = new SARSA(kArmedBandit, 0.1f);
             Print(kArmedBandit);
 
             var i = 0;
@@ -36,7 +36,7 @@ namespace TorchSharpTest.RLTest
 
                 bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 17)
+                if (bestReward > 16.2)
                     break;
             }
 
@@ -53,7 +53,7 @@ namespace TorchSharpTest.RLTest
             var frozenlake = new Frozenlake(new[] {1f, 0.2f, 0.2f}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new QLearning(frozenlake);
+            var agent = new SARSA(frozenlake);
             Print(frozenlake);
 
             var i = 0;

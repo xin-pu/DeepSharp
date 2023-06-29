@@ -63,11 +63,11 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public override float Learn(int count)
+        public Episode[] Learns(int count)
         {
-            var episodes = RunEpisode(count, PlayMode.Sample);
+            var episodes = RunEpisodes(count, PlayMode.Sample);
             ValueIteration();
-            return episodes.Length;
+            return episodes;
         }
 
         public override void Update(Episode episode)

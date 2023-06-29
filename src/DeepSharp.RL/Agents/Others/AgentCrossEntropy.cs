@@ -52,9 +52,9 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public override float Learn(int count)
+        public float Learn(int count)
         {
-            var steps = RunEpisode(count, PlayMode.Sample);
+            var steps = RunEpisodes(count, PlayMode.Sample);
             var eliteSteps = GetElite(steps);
 
             var oars = eliteSteps.SelectMany(a => a.Steps)
@@ -70,7 +70,9 @@ namespace DeepSharp.RL.Agents
             var observation = torch.vstack(observations!);
             var action = torch.vstack(actions!);
 
-            return Learn(observation, action);
+            var loss = Learn(observation, action);
+
+            return loss;
         }
 
         /// <summary>

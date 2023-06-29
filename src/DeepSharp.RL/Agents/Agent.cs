@@ -61,8 +61,6 @@ namespace DeepSharp.RL.Agents
 
         public abstract void Update(Episode episode);
 
-        public abstract float Learn(int count);
-
 
         /// <summary>
         ///     Get Episode by Agent
@@ -70,8 +68,7 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <returns>奖励</returns>
         public virtual Episode RunEpisode(
-            PlayMode playMode = PlayMode.Agent,
-            Action<Step>? stepUpdate = null)
+            PlayMode playMode = PlayMode.Agent)
         {
             Environ.Reset();
             var episode = new Episode();
@@ -87,7 +84,6 @@ namespace DeepSharp.RL.Agents
                     _ => throw new ArgumentOutOfRangeException(nameof(playMode), playMode, null)
                 };
                 var step = Environ.Step(act, epoch);
-                stepUpdate?.Invoke(step);
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
                 Environ.Observation = step.StateNew; /// It's import for Update Observation
@@ -99,18 +95,18 @@ namespace DeepSharp.RL.Agents
             return episode;
         }
 
+
         /// <summary>
         ///     Get Episodes by Agent
         ///     以策略为主，运行得到多个完整片段
         /// </summary>
         /// <returns>奖励</returns>
-        public virtual Episode[] RunEpisode(int count,
-            PlayMode playMode = PlayMode.Agent,
-            Action<Step>? stepUpdate = null)
+        public virtual Episode[] RunEpisodes(int count,
+            PlayMode playMode = PlayMode.Agent)
         {
             var episodes = new List<Episode>();
             foreach (var _ in Enumerable.Repeat(1, count))
-                episodes.Add(RunEpisode(playMode, stepUpdate));
+                episodes.Add(RunEpisode(playMode));
 
             return episodes.ToArray();
         }

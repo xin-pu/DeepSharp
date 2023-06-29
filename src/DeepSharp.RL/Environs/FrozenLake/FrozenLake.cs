@@ -59,8 +59,8 @@ namespace DeepSharp.RL.Environs
             }
 
             units[0].Role = LakeRole.Start;
-            units[5].Role = units[12].Role = LakeRole.Hole;
-            //units[5].Role = units[7].Role = units[11].Role = units[12].Role = LakeRole.Hole;
+            //units[5].Role = units[12].Role = LakeRole.Hole;
+            units[5].Role = units[7].Role = units[11].Role = units[12].Role = LakeRole.Hole;
             units[15].Role = LakeRole.End;
 
             return units;

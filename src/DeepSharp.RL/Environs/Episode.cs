@@ -10,6 +10,7 @@
             Steps = new List<Step>();
             SumReward = new Reward(0);
             DateTime = DateTime.Now;
+            Evaluate = 0;
         }
 
         public List<Step> Steps { set; get; }
@@ -20,5 +21,7 @@
 
         public bool IsComplete { set; get; }
         public int Length => Steps.Count;
+
+        public float Evaluate { set; get; }
     }
 }
