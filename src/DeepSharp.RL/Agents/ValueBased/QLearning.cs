@@ -15,7 +15,7 @@ namespace DeepSharp.RL.Agents
             Gamma = gamma;
         }
 
-        public float Epsilon { set; get; }
+
         public float Alpha { protected set; get; }
         public float Gamma { protected set; get; }
 
@@ -42,15 +42,14 @@ namespace DeepSharp.RL.Agents
             var stateNew = step.StateNew.Value!;
             var reward = step.Reward.Value!;
 
-            var oldValue = ValueTable[state, action];
-            var actNext = ValueTable.GetBestAct(state);
-            var qNext = actNext == null
-                ? 0
-                : ValueTable[stateNew, actNext.Value!];
+            var currentTransit = new TransitKey(state, action);
 
-            var newValue = reward + Gamma * qNext;
-            var finalValue = (1 - Alpha) * oldValue + Alpha * newValue;
-            ValueTable[state, action] = finalValue;
+            var bestValue = ValueTable.GetBestValue(stateNew);
+            var newValue = reward + Gamma * bestValue;
+            var oldValue = ValueTable[currentTransit];
+            var finalValue = oldValue * (1 - Alpha) + newValue * Alpha;
+
+            ValueTable[currentTransit] = finalValue;
         }
 
         public override float Learn(int count)
@@ -62,7 +61,7 @@ namespace DeepSharp.RL.Agents
 
         public Step SampleEnv()
         {
-            var action = GetEpsilonAct(Environ.Observation.Value, Epsilon);
+            var action = GetEpsilonAct(Environ.Observation!.Value!);
             var step = Environ.Step(action, 0);
             if (Environ.IsComplete(0)) Environ.Reset();
             return step;
@@ -71,6 +70,11 @@ namespace DeepSharp.RL.Agents
         public override Episode RunEpisode(PlayMode playMode = PlayMode.Agent, Action<Step>? updateAgent = null)
         {
             return base.RunEpisode(playMode, Update);
+        }
+
+        public override string ToString()
+        {
+            return "QLearning";
         }
     }
 }

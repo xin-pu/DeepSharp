@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs;
+﻿using System.Text;
+using DeepSharp.RL.Environs;
 
 namespace DeepSharp.RL.Agents
 {
@@ -23,6 +24,13 @@ namespace DeepSharp.RL.Agents
         }
 
 
+        public float this[torch.Tensor state, torch.Tensor action]
+        {
+            get => GetValue(new TransitKey(state, action));
+            set => SetValue(new TransitKey(state, action), value);
+        }
+
+
         private void SetValue(TransitKey transit, float value)
         {
             Return[transit] = value;
@@ -30,15 +38,8 @@ namespace DeepSharp.RL.Agents
 
         private float GetValue(TransitKey transit)
         {
-            Return.TryAdd(transit, 0);
+            Return.TryAdd(transit, 0f);
             return Return[transit];
-        }
-
-
-        public float this[torch.Tensor state, torch.Tensor action]
-        {
-            get => GetValue(new TransitKey(state, action));
-            set => SetValue(new TransitKey(state, action), value);
         }
 
 
@@ -58,13 +59,43 @@ namespace DeepSharp.RL.Agents
             if (!stateActions.Any())
                 return null;
 
-            if (stateActions.Max(a => a.Value) == 0)
+            if (stateActions.All(a => a.Value == 0))
                 return null;
 
             var argMax = stateActions
                 .MaxBy(a => a.Value);
             var act = argMax.Key.Act;
             return new Act(act);
+        }
+
+        /// <summary>
+        ///     argMax
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public float GetBestValue(torch.Tensor state)
+        {
+            var row = TrasitKeys
+                .Where(a => a.State.Equals(state));
+
+            var stateActions = Return
+                .Where(a => row.Contains(a.Key)).ToList();
+
+            if (!stateActions.Any())
+                return 0;
+
+            var bestValue = stateActions
+                .Max(a => a.Value);
+            return bestValue;
+        }
+
+
+        public override string ToString()
+        {
+            var str = new StringBuilder();
+            foreach (var keyValuePair in Return.Where(a => a.Value > 0))
+                str.AppendLine($"{keyValuePair.Key}\t{keyValuePair.Value:F4}");
+            return str.ToString();
         }
     }
 }

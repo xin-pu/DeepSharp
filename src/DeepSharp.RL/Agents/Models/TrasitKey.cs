@@ -49,5 +49,10 @@ namespace DeepSharp.RL.Agents
         {
             return -1;
         }
+
+        public override string ToString()
+        {
+            return $"{State.ToString(torch.numpy)},{Act.ToString(torch.numpy)}";
+        }
     }
 }

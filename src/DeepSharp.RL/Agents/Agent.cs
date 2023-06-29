@@ -21,7 +21,7 @@ namespace DeepSharp.RL.Agents
         public long ActionSize => Environ.ActionSpace!.N;
 
         public Environ<Space, Space> Environ { protected set; get; }
-
+        public float Epsilon { set; get; } = 0.2f;
 
         /// <summary>
         ///     Get a random Action
@@ -48,11 +48,11 @@ namespace DeepSharp.RL.Agents
         /// <param name="state">current state</param>
         /// <param name="epsilon"></param>
         /// <returns></returns>
-        public Act GetEpsilonAct(torch.Tensor state, double epsilon = 0.1)
+        public Act GetEpsilonAct(torch.Tensor state)
         {
             var d = new SystemRandomSource();
             var v = d.NextDouble();
-            var act = v < epsilon
+            var act = v < Epsilon
                 ? GetSampleAct()
                 : GetPolicyAct(state);
             return act;

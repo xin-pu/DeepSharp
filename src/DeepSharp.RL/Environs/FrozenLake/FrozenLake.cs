@@ -6,7 +6,7 @@ namespace DeepSharp.RL.Environs
     public class Frozenlake : Environ<Space, Space>
 
     {
-        public Frozenlake(int order = 4, DeviceType deviceType = DeviceType.CUDA)
+        public Frozenlake(int order = 4, DeviceType deviceType = DeviceType.CPU)
             : base("Frozenlake", deviceType)
         {
             var area = (int) Math.Pow(order, 2);
@@ -18,7 +18,7 @@ namespace DeepSharp.RL.Environs
             Reset();
         }
 
-        public Frozenlake(float[] soomthing, int order = 4, DeviceType deviceType = DeviceType.CUDA)
+        public Frozenlake(float[] soomthing, int order = 4, DeviceType deviceType = DeviceType.CPU)
             : this(order, deviceType)
         {
             Smoothing = soomthing;
@@ -28,7 +28,7 @@ namespace DeepSharp.RL.Environs
         /// <summary>
         ///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
         /// </summary>
-        public float[] Smoothing { protected set; get; } = {1f, 0.5f, 0.5f};
+        public float[] Smoothing { protected set; get; } = {1f, 1f, 1f};
 
         public int Order { protected set; get; }
         public int PlayID { protected set; get; }

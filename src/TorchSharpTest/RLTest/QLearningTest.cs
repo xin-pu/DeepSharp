@@ -15,7 +15,7 @@ namespace TorchSharpTest.RLTest
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.8, 0.3, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.3, 0.75}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new QLearning(kArmedBandit);
@@ -31,7 +31,7 @@ namespace TorchSharpTest.RLTest
                 var epoch = 0;
                 while (!kArmedBandit.IsComplete(epoch))
                 {
-                    var action = agent.GetEpsilonAct(kArmedBandit.Observation!.Value!);
+                    var action = agent.GetEpsilonAct(kArmedBandit.Observation!.Value!, 1);
                     var step = kArmedBandit.Step(action, epoch++);
                     agent.Update(step);
                 }
@@ -42,7 +42,7 @@ namespace TorchSharpTest.RLTest
 
                 bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 16)
+                if (bestReward > 16.2)
                     break;
             }
 
@@ -56,7 +56,7 @@ namespace TorchSharpTest.RLTest
         public void FrozenlakeMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenlake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
+            var frozenlake = new Frozenlake(new[] {1f, 1f, 1f}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new QLearning(frozenlake);
@@ -68,6 +68,7 @@ namespace TorchSharpTest.RLTest
 
             while (true)
             {
+                i++;
                 frozenlake.Reset();
                 var epoch = 0;
                 while (!frozenlake.IsComplete(epoch))
@@ -77,14 +78,17 @@ namespace TorchSharpTest.RLTest
                     agent.Update(step);
                 }
 
+                if (i % 100 == 0)
+                {
+                    var episode = agent.RunEpisode(testEpisode);
+                    var reward = episode.Average(a => a.SumReward.Value);
 
-                var episode = agent.RunEpisode(testEpisode);
-                var reward = episode.Average(a => a.SumReward.Value);
-
-                bestReward = new[] {bestReward, reward}.Max();
-                Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 0.8)
-                    break;
+                    bestReward = new[] {bestReward, reward}.Max();
+                    Print($"{agent} Play:{i:D3}\t {reward}");
+                    if (bestReward > 0.8)
+                        break;
+                    Print(agent.ValueTable);
+                }
             }
 
             var e = agent.RunEpisode();
