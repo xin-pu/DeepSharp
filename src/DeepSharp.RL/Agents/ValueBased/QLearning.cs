@@ -27,7 +27,7 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Act GetPolicyAct(torch.Tensor state)
         {
-            var action = ValueTable.GetArgMax(state);
+            var action = ValueTable.GetBestAct(state);
             return action ?? GetSampleAct();
         }
 
@@ -42,15 +42,15 @@ namespace DeepSharp.RL.Agents
             var stateNew = step.StateNew.Value!;
             var reward = step.Reward.Value!;
 
-            var oldValue = ValueTable.GetValue(state, action);
-            var actNext = ValueTable.GetArgMax(state);
+            var oldValue = ValueTable[state, action];
+            var actNext = ValueTable.GetBestAct(state);
             var qNext = actNext == null
                 ? 0
-                : ValueTable.GetValue(stateNew, actNext.Value!);
+                : ValueTable[stateNew, actNext.Value!];
 
             var newValue = reward + Gamma * qNext;
             var finalValue = (1 - Alpha) * oldValue + Alpha * newValue;
-            ValueTable.Update(state, action, finalValue);
+            ValueTable[state, action] = finalValue;
         }
 
         public override float Learn(int count)

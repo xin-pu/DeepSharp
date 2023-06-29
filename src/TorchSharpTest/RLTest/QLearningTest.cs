@@ -15,17 +15,18 @@ namespace TorchSharpTest.RLTest
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.8, 0.3, 0.75}, DeviceType.CPU) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.8, 0.3, 0.75}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new QLearning(kArmedBandit);
             Print(kArmedBandit);
 
             var i = 0;
-            var testEpisode = 100;
+            var testEpisode = 20;
             var bestReward = 0f;
             while (true)
             {
+                i++;
                 kArmedBandit.Reset();
                 var epoch = 0;
                 while (!kArmedBandit.IsComplete(epoch))

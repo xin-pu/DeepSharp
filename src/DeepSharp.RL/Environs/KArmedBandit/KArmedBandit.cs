@@ -9,7 +9,7 @@ namespace DeepSharp.RL.Environs
     /// </summary>
     public sealed class KArmedBandit : Environ<Space, Space>
     {
-        public KArmedBandit(int k, DeviceType deviceType = DeviceType.CUDA)
+        public KArmedBandit(int k, DeviceType deviceType = DeviceType.CPU)
             : base("KArmedBandit", deviceType)
         {
             bandits = new Bandit[k];
@@ -20,7 +20,7 @@ namespace DeepSharp.RL.Environs
         }
 
 
-        public KArmedBandit(double[] probs, DeviceType deviceType = DeviceType.CUDA)
+        public KArmedBandit(double[] probs, DeviceType deviceType = DeviceType.CPU)
             : base("KArmedBandit", deviceType)
         {
             var k = probs.Length;

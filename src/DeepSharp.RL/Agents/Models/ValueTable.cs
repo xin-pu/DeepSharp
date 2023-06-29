@@ -3,49 +3,57 @@
 namespace DeepSharp.RL.Agents
 {
     /// <summary>
-    ///     State Action Value Table
+    ///     State-Action Value Table
     /// </summary>
     public class ValueTable
     {
         public ValueTable()
         {
-            Return = new Dictionary<TrasitKey, float>();
+            Return = new Dictionary<TransitKey, float>();
         }
 
-        public Dictionary<TrasitKey, float> Return { protected set; get; }
-        protected List<TrasitKey> TrasitKeys => Return.Keys.ToList();
+        public Dictionary<TransitKey, float> Return { protected set; get; }
+        protected List<TransitKey> TrasitKeys => Return.Keys.ToList();
 
-        public void Update(torch.Tensor state, torch.Tensor action, float value)
+
+        public float this[TransitKey transit]
         {
-            var existKey = TrasitKeys.Where(a => a.State.Equals(state) &&
-                                                 a.Act.Equals(action)).ToList();
-            if (existKey.Any())
-                Return[existKey.First()] = value;
-            else
-                Return[new TrasitKey(state, action)] = value;
+            get => GetValue(transit);
+            set => SetValue(transit, value);
         }
 
-        public float GetValue(torch.Tensor state, torch.Tensor action)
+
+        private void SetValue(TransitKey transit, float value)
         {
-            var existKey = TrasitKeys
-                .Where(a => a.State.Equals(state) &&
-                            a.Act.Equals(action)).ToList();
-
-            var ret = existKey.Any()
-                ? Return[existKey.First()]
-                : 0;
-            return ret;
+            Return[transit] = value;
         }
+
+        private float GetValue(TransitKey transit)
+        {
+            Return.TryAdd(transit, 0);
+            return Return[transit];
+        }
+
+
+        public float this[torch.Tensor state, torch.Tensor action]
+        {
+            get => GetValue(new TransitKey(state, action));
+            set => SetValue(new TransitKey(state, action), value);
+        }
+
 
         /// <summary>
         ///     argMax
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public Act? GetArgMax(torch.Tensor state)
+        public Act? GetBestAct(torch.Tensor state)
         {
-            var row = TrasitKeys.Where(a => a.State.Equals(state));
-            var stateActions = Return.Where(a => row.Contains(a.Key)).ToList();
+            var row = TrasitKeys
+                .Where(a => a.State.Equals(state));
+
+            var stateActions = Return
+                .Where(a => row.Contains(a.Key)).ToList();
 
             if (!stateActions.Any())
                 return null;

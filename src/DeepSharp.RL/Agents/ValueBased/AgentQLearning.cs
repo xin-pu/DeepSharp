@@ -10,7 +10,7 @@ namespace DeepSharp.RL.Agents
             : base(env)
         {
             Rewards = new Dictionary<RewardKey, Reward>();
-            Transits = new Dictionary<TrasitKey, Dictionary<torch.Tensor, int>>();
+            Transits = new Dictionary<TransitKey, Dictionary<torch.Tensor, int>>();
             Values = new Dictionary<torch.Tensor, float>();
         }
 
@@ -22,7 +22,7 @@ namespace DeepSharp.RL.Agents
         /// <summary>
         ///     转移表
         /// </summary>
-        public Dictionary<TrasitKey, Dictionary<torch.Tensor, int>> Transits { set; get; }
+        public Dictionary<TransitKey, Dictionary<torch.Tensor, int>> Transits { set; get; }
 
         /// <summary>
         ///     价值表
@@ -91,7 +91,7 @@ namespace DeepSharp.RL.Agents
                     .Select(a => a.Act);
 
                 var maxStateValue = actionList
-                    .Select(a => GetActionValue(new TrasitKey(state, a)))
+                    .Select(a => GetActionValue(new TransitKey(state, a)))
                     .Max();
 
                 Values[state] = maxStateValue;
@@ -117,7 +117,7 @@ namespace DeepSharp.RL.Agents
             Rewards[finalRewardKey] = reward;
 
 
-            var transitsKey = new TrasitKey(state, act);
+            var transitsKey = new TransitKey(state, act);
             var existTransitKey = Transits.Keys.Where(a =>
                     a.Act.Equals(act.Value!) &&
                     a.State.Equals(state.Value!))
@@ -153,16 +153,16 @@ namespace DeepSharp.RL.Agents
         ///     状态和动作的近似价值Q(s,a) = 每个状态的概率乘以状态价值
         ///     根据Bellman方程，它也等于立即奖励和折扣长期状态价值之和
         /// </summary>
-        /// <param name="trasitKey"></param>
+        /// <param name="transitKey"></param>
         /// <returns></returns>
-        private float GetActionValue(TrasitKey trasitKey)
+        private float GetActionValue(TransitKey transitKey)
         {
-            var targetCounts = getTransit(trasitKey);
+            var targetCounts = getTransit(transitKey);
             var total = targetCounts.Sum(a => a.Value);
             var activaValue = 0f;
             foreach (var i in targetCounts)
             {
-                var reward = getReward(new RewardKey(trasitKey.State, trasitKey.Act, i.Key!));
+                var reward = getReward(new RewardKey(transitKey.State, transitKey.Act, i.Key!));
                 var value = reward.Value + Environ.Gamma * getValue(i.Key);
                 activaValue += 1f * i.Value / total * value;
             }
@@ -170,7 +170,7 @@ namespace DeepSharp.RL.Agents
             return activaValue;
         }
 
-        private Dictionary<torch.Tensor, int> getTransit(TrasitKey traitKey)
+        private Dictionary<torch.Tensor, int> getTransit(TransitKey traitKey)
         {
             try
             {
