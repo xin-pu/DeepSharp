@@ -10,6 +10,7 @@ namespace DeepSharp.RL.Agents
     {
         protected Agent(Environ<Space, Space> env, string name)
         {
+            Name = name;
             Environ = env;
             Device = env.Device;
         }
