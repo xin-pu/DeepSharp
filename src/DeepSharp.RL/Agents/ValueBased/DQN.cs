@@ -25,9 +25,9 @@ namespace DeepSharp.RL.Agents
             Epsilon = epsilon;
             Gamma = gamma;
             Net = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
-            TGTNet = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
-            TGTNet.load_state_dict(Net.state_dict());
-            Optimizer = Adam(Net.parameters(), 0.0001);
+            TargetNet = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
+            TargetNet.load_state_dict(Net.state_dict());
+            Optimizer = Adam(Net.parameters(), 0.01);
             Loss = MSELoss();
             Experience = new ExperienceReplayBuffer(N);
         }
@@ -47,11 +47,15 @@ namespace DeepSharp.RL.Agents
         public int N { protected set; get; }
 
         public Net Net { protected set; get; }
+        public Net TargetNet { protected set; get; }
 
-        public Net TGTNet { protected set; get; }
+
         public Optimizer Optimizer { protected set; get; }
+
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { protected set; get; }
+
         public ExperienceReplayBuffer Experience { protected set; get; }
+
 
         public override Act GetPolicyAct(torch.Tensor state)
         {
@@ -70,7 +74,7 @@ namespace DeepSharp.RL.Agents
 
         public Tuple<Act, torch.Tensor> GetTGTPredValues(torch.Tensor state)
         {
-            var values = TGTNet.forward(state);
+            var values = TargetNet.forward(state);
             var bestActIndex = torch.argmax(values).ToInt32();
             var actTensor = torch.from_array(new[] {bestActIndex});
             var act = new Act(actTensor);
@@ -91,7 +95,6 @@ namespace DeepSharp.RL.Agents
                 while (Environ.IsComplete(epoch) == false)
                 {
                     epoch++;
-
                     var act = GetSampleAct();
                     var step = Environ.Step(act, epoch);
 
@@ -104,7 +107,7 @@ namespace DeepSharp.RL.Agents
                 UpdateNet();
             }
 
-            TGTNet.load_state_dict(Net.state_dict());
+            TargetNet.load_state_dict(Net.state_dict());
         }
 
         private void UpdateNet()
@@ -205,12 +208,27 @@ namespace DeepSharp.RL.Agents
             return Buffers.ElementAt(randomIndex);
         }
 
-        public Step Sample(int batchSize)
+        /// <summary>
+        ///     Todo
+        /// </summary>
+        /// <param name="batchSize"></param>
+        /// <returns></returns>
+        public torch.Tensor[] Sample(int batchSize)
         {
             var length = Buffers.Count;
             var probs = torch.from_array(Enumerable.Repeat(1, length).ToArray(), torch.ScalarType.Float32);
-            var randomIndex = torch.multinomial(probs, 1L).ToInt32();
-            return Buffers.ElementAt(randomIndex);
+            var randomIndex = torch.multinomial(probs, batchSize).data<int>()
+                .ToArray();
+
+            var steps = randomIndex
+                .Select(i => Buffers.ElementAt(i))
+                .ToList();
+
+            var state = torch.vstack(steps.Select(a => a.State!.Value!).ToArray());
+            var action = torch.vstack(steps.Select(a => a.Action!.Value!).ToArray());
+            var reward = torch.from_array(steps.Select(a => a.Reward!.Value).ToArray());
+            var newState = torch.vstack(steps.Select(a => a.StateNew!.Value!).ToArray());
+            return new[] {state, action, reward, newState};
         }
 
         public Queue<Step> Buffers { set; get; }

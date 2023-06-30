@@ -16,7 +16,7 @@ var frozenLake = new KArmedBandit(new[] {0.5d, 0.80d, 0.9d, 0.95d}) {Gamma = 0.9
 Utility.Print(frozenLake);
 
 /// Step 2 Create AgentQLearning
-var agent = new DQN(frozenLake, 1, 1000, gamma: 0.95f);
+var agent = new DQN(frozenLake, 1, 500, gamma: 0.95f);
 
 /// Step 3 Learn and Optimize
 var i = 0;
