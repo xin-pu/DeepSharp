@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Environs;
 using FluentAssertions;
 
 namespace TorchSharpTest.RLTest
@@ -29,6 +30,16 @@ namespace TorchSharpTest.RLTest
             Print(res);
 
             res.shape.Should().BeEquivalentTo(new long[] {1, 3});
+        }
+
+
+        [Fact]
+        public void TestDQN()
+        {
+            var frozenLake = new Frozenlake();
+            var dqn = new DQN(frozenLake, 10, 10);
+            var act = dqn.GetPolicyAct(frozenLake.Observation!.Value!);
+            Print(act);
         }
     }
 }
