@@ -3,7 +3,7 @@
 namespace DeepSharp.RL.Environs.Spaces
 {
     /// <summary>
-    ///     A N-dimensional box that contains every point in the action space.
+    ///     A T-dimensional box that contains every point in the action space.
     /// </summary>
     public class Box : DigitalSpace
     {

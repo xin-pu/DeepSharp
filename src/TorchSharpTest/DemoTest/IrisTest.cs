@@ -11,7 +11,7 @@ namespace TorchSharpTest.DemoTest
         }
 
 
-        private torch.Device device => new(DeviceType.CUDA);
+        private torch.Device device => new(DeviceType.CPU);
         public string SaveFile => "Iris.txt";
 
 
@@ -22,7 +22,7 @@ namespace TorchSharpTest.DemoTest
         public async void Train()
         {
             var dataset = new Dataset<IrisOneHot>(@"..\..\..\..\..\Resources\iris-train.txt");
-            var dataConfig = new DataLoaderConfig {BatchSize = 8};
+            var dataConfig = new DataLoaderConfig { BatchSize = 8, Device = device };
             var dataloader = new DataLoader<IrisOneHot>(dataset, dataConfig);
 
 

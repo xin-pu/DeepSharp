@@ -7,6 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="Nets\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Nets\**" />
+    <None Remove="Models\**" />
+    <None Remove="Nets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.0" />
     <PackageReference Include="FluentAssertions" Version="6.11.0" />
     <PackageReference Include="libtorch-cuda-11.7-win-x64" Version="2.0.1.1" />
@@ -16,11 +25,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DeepSharp.Utility\DeepSharp.Utility.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
-    <Folder Include="Nets\" />
   </ItemGroup>
 
 </Project>
