@@ -21,7 +21,7 @@ namespace DeepSharp.RL.Agents
 
         public int T { protected set; get; }
 
-        public Dictionary<TransitKey, int> Count { set; get; }
+        public Dictionary<TransitKey, int> Count { protected set; get; }
 
 
         public Episode Learn()
@@ -49,14 +49,6 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        private int GetCount(TransitKey transitKey)
-        {
-            if (Count.ContainsKey(transitKey) == false)
-                Count[transitKey] = 0;
-
-            return Count[transitKey];
-        }
-
         public void Update(Episode episode)
         {
             var lenth = episode.Length;
@@ -69,6 +61,14 @@ namespace DeepSharp.RL.Agents
                 ValueTable[key] = (ValueTable[key] * GetCount(key) + r) / (GetCount(key) + 1);
                 Count[key] = GetCount(key) + 1;
             }
+        }
+
+        private int GetCount(TransitKey transitKey)
+        {
+            if (Count.ContainsKey(transitKey) == false)
+                Count[transitKey] = 0;
+
+            return Count[transitKey];
         }
     }
 }
