@@ -33,23 +33,6 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public void Update(Step step)
-        {
-            var state = step.State.Value!;
-            var action = step.Action.Value!;
-            var stateNew = step.StateNew.Value!;
-            var reward = step.Reward.Value;
-
-            var currentTransit = new TransitKey(state, action);
-
-            var bestValue = ValueTable.GetBestValue(stateNew);
-            var newValue = reward + Gamma * bestValue;
-            var oldValue = ValueTable[currentTransit];
-            var finalValue = oldValue * (1 - Alpha) + newValue * Alpha;
-
-            ValueTable[currentTransit] = finalValue;
-        }
-
         public Episode Learn()
         {
             Environ.Reset();
@@ -58,11 +41,14 @@ namespace DeepSharp.RL.Agents
             while (Environ.IsComplete(epoch) == false)
             {
                 epoch++;
-                var act = GetEpsilonAct(Environ.Observation!.Value!);
-                var step = Environ.Step(act, epoch);
+                var epsilonAct = GetEpsilonAct(Environ.Observation!.Value!);
+                var step = Environ.Step(epsilonAct, epoch);
+
                 Update(step);
+
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
+
                 Environ.Observation = step.StateNew; /// It's import for Update Observation
             }
 
@@ -72,39 +58,18 @@ namespace DeepSharp.RL.Agents
             return episode;
         }
 
-
-        public override Episode RunEpisode(PlayMode playMode = PlayMode.Agent)
+        public void Update(Step step)
         {
-            Environ.Reset();
-            var episode = new Episode();
-            var epoch = 0;
-            while (Environ.IsComplete(epoch) == false)
-            {
-                epoch++;
-                var act = playMode switch
-                {
-                    PlayMode.Sample => GetSampleAct(),
-                    PlayMode.Agent => GetPolicyAct(Environ.Observation!.Value!),
-                    PlayMode.EpsilonGreedy => GetEpsilonAct(Environ.Observation!.Value!),
-                    _ => throw new ArgumentOutOfRangeException(nameof(playMode), playMode, null)
-                };
-                var step = Environ.Step(act, epoch);
-                Update(step);
-                episode.Steps.Add(step);
-                Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
-            }
+            var s = step.State.Value!;
+            var a = step.Action.Value!;
+            var r = step.Reward.Value;
+            var sNext = step.StateNew.Value!;
+            var q = ValueTable[s, a];
 
-            var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward;
-            episode.SumReward = new Reward(sumReward);
-            return episode;
+            var aNext = GetPolicyAct(sNext);
+            var qNext = ValueTable[sNext, aNext.Value!];
+
+            ValueTable[s, a] = q + Alpha * (r + Gamma * qNext - q);
         }
-    }
-
-    public struct LearnRes
-    {
-        public float Loss { set; get; }
-        public Episode Episode { set; get; }
     }
 }

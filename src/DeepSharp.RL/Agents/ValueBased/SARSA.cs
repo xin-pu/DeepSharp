@@ -33,10 +33,14 @@ namespace DeepSharp.RL.Agents
             {
                 epoch++;
                 var step = Environ.Step(act, epoch);
-                act = Update(step);
+
+                var actNext = Update(step); ///
+
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
+
                 Environ.Observation = step.StateNew; /// It's import for Update Observation
+                act = actNext;
             }
 
             var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
@@ -48,21 +52,18 @@ namespace DeepSharp.RL.Agents
 
         public Act Update(Step step)
         {
-            var state = step.State.Value!;
-            var action = step.Action.Value!;
-            var stateNew = step.StateNew.Value!;
-            var reward = step.Reward.Value;
+            var s = step.State.Value!;
+            var a = step.Action.Value!;
+            var r = step.Reward.Value;
+            var sNext = step.StateNew.Value!;
+            var q = ValueTable[s, a];
 
-            var currentTransit = new TransitKey(state, action);
+            var aNext = GetEpsilonAct(sNext); /// a' by ε-greedy policy
+            var qNext = ValueTable[sNext, aNext.Value!];
 
-            var bestValue = ValueTable.GetBestValue(stateNew);
-            var nextAct = GetEpsilonAct(stateNew);
-            var newValue = reward + Gamma * bestValue;
-            var oldValue = ValueTable[currentTransit];
-            var finalValue = oldValue * (1 - Alpha) + newValue * Alpha;
 
-            ValueTable[currentTransit] = finalValue;
-            return nextAct;
+            ValueTable[s, a] = q + Alpha * (r + Gamma * qNext - q);
+            return aNext;
         }
     }
 }

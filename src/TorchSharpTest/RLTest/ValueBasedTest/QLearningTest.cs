@@ -36,7 +36,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
                 bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 17)
+                if (bestReward >= 17.5)
                     break;
             }
 
@@ -73,7 +73,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
                     bestReward = new[] {bestReward, reward}.Max();
                     Print($"{agent} Play:{i:D3}\t {reward}");
-                    if (bestReward > 0.8)
+                    if (bestReward > 0.7)
                         break;
                 }
             }

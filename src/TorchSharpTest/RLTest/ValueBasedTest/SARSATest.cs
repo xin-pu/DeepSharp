@@ -1,5 +1,6 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using FluentAssertions;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {
@@ -14,12 +15,11 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KArmedBanditMain()
         {
-            /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.72, 0.70}) {Gamma = 0.95f};
-
-            /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new SARSA(kArmedBandit, 0.1f);
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.9f};
             Print(kArmedBandit);
+
+            var agent = new SARSA(kArmedBandit);
+
 
             var i = 0;
             var testEpisode = 20;
@@ -36,13 +36,17 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
                 bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 16.2)
+
+                if (bestReward >= 17)
                     break;
             }
 
             var e = agent.RunEpisode();
-            var act = e.Steps.Select(a => a.Action);
+            var act = e.Steps.Select(a => a.Action).ToList();
             Print(string.Join("\r\n", act));
+
+            var bestResut = act.Select(a => a.Value!.ToInt32()).ToList();
+            bestResut.All(a => a == 1).Should().BeTrue();
         }
 
 
@@ -53,7 +57,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
             var frozenlake = new Frozenlake(new[] {1f, 0.2f, 0.2f}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new SARSA(frozenlake, 0.1f);
+            var agent = new SARSA(frozenlake);
             Print(frozenlake);
 
             var i = 0;
