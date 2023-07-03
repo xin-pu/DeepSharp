@@ -23,7 +23,7 @@ namespace DeepSharp.RL.Agents
         public float Alpha { protected set; get; }
         public float Gamma { protected set; get; }
 
-        public Episode Learn()
+        public override Episode Learn()
         {
             Environ.Reset();
             var episode = new Episode();

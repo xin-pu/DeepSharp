@@ -2,9 +2,12 @@
 
 namespace DeepSharp.RL.Agents
 {
+    /// <summary>
+    ///     Todo has issue about GetTransitPer?   2023/7/3
+    /// </summary>
     public class MonteCarloOffPolicy : ValueAgent
     {
-        public MonteCarloOffPolicy(Environ<Space, Space> env, float epsilon, int t)
+        public MonteCarloOffPolicy(Environ<Space, Space> env, float epsilon = 0.1f, int t = 10)
             : base(env, "MonteCarloOffPolicy")
         {
             Epsilon = epsilon;
@@ -17,7 +20,7 @@ namespace DeepSharp.RL.Agents
         public Dictionary<TransitKey, int> Count { protected set; get; }
 
 
-        public Episode Learn()
+        public override Episode Learn()
         {
             Environ.Reset();
             var episode = new Episode();
@@ -51,7 +54,7 @@ namespace DeepSharp.RL.Agents
                 var step = steps[t];
                 var key = new TransitKey(step.State, step.Action);
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
-                var per = steps.Skip(t).Select(GetTransitPer).Aggregate(1f, (a, b) => a * b);
+                var per = steps.Skip(t).Select(GetTransitPer).Aggregate(1f, (a, b) => a * b); ///Error Here
                 var finalR = r * per;
                 var count = GetCount(key);
                 ValueTable[key] = (ValueTable[key] * count + finalR) / (count + 1);
@@ -65,7 +68,7 @@ namespace DeepSharp.RL.Agents
             var actPolicy = GetPolicyAct(step.State.Value!).Value!;
             var actStep = step.Action.Value!;
             var actionSpace = Environ.ActionSpace!.N;
-            var e = 1;
+            var e = 1f;
             var per = actPolicy.Equals(actStep)
                 ? 1 - Epsilon + Epsilon / actionSpace
                 : Epsilon / actionSpace;

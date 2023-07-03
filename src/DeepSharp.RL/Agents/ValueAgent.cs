@@ -12,6 +12,7 @@ namespace DeepSharp.RL.Agents
 
         public ValueTable ValueTable { protected set; get; }
 
+        public abstract Episode Learn();
 
         /// <summary>
         ///     argmax(a') Q(state,a')

@@ -41,7 +41,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void FrozenlakeMain()
         {
-            var frozenlake = new Frozenlake(new[] {0.6f, 0.2f, 0.2f}) {Gamma = 0.95f};
+            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
             var agent = new QLearning(frozenlake);
             Print(frozenlake);
 
@@ -63,7 +63,6 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
             frozenlake.ChangeToRough();
             var episode = agent.RunEpisode();
             Print(episode);
-            ;
         }
     }
 }

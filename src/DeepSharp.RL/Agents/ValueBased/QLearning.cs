@@ -33,7 +33,7 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public Episode Learn()
+        public override Episode Learn()
         {
             Environ.Reset();
             var episode = new Episode();

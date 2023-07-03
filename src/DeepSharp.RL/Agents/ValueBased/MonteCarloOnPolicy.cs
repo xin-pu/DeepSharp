@@ -11,7 +11,7 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="env"></param>
         /// <param name="t">the leaning count of  each epoch </param>
-        public MonteCarloOnPolicy(Environ<Space, Space> env, float epsilon = 0.8f, int t = 10)
+        public MonteCarloOnPolicy(Environ<Space, Space> env, float epsilon = 0.1f, int t = 10)
             : base(env, "MonteCarloOnPolicy")
         {
             Epsilon = epsilon;
@@ -24,7 +24,7 @@ namespace DeepSharp.RL.Agents
         public Dictionary<TransitKey, int> Count { protected set; get; }
 
 
-        public Episode Learn()
+        public override Episode Learn()
         {
             Environ.Reset();
             var episode = new Episode();
@@ -36,6 +36,7 @@ namespace DeepSharp.RL.Agents
                 var step = Environ.Step(act, epoch);
 
                 episode.Steps.Add(step);
+
                 Environ.CallBack?.Invoke(step);
                 Environ.Observation = step.StateNew; /// It's import for Update Observation
             }
