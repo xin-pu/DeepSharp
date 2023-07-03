@@ -14,7 +14,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KABOnPolicyTest()
         {
-            var kArmedBandit = new KArmedBandit(new[] { 0.4, 0.80, 0.85, 0.80 }) { Gamma = 0.95f };
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.85, 0.80}) {Gamma = 0.95f};
             Print(kArmedBandit);
 
             var agent = new MonteCarloOnPolicy(kArmedBandit, 0.1f, 20);
@@ -50,7 +50,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         public void KABOffPolicyTest()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] { 0.4, 0.80, 0.85, 0.80 }) { Gamma = 0.95f };
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.85, 0.80}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new MonteCarloOffPolicy(kArmedBandit, 0.1f, 20);
@@ -69,7 +69,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                 var episode = agent.RunEpisodes(testEpisode);
                 var reward = episode.Average(a => a.SumReward.Value);
 
-                bestReward = new[] { bestReward, reward }.Max();
+                bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
                 if (bestReward > 17)
                     break;
@@ -83,7 +83,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void FLOnPolicyTest()
         {
-            var frozenlake = new Frozenlake(new[] { 1f, 0f, 0f }) { Gamma = 0.9f };
+            var frozenlake = new Frozenlake(new[] {1f, 0f, 0f}) {Gamma = 0.9f};
             Print(frozenlake);
 
             var agent = new MonteCarloOnPolicy(frozenlake, 0.1f, 50);
@@ -104,7 +104,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                     var episode = agent.RunEpisodes(testEpisode);
                     var reward = episode.Average(a => a.SumReward.Value);
 
-                    bestReward = new[] { bestReward, reward }.Max();
+                    bestReward = new[] {bestReward, reward}.Max();
                     Print($"{agent} Play:{i:D5}\t {reward}");
                     if (bestReward >= 0.5f)
                         break;
@@ -119,7 +119,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
             var bestPath = act.Select(a => a.Value!.ToInt32()).ToList();
 
-            bestPath.Zip(new[] { 1, 1, 3, 1, 3, 3 }, (a, b) => a == b)
+            bestPath.Zip(new[] {1, 1, 3, 1, 3, 3}, (a, b) => a == b)
                 .All(a => a)
                 .Should().BeTrue();
         }
@@ -128,7 +128,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         public void FLOffPolictTest()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenlake = new Frozenlake(new[] { 0.6f, 0.2f, 0.2f }) { Gamma = 0.9f };
+            var frozenlake = new Frozenlake(new[] {0.6f, 0.2f, 0.2f}) {Gamma = 0.9f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new MonteCarloOffPolicy(frozenlake, 0.5f, 50);
@@ -149,7 +149,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                     var episode = agent.RunEpisodes(testEpisode);
                     var reward = episode.Average(a => a.SumReward.Value);
 
-                    bestReward = new[] { bestReward, reward }.Max();
+                    bestReward = new[] {bestReward, reward}.Max();
                     Print($"{agent} Play:{i:D3}\t {reward}");
                     if (bestReward > 0.5)
                         break;
