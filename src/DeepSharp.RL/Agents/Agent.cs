@@ -110,6 +110,18 @@ namespace DeepSharp.RL.Agents
             return episodes.ToArray();
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="testCount">test count</param>
+        /// <returns>Average Reward</returns>
+        public float TestEpisodes(int testCount)
+        {
+            var episode = RunEpisodes(testCount);
+            var averageReward = episode.Average(a => a.SumReward.Value);
+            return averageReward;
+        }
+
+
         public override string ToString()
         {
             return $"Agent[{Name}]";

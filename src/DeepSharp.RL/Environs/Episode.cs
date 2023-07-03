@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Environs
+﻿using System.Text;
+
+namespace DeepSharp.RL.Environs
 {
     /// <summary>
     ///     片段
@@ -23,5 +25,29 @@
         public int Length => Steps.Count;
 
         public float Evaluate { set; get; }
+
+
+        public int[] GetAction()
+        {
+            var actions = Steps
+                .Select(a => a.Action.Value!.ToInt32())
+                .ToArray();
+            return actions;
+        }
+
+        public override string ToString()
+        {
+            var str = new StringBuilder();
+            str.AppendLine($"Test By Agent: Get Reward {SumReward}");
+            Steps.ForEach(s =>
+            {
+                var state = s.State.Value!.ToString(torch.numpy);
+                var action = s.Action.Value!.ToInt32();
+                var reward = s.Reward.Value;
+                var line = $"{state},{action},{reward}";
+                str.AppendLine(line);
+            });
+            return str.ToString();
+        }
     }
 }
