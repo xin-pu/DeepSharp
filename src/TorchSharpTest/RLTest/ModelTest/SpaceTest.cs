@@ -1,7 +1,7 @@
 ﻿using DeepSharp.RL.Environs.Spaces;
 using FluentAssertions;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.ModelTest
 {
     public class SpaceTest : AbstractTest
     {

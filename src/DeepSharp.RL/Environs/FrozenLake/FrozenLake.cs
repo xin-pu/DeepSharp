@@ -138,7 +138,7 @@ namespace DeepSharp.RL.Environs
         /// <returns></returns>
         public override Observation Update(Act act)
         {
-            var banditSelectIndex = act.Value!.to_type(ActionSpace!.Type).ToInt32();
+            var action = act.Value!.to_type(ActionSpace!.Type).ToInt32();
 
             var moveProb = torch
                 .multinomial(torch.from_array(Smoothing), 1)
@@ -149,7 +149,7 @@ namespace DeepSharp.RL.Environs
             var rowCurrent = this[PlayID].Row;
             var columnCurrent = this[PlayID].Column;
 
-            PlayID = banditSelectIndex switch
+            PlayID = action switch
             {
                 /// 往上走
                 0 => moveAction switch

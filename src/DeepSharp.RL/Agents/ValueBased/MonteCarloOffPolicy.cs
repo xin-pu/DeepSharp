@@ -22,7 +22,7 @@ namespace DeepSharp.RL.Agents
             Environ.Reset();
             var episode = new Episode();
             var epoch = 0;
-            var act = GetPolicyAct(Environ.Observation!.Value!);
+            var act = GetEpsilonAct(Environ.Observation!.Value!);
             while (Environ.IsComplete(epoch) == false && epoch < T)
             {
                 epoch++;
@@ -53,8 +53,9 @@ namespace DeepSharp.RL.Agents
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
                 var per = steps.Skip(t).Select(GetTransitPer).Aggregate(1f, (a, b) => a * b);
                 var finalR = r * per;
-                ValueTable[key] = (ValueTable[key] * GetCount(key) + finalR) / (GetCount(key) + 1);
-                Count[key] = GetCount(key) + 1;
+                var count = GetCount(key);
+                ValueTable[key] = (ValueTable[key] * count + finalR) / (count + 1);
+                SetCount(key, count + 1);
             }
         }
 
@@ -64,19 +65,22 @@ namespace DeepSharp.RL.Agents
             var actPolicy = GetPolicyAct(step.State.Value!).Value!;
             var actStep = step.Action.Value!;
             var actionSpace = Environ.ActionSpace!.N;
-            var e = actPolicy.Equals(actStep) ? 1 : 0;
+            var e = 1;
             var per = actPolicy.Equals(actStep)
                 ? 1 - Epsilon + Epsilon / actionSpace
                 : Epsilon / actionSpace;
-            return per / e;
+            return e / per;
         }
 
         private int GetCount(TransitKey transitKey)
         {
-            if (Count.ContainsKey(transitKey) == false)
-                Count[transitKey] = 0;
-
+            Count.TryAdd(transitKey, 0);
             return Count[transitKey];
+        }
+
+        private void SetCount(TransitKey transitKey, int value)
+        {
+            Count[transitKey] = value;
         }
     }
 }

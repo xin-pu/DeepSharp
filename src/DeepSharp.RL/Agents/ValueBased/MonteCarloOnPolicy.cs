@@ -58,17 +58,21 @@ namespace DeepSharp.RL.Agents
                 var step = steps[t];
                 var key = new TransitKey(step.State, step.Action);
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
-                ValueTable[key] = (ValueTable[key] * GetCount(key) + r) / (GetCount(key) + 1);
-                Count[key] = GetCount(key) + 1;
+                var count = GetCount(key);
+                ValueTable[key] = (ValueTable[key] * count + r) / (count + 1);
+                SetCount(key, count + 1);
             }
         }
 
         private int GetCount(TransitKey transitKey)
         {
-            if (Count.ContainsKey(transitKey) == false)
-                Count[transitKey] = 0;
-
+            Count.TryAdd(transitKey, 0);
             return Count[transitKey];
+        }
+
+        private void SetCount(TransitKey transitKey, int value)
+        {
+            Count[transitKey] = value;
         }
     }
 }

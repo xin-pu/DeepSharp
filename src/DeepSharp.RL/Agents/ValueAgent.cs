@@ -14,8 +14,8 @@ namespace DeepSharp.RL.Agents
 
 
         /// <summary>
-        ///     ε 贪心策略
-        ///     利用和探索 策略
+        ///     argmax(a') Q(state,a')
+        ///     价值表中获取该状态State下最高价值的action'
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>

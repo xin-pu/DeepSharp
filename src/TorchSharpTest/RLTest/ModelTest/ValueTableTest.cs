@@ -1,7 +1,7 @@
 ﻿using DeepSharp.RL.Agents;
 using FluentAssertions;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.ModelTest
 {
     public class ValueTableTest : AbstractTest
     {

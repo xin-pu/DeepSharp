@@ -1,7 +1,7 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.EnvironTest
 {
     public class KArmedBanditTest : AbstractTest
     {

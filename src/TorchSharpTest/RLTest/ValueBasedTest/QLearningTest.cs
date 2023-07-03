@@ -1,23 +1,24 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.ValueBasedTest
 {
-    public class MonteCarloOffTest : AbstractTest
+    public class QLearningTest : AbstractTest
     {
-        public MonteCarloOffTest(ITestOutputHelper testOutputHelper)
+        public QLearningTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }
+
 
         [Fact]
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] { 0.4, 0.80, 0.9, 0.7 }) { Gamma = 0.95f };
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new MonteCarloOffPolicy(kArmedBandit, 0.1f, 20);
+            var agent = new QLearning(kArmedBandit);
             Print(kArmedBandit);
 
             var i = 0;
@@ -33,7 +34,7 @@ namespace TorchSharpTest.RLTest
                 var episode = agent.RunEpisodes(testEpisode);
                 var reward = episode.Average(a => a.SumReward.Value);
 
-                bestReward = new[] { bestReward, reward }.Max();
+                bestReward = new[] {bestReward, reward}.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
                 if (bestReward > 17)
                     break;
@@ -49,10 +50,10 @@ namespace TorchSharpTest.RLTest
         public void FrozenlakeMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var frozenlake = new Frozenlake(new[] { 0.7f, 0.15f, 0.15f }) { Gamma = 0.9f };
+            var frozenlake = new Frozenlake(new[] {1f, 0.2f, 0.2f}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new MonteCarloOnPolicy(frozenlake, 0.1f, 50);
+            var agent = new QLearning(frozenlake);
             Print(frozenlake);
 
             var i = 0;
@@ -70,15 +71,14 @@ namespace TorchSharpTest.RLTest
                     var episode = agent.RunEpisodes(testEpisode);
                     var reward = episode.Average(a => a.SumReward.Value);
 
-                    bestReward = new[] { bestReward, reward }.Max();
+                    bestReward = new[] {bestReward, reward}.Max();
                     Print($"{agent} Play:{i:D3}\t {reward}");
-                    if (bestReward > 0.6)
+                    if (bestReward > 0.8)
                         break;
                 }
             }
 
             frozenlake.ChangeToRough();
-            frozenlake.CallBack = _ => { Print(frozenlake); };
             var e = agent.RunEpisode();
             var act = e.Steps.Select(a => a.Action);
             Print(string.Join("\r\n", act));

@@ -1,7 +1,7 @@
 ﻿using DeepSharp.RL.ActionSelectors;
 using FluentAssertions;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.ModelTest
 {
     public class ActionSelectorTest : AbstractTest
     {

@@ -2,7 +2,7 @@
 using DeepSharp.RL.Environs;
 using FluentAssertions;
 
-namespace TorchSharpTest.RLTest
+namespace TorchSharpTest.RLTest.ValueBasedTest
 {
     public class DQNTest : AbstractTest
     {
@@ -18,7 +18,7 @@ namespace TorchSharpTest.RLTest
             var deviceType = DeviceType.CPU;
             var scalarType = torch.ScalarType.Float32;
 
-            var net = new DQNNet(new long[] {1, 416, 416}, 3,
+            var net = new DQNNet(new long[] { 1, 416, 416 }, 3,
                 scalarType,
                 deviceType);
 
@@ -29,7 +29,7 @@ namespace TorchSharpTest.RLTest
             var res = net.forward(input);
             Print(res);
 
-            res.shape.Should().BeEquivalentTo(new long[] {1, 3});
+            res.shape.Should().BeEquivalentTo(new long[] { 1, 3 });
         }
 
 
@@ -47,7 +47,7 @@ namespace TorchSharpTest.RLTest
         public void KArmedBanditMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.72, 0.70}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] { 0.4, 0.80, 0.72, 0.70 }) { Gamma = 0.95f };
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
             var agent = new DQN(kArmedBandit, 1, 100, 0.1f);
@@ -66,7 +66,7 @@ namespace TorchSharpTest.RLTest
                 var episode = agent.RunEpisodes(testEpisode);
                 var reward = episode.Average(a => a.SumReward.Value);
 
-                bestReward = new[] {bestReward, reward}.Max();
+                bestReward = new[] { bestReward, reward }.Max();
                 Print($"{agent} Play:{i:D3}\t {reward}");
                 if (bestReward > 16.2)
                     break;
