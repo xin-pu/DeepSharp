@@ -7,29 +7,36 @@ namespace DeepSharp.RL.Agents
     ///     Deep Q Network
     ///     Now ObservationSpace use one-dimensional for test
     ///     Will support Multi in feature
+    ///     Using TargetNet and Experience
     /// </summary>
     public class DQN : Agent
     {
         /// <summary>
         /// </summary>
         /// <param name="env"></param>
-        /// <param name="c">update interval</param>
-        /// <param name="n">Capacity of Experience pool</param>
-        public DQN(Environ<Space, Space> env, int c, int n, float epsilon = 0.1f, float gamma = 0.9f)
+        /// <param name="n">update interval</param>
+        /// <param name="c">Capacity of Experience pool</param>
+        public DQN(Environ<Space, Space> env,
+            int n = 1000,
+            int c = 10000,
+            float epsilon = 0.1f,
+            float gamma = 0.99f,
+            int batchSize = 32)
             : base(env, "DQN")
         {
             ObservationSpace = (int) env.ObservationSpace!.N;
             ActionSpace = (int) env.ActionSpace!.N;
             C = c;
             N = n;
+            TrainBatchSize = batchSize;
             Epsilon = epsilon;
             Gamma = gamma;
-            Net = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
-            TargetNet = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
-            TargetNet.load_state_dict(Net.state_dict());
-            Optimizer = Adam(Net.parameters(), 0.01);
+            Q = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
+            QTarget = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
+            QTarget.load_state_dict(Q.state_dict());
+            Optimizer = SGD(Q.parameters(), 0.001);
             Loss = MSELoss();
-            Experience = new ExperienceReplayBuffer(N);
+            Experience = new ExperienceReplayBuffer(C);
         }
 
         public int ActionSpace { protected set; get; }
@@ -37,18 +44,18 @@ namespace DeepSharp.RL.Agents
         public float Gamma { protected set; get; }
 
         /// <summary>
-        ///     update interval
+        ///     Capacity of Experience pool
         /// </summary>
         public int C { protected set; get; }
 
         /// <summary>
-        ///     Capacity of Experience pool
+        ///     Update interval
         /// </summary>
         public int N { protected set; get; }
 
-        public Net Net { protected set; get; }
-        public Net TargetNet { protected set; get; }
-
+        public Net Q { protected set; get; }
+        public Net QTarget { protected set; get; }
+        public int TrainBatchSize { protected set; get; }
 
         public Optimizer Optimizer { protected set; get; }
 
@@ -65,7 +72,7 @@ namespace DeepSharp.RL.Agents
 
         public Tuple<Act, torch.Tensor> GetPredValues(torch.Tensor state)
         {
-            var values = Net.forward(state);
+            var values = Q.forward(state);
             var bestActIndex = torch.argmax(values).ToInt32();
             var actTensor = torch.from_array(new[] {bestActIndex});
             var act = new Act(actTensor);
@@ -74,7 +81,7 @@ namespace DeepSharp.RL.Agents
 
         public Tuple<Act, torch.Tensor> GetTGTPredValues(torch.Tensor state)
         {
-            var values = TargetNet.forward(state);
+            var values = QTarget.forward(state);
             var bestActIndex = torch.argmax(values).ToInt32();
             var actTensor = torch.from_array(new[] {bestActIndex});
             var act = new Act(actTensor);
@@ -82,66 +89,66 @@ namespace DeepSharp.RL.Agents
         }
 
         /// <summary>
-        ///     Update Net after C
+        ///     Update Net after N
         /// </summary>
         public void Learn()
         {
-            var epochTop = 0;
-            while (epochTop++ <= C)
+            foreach (var _ in Enumerable.Range(0, N))
             {
                 Environ.Reset();
-                var episode = new Episode();
                 var epoch = 0;
                 while (Environ.IsComplete(epoch) == false)
                 {
                     epoch++;
-                    var act = GetSampleAct();
+                    /// Step 2 ε greedy select an action
+                    var act = GetEpsilonAct(Environ.Observation!.Value!);
+                    /// Step 3 get reward and next state
                     var step = Environ.Step(act, epoch);
+                    /// Step 4 save to Experience
+                    Experience.Append(step);
 
-                    episode.Steps.Add(step);
                     Environ.CallBack?.Invoke(step);
                     Environ.Observation = step.StateNew; /// It's import for Update Observation
                 }
 
-                Experience.Append(episode);
-                UpdateNet();
+                /// Step 5 update Q from Experience
+                if (Experience.Buffers.Count >= C)
+                    UpdateNet();
             }
 
-            TargetNet.load_state_dict(Net.state_dict());
+            /// 每隔C次刚更新权重 Net -> TargetNet
+            CopyQToTagget();
+        }
+
+        private void CopyQToTagget()
+        {
+            var partmeters = Q.state_dict();
+            QTarget.load_state_dict(partmeters);
         }
 
         private void UpdateNet()
         {
-            foreach (var i in Enumerable.Range(0, 32))
-            {
-                /// Step 0 Get a random sample (ss,aa,rr,ss') for Experience
-                var expSample = Experience.Sample();
-                var state = expSample.State.Value!;
-                var stateNext = expSample.StateNew.Value!;
-                var reward = expSample.Reward.Value;
+            var batchStep = Experience.Sample(TrainBatchSize);
+            var rewardArray = batchStep.Select(a => a.Reward!.Value).ToArray();
+            var reward = torch.from_array(rewardArray).reshape(TrainBatchSize, 1).squeeze(-1);
+
+            var state = torch.vstack(batchStep.Select(a => a.State!.Value!.unsqueeze(0)).ToArray());
+            var actionV = torch.vstack(batchStep.Select(a => a.Action!.Value!.unsqueeze(0)).ToArray())
+                .to(torch.ScalarType.Int64);
+            var stateNext = torch.vstack(batchStep.Select(a => a.StateNew!.Value!.unsqueeze(0)).ToArray());
+
+            var stateActionValue = Q.forward(state).gather(1, actionV).squeeze(-1);
 
 
-                /// Step 1 forward and Get Q(ss,aa)
-                var (_, qValue) = GetPredValues(state);
+            var nextStateValue = QTarget.forward(stateNext).max(1).values.detach();
 
+            var expectedStatedActionValue = nextStateValue * Gamma + reward;
 
-                var (act, nextQValue) = GetTGTPredValues(stateNext);
-                var nextStateValue = nextQValue.data<float>().Max();
+            var output = Loss.call(stateActionValue, expectedStatedActionValue);
 
-                var exceptedStatrActionValues = reward +
-                                                (expSample.IsComplete ? 0 : Gamma * nextStateValue);
-
-                var actIndex = act.Value!.ToInt32();
-                var valueArr = nextQValue.detach().data<float>().ToArray();
-                valueArr[actIndex] = exceptedStatrActionValues;
-                nextQValue = torch.from_array(valueArr);
-
-                var output = Loss.call(qValue, nextQValue);
-
-                Optimizer.zero_grad();
-                output.backward();
-                Optimizer.step();
-            }
+            Optimizer.zero_grad();
+            output.backward();
+            Optimizer.step();
         }
 
 
@@ -184,6 +191,8 @@ namespace DeepSharp.RL.Agents
 
         public int Capacity { protected set; get; }
 
+        public Queue<Step> Buffers { set; get; }
+
         public void Append(Step step)
         {
             if (Buffers.Count == Capacity) Buffers.Dequeue();
@@ -213,24 +222,17 @@ namespace DeepSharp.RL.Agents
         /// </summary>
         /// <param name="batchSize"></param>
         /// <returns></returns>
-        public torch.Tensor[] Sample(int batchSize)
+        public Step[] Sample(int batchSize)
         {
             var length = Buffers.Count;
             var probs = torch.from_array(Enumerable.Repeat(1, length).ToArray(), torch.ScalarType.Float32);
-            var randomIndex = torch.multinomial(probs, batchSize).data<int>()
-                .ToArray();
+            var randomIndex = torch.multinomial(probs, batchSize).data<long>().ToArray();
 
             var steps = randomIndex
-                .Select(i => Buffers.ElementAt(i))
-                .ToList();
+                .Select(i => Buffers.ElementAt((int) i))
+                .ToArray();
 
-            var state = torch.vstack(steps.Select(a => a.State!.Value!).ToArray());
-            var action = torch.vstack(steps.Select(a => a.Action!.Value!).ToArray());
-            var reward = torch.from_array(steps.Select(a => a.Reward!.Value).ToArray());
-            var newState = torch.vstack(steps.Select(a => a.StateNew!.Value!).ToArray());
-            return new[] {state, action, reward, newState};
+            return steps;
         }
-
-        public Queue<Step> Buffers { set; get; }
     }
 }
