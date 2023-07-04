@@ -7,10 +7,10 @@ namespace DeepSharp.RL.Agents
         protected ValueAgent(Environ<Space, Space> env, string name)
             : base(env, name)
         {
-            ValueTable = new ValueTable();
+            QTable = new QTable();
         }
 
-        public ValueTable ValueTable { protected set; get; }
+        public QTable QTable { protected set; get; }
 
         public abstract Episode Learn();
 
@@ -22,7 +22,7 @@ namespace DeepSharp.RL.Agents
         /// <returns></returns>
         public override Act GetPolicyAct(torch.Tensor state)
         {
-            var action = ValueTable.GetBestAct(state);
+            var action = QTable.GetBestAct(state);
             return action ?? GetSampleAct();
         }
     }

@@ -60,7 +60,7 @@ namespace DeepSharp.RL.Agents
                 var key = new TransitKey(step.State, step.Action);
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
                 var count = GetCount(key);
-                ValueTable[key] = (ValueTable[key] * count + r) / (count + 1);
+                QTable[key] = (QTable[key] * count + r) / (count + 1);
                 SetCount(key, count + 1);
             }
         }

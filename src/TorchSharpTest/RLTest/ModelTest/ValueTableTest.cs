@@ -44,7 +44,7 @@ namespace TorchSharpTest.RLTest.ModelTest
         [Fact]
         public void CreateValueTableTest1()
         {
-            var vt = new ValueTable();
+            var vt = new QTable();
             var state = torch.tensor(new[] {0, 0, 1});
             var action = torch.tensor(new[] {0, 1, 0});
             var tr = new TransitKey(state, action);
@@ -57,7 +57,7 @@ namespace TorchSharpTest.RLTest.ModelTest
         [Fact]
         public void CreateValueTableTest2()
         {
-            var vt = new ValueTable();
+            var vt = new QTable();
             var state = torch.tensor(new[] {0, 0, 1});
             var action = torch.tensor(new[] {0, 1, 0});
             vt[state, action] = 3f;

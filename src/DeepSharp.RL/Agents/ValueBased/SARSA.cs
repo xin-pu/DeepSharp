@@ -56,13 +56,13 @@ namespace DeepSharp.RL.Agents
             var a = step.Action.Value!;
             var r = step.Reward.Value;
             var sNext = step.StateNew.Value!;
-            var q = ValueTable[s, a];
+            var q = QTable[s, a];
 
             var aNext = GetEpsilonAct(sNext); /// a' by ε-greedy policy
-            var qNext = ValueTable[sNext, aNext.Value!];
+            var qNext = QTable[sNext, aNext.Value!];
 
 
-            ValueTable[s, a] = q + Alpha * (r + Gamma * qNext - q);
+            QTable[s, a] = q + Alpha * (r + Gamma * qNext - q);
             return aNext;
         }
     }

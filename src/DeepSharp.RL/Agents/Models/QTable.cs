@@ -5,10 +5,11 @@ namespace DeepSharp.RL.Agents
 {
     /// <summary>
     ///     State-Action Value Table
+    ///     Q(State,Action) = Value (Reward)
     /// </summary>
-    public class ValueTable
+    public class QTable : IEquatable<QTable>
     {
-        public ValueTable()
+        public QTable()
         {
             Return = new Dictionary<TransitKey, float>();
         }
@@ -28,6 +29,15 @@ namespace DeepSharp.RL.Agents
         {
             get => GetValue(new TransitKey(state, action));
             set => SetValue(new TransitKey(state, action), value);
+        }
+
+
+        public bool Equals(QTable? other)
+        {
+            if (other == null) return false;
+            if (other.TrasitKeys.Count != TrasitKeys.Count) return false;
+            var res = TrasitKeys.All(key => !(Math.Abs(this[key] - other[key]) > 1E-2));
+            return res;
         }
 
 
@@ -88,7 +98,6 @@ namespace DeepSharp.RL.Agents
                 .Max(a => a.Value);
             return bestValue;
         }
-
 
         public override string ToString()
         {

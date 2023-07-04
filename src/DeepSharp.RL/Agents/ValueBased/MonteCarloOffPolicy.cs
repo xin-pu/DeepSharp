@@ -57,7 +57,7 @@ namespace DeepSharp.RL.Agents
                 var per = steps.Skip(t).Select(GetTransitPer).Aggregate(1f, (a, b) => a * b); ///Error Here
                 var finalR = r * per;
                 var count = GetCount(key);
-                ValueTable[key] = (ValueTable[key] * count + finalR) / (count + 1);
+                QTable[key] = (QTable[key] * count + finalR) / (count + 1);
                 SetCount(key, count + 1);
             }
         }
