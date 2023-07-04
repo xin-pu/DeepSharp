@@ -50,7 +50,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.72, 0.70}) {Gamma = 0.95f};
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new DQN(kArmedBandit, 1, 100, 0.1f);
+            var agent = new DQN(kArmedBandit, 1, 100);
             Print(kArmedBandit);
 
             var i = 0;

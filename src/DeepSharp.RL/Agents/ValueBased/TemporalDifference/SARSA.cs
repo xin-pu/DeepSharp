@@ -1,6 +1,6 @@
 ﻿using DeepSharp.RL.Environs;
 
-namespace DeepSharp.RL.Agents.ValueBased.TemporalDifference
+namespace DeepSharp.RL.Agents
 {
     public class SARSA : ValueAgent
     {
