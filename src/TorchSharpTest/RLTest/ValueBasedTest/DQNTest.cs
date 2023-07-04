@@ -50,7 +50,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         public void FrozenlakeMain()
         {
             var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
-            var agent = new DQN(frozenlake);
+            var agent = new DQN(frozenlake, 100, 1000, 0.9f);
             Print(frozenlake);
 
 
@@ -65,6 +65,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                 agent.Learn();
 
                 reward = agent.TestEpisodes(testEpisode);
+                Print($"{i}:\t{reward}");
             } while (reward < predReward);
 
             Print($"Stop after Learn {i}");
