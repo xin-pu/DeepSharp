@@ -5,7 +5,7 @@ namespace DeepSharp.RL.Agents
 {
     /// <summary>
     ///     State-Action Value Table
-    ///     Q(State,Action) = Value (Reward)
+    ///     Q(s,a) = Cumulative reward
     /// </summary>
     public class QTable : IEquatable<QTable>
     {

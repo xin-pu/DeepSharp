@@ -3,9 +3,9 @@ using FluentAssertions;
 
 namespace TorchSharpTest.RLTest.ModelTest
 {
-    public class ValueTableTest : AbstractTest
+    public class QTableTest : AbstractTest
     {
-        public ValueTableTest(ITestOutputHelper testOutputHelper)
+        public QTableTest(ITestOutputHelper testOutputHelper)
             : base(testOutputHelper)
         {
         }

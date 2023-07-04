@@ -34,6 +34,7 @@ namespace DeepSharp.RL.Agents
 
             return $"{state} \r\n {action}  \r\n {newState}";
         }
+
         public static bool operator ==(RewardKey x, RewardKey y)
         {
             return x.Equals(y);
@@ -48,6 +49,7 @@ namespace DeepSharp.RL.Agents
         {
             return State.Equals(other.State) && Act.Equals(other.Act) && NewState.Equals(other.NewState);
         }
+
 
         public override bool Equals(object? obj)
         {

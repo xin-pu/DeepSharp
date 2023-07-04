@@ -1,6 +1,6 @@
 ﻿using DeepSharp.RL.Environs;
 
-namespace DeepSharp.RL.Agents
+namespace DeepSharp.RL.Agents.ValueBased.TemporalDifference
 {
     public class QLearning : ValueAgent
     {
