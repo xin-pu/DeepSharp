@@ -1,6 +1,5 @@
 ﻿using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
-using FluentAssertions;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {
@@ -13,68 +12,65 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
 
         [Fact]
-        public void TestDQNModel()
-        {
-            var deviceType = DeviceType.CPU;
-            var scalarType = torch.ScalarType.Float32;
-
-            var net = new DQNNet(new long[] {1, 416, 416}, 3,
-                scalarType,
-                deviceType);
-
-            var c = net.children();
-            foreach (var module in c) Print(module.GetName());
-
-            var input = torch.randn(1, 1, 416, 416, scalarType, new torch.Device(deviceType));
-            var res = net.forward(input);
-            Print(res);
-
-            res.shape.Should().BeEquivalentTo(new long[] {1, 3});
-        }
-
-
-        [Fact]
         public void TestDQN()
         {
             var frozenLake = new Frozenlake();
-            var dqn = new DQN(frozenLake, 10, 10);
+            var dqn = new DQN(frozenLake);
             var act = dqn.GetPolicyAct(frozenLake.Observation!.Value!);
             Print(act);
         }
 
-
         [Fact]
         public void KArmedBanditMain()
         {
-            /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.80, 0.72, 0.70}) {Gamma = 0.95f};
-
-            /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new DQN(kArmedBandit, 1, 100);
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var agent = new DQN(kArmedBandit, 100, 1000);
             Print(kArmedBandit);
 
             var i = 0;
-            var testEpisode = 20;
-            var bestReward = 0f;
-            while (true)
+            float reward;
+            const int testEpisode = 20;
+            const float predReward = 17f;
+            do
             {
                 i++;
                 kArmedBandit.Reset();
                 agent.Learn();
 
+                reward = agent.TestEpisodes(testEpisode);
+                Print($"{i}:\t{reward}");
+            } while (reward <= predReward);
 
-                var episode = agent.RunEpisodes(testEpisode);
-                var reward = episode.Average(a => a.SumReward.Value);
+            var episode = agent.RunEpisode();
+            Print(episode);
+        }
 
-                bestReward = new[] {bestReward, reward}.Max();
-                Print($"{agent} Play:{i:D3}\t {reward}");
-                if (bestReward > 16.2)
-                    break;
-            }
 
-            var e = agent.RunEpisode();
-            var act = e.Steps.Select(a => a.Action);
-            Print(string.Join("\r\n", act));
+        [Fact]
+        public void FrozenlakeMain()
+        {
+            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
+            var agent = new DQN(frozenlake);
+            Print(frozenlake);
+
+
+            var i = 0;
+            float reward;
+            const int testEpisode = 20;
+            const float predReward = 0.7f;
+            do
+            {
+                i++;
+                frozenlake.Reset();
+                agent.Learn();
+
+                reward = agent.TestEpisodes(testEpisode);
+            } while (reward < predReward);
+
+            Print($"Stop after Learn {i}");
+            frozenlake.ChangeToRough();
+            var episode = agent.RunEpisode();
+            Print(episode);
         }
     }
 }

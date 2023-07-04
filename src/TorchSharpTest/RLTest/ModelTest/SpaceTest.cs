@@ -72,7 +72,7 @@ namespace TorchSharpTest.RLTest.ModelTest
             {
                 var data = a.Sample();
                 Print(data);
-                data.ToInt64().Should().BeInRange(1, 5);
+                data.ToInt64().Should().BeInRange(0, 4);
             }
         }
 
