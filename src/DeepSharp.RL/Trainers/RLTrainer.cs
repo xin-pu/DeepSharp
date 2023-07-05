@@ -5,16 +5,34 @@ namespace DeepSharp.RL.Trainers
 {
     public class RLTrainer
     {
-        protected RLTrainer(Agent agent)
+        private TrainerCallBack? callback;
+
+        public RLTrainer(Agent agent)
         {
             Agent = agent;
         }
 
+        public RLTrainer(Agent agent, Action<object> print)
+        {
+            Agent = agent;
+            Print = print;
+        }
+
         public Agent Agent { set; get; }
 
+        public TrainerCallBack? Callback
+        {
+            set
+            {
+                callback = value;
+                if (callback != null)
+                    callback.RlTrainer = this;
+            }
+            get => callback;
+        }
 
-        public TrainerCallBack? Callback { set; get; }
         public Action<object>? Print { set; get; }
+
 
         public virtual void Train(
             float preReward,
@@ -62,49 +80,49 @@ namespace DeepSharp.RL.Trainers
         }
 
 
-        public virtual void OnTrainStart()
+        protected virtual void OnTrainStart()
         {
             Print?.Invoke($"[{Agent}] start training.");
             Callback?.OnTrainStart();
         }
 
-        public virtual void OnTrainEnd()
+        protected virtual void OnTrainEnd()
         {
             Print?.Invoke($"[{Agent}] stop training.");
             Callback?.OnTrainEnd();
         }
 
 
-        public virtual void OnLearnStart(int epoch)
+        protected virtual void OnLearnStart(int epoch)
         {
             Callback?.OnLearnStart(epoch);
         }
 
 
-        public virtual void OnLearnEnd(int epoch, LearnOutcome outcome)
+        protected virtual void OnLearnEnd(int epoch, LearnOutcome outcome)
         {
-            Print?.Invoke($"Learn {epoch:D5}:\t {outcome}");
+            Print?.Invoke($"<Train> {epoch:D5}:\t {outcome}");
             Callback?.OnLearnEnd(epoch, outcome);
         }
 
-        public virtual void OnValStart(int epoch)
+        protected virtual void OnValStart(int epoch)
         {
             Callback?.OnValStart(epoch);
         }
 
-        public virtual void OnValStop(int epoch, Episode[] episodes)
+        protected virtual void OnValStop(int epoch, Episode[] episodes)
         {
             var aveReward = episodes.Average(a => a.SumReward.Value);
-            Print?.Invoke($"[{Agent}];\tVal:[{episodes.Length}]:\tR:[{aveReward:F2}]");
+            Print?.Invoke($"<Val> E:[{episodes.Length}]:\tR:[{aveReward:F2}]");
             Callback?.OnValEnd(epoch, episodes);
         }
 
-        public virtual void OnSaveStart()
+        protected virtual void OnSaveStart()
         {
             Callback?.OnSaveStart();
         }
 
-        public virtual void OnSaveEnd()
+        protected virtual void OnSaveEnd()
         {
             Callback?.OnSaveEnd();
         }

@@ -56,5 +56,12 @@ namespace DeepSharp.RL.Agents
         {
             Evaluate = evaluation;
         }
+
+        public override string ToString()
+        {
+            var avrReward = Steps.Average(a => a.Reward.Value);
+            var message = $"[Outcome]:\tS:{Steps.Count}\tR:{avrReward:F4}\tE:{Evaluate:F4}";
+            return message;
+        }
     }
 }

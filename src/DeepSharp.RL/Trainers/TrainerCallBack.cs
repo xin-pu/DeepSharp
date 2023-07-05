@@ -5,16 +5,7 @@ namespace DeepSharp.RL.Trainers
 {
     public abstract class TrainerCallBack
     {
-        protected TrainerCallBack(RLTrainer rltrainer)
-        {
-            RlTrainer = rltrainer;
-        }
-
-
-        public RLTrainer RlTrainer { protected set; get; }
-
-        public Agent Agent => RlTrainer.Agent;
-
+        public RLTrainer RlTrainer { set; get; } = null!;
 
         public abstract void OnTrainStart();
         public abstract void OnTrainEnd();
