@@ -198,6 +198,16 @@ namespace DeepSharp.RL.Environs
             return res;
         }
 
+        /// <summary>
+        ///     获取一个片段的奖励
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <returns></returns>
+        public override float GetReturn(Episode episode)
+        {
+            return episode.Steps.Last().Reward.Value;
+        }
+
         public override bool IsComplete(int epoch)
         {
             return this[PlayID].Role == LakeRole.End || this[PlayID].Role == LakeRole.Hole || epoch > 100;

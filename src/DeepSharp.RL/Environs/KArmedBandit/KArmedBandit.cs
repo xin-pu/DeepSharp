@@ -63,6 +63,16 @@ namespace DeepSharp.RL.Environs
             return reward;
         }
 
+        /// <summary>
+        ///     The cumulative reward received by the trajectory of an interaction process
+        ///     apply for evaluate
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <returns></returns>
+        public override float GetReturn(Episode episode)
+        {
+            return episode.Steps.Average(a => a.Reward.Value);
+        }
 
         /// <summary>
         /// </summary>

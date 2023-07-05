@@ -77,6 +77,7 @@ namespace DeepSharp.RL.Environs
             return Observation;
         }
 
+        public abstract float GetReturn(Episode episode);
 
         public virtual Act SampleAct()
         {

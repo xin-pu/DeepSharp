@@ -25,12 +25,12 @@ namespace TorchSharpTest.RLTest.TrainerTest
         public void TrainCallBackTest()
         {
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
-            var agent = new SARSA(kArmedBandit);
+            var agent = new DQN(kArmedBandit);
             var trainer = new RLTrainer(agent, Print)
             {
                 Callback = new TestCallBack()
             };
-            trainer.Train(17f, 1, "", 20, 2);
+            trainer.Train(0.85f, 500, "", 20);
         }
 
 

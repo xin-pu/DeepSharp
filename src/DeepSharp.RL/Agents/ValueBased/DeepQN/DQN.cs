@@ -1,5 +1,4 @@
-﻿using DeepSharp.RL.Enumerates;
-using DeepSharp.RL.Environs;
+﻿using DeepSharp.RL.Environs;
 using DeepSharp.RL.ExpReplays;
 using static TorchSharp.torch.optim;
 
@@ -119,7 +118,7 @@ namespace DeepSharp.RL.Agents
                 learnOutCome.AppendStep(episode);
                 UniformExp.Enqueue(episode);
                 if (UniformExp.Buffers.Count >= C)
-                    UpdateNet();
+                    learnOutCome.Evaluate = UpdateNet();
             }
 
             /// 每隔C次刚更新权重 Net -> TargetNet
@@ -130,12 +129,13 @@ namespace DeepSharp.RL.Agents
 
         public override void Save(string path)
         {
-            throw new NotImplementedException();
+            if (File.Exists(path)) File.Delete(path);
+            Q.save(path);
         }
 
         public override void Load(string path)
         {
-            throw new NotImplementedException();
+            Q.load(path);
         }
 
         /// <summary>
@@ -171,34 +171,6 @@ namespace DeepSharp.RL.Agents
             loss.backward();
             Optimizer.step();
             return loss.item<float>();
-        }
-
-
-        public override Episode RunEpisode(PlayMode playMode = PlayMode.Agent)
-        {
-            Environ.Reset();
-            var episode = new Episode();
-            var epoch = 0;
-            while (Environ.IsComplete(epoch) == false)
-            {
-                epoch++;
-                var act = playMode switch
-                {
-                    PlayMode.Sample => GetSampleAct(),
-                    PlayMode.Agent => GetPolicyAct(Environ.Observation!.Value!),
-                    PlayMode.EpsilonGreedy => GetEpsilonAct(Environ.Observation!.Value!),
-                    _ => throw new ArgumentOutOfRangeException(nameof(playMode), playMode, null)
-                };
-                var step = Environ.Step(act, epoch);
-                episode.Steps.Add(step);
-                Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.PostState; /// It's import for Update Observation
-            }
-
-            var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward;
-            episode.SumReward = new Reward(sumReward);
-            return episode;
         }
     }
 }

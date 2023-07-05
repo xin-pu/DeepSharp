@@ -35,7 +35,7 @@ namespace DeepSharp.RL.Agents
         }
 
         public List<Step> Steps { protected set; get; }
-        public float Evaluate { protected set; get; }
+        public float Evaluate { set; get; }
 
         public void AppendStep(Step step)
         {
@@ -60,7 +60,7 @@ namespace DeepSharp.RL.Agents
         public override string ToString()
         {
             var avrReward = Steps.Average(a => a.Reward.Value);
-            var message = $"[Outcome]:\tS:{Steps.Count}\tR:{avrReward:F4}\tE:{Evaluate:F4}";
+            var message = $"S:{Steps.Count}\tR:{avrReward:F4}\tE:{Evaluate:F4}";
             return message;
         }
     }

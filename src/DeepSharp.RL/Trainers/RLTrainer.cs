@@ -43,7 +43,8 @@ namespace DeepSharp.RL.Trainers
         {
             OnTrainStart();
 
-            foreach (var epoch in Enumerable.Range(0, trainEpoch))
+            var valEpoch = 0;
+            foreach (var epoch in Enumerable.Range(1, trainEpoch))
             {
                 OnLearnStart(epoch);
 
@@ -57,9 +58,10 @@ namespace DeepSharp.RL.Trainers
 
                 if (epoch % testInterval == 0)
                 {
-                    OnValStart(epoch);
+                    valEpoch++;
+                    OnValStart(valEpoch);
                     var episodes = Agent.RunEpisodes(testEpisodes);
-                    OnValStop(epoch, episodes);
+                    OnValStop(valEpoch, episodes);
 
                     var valReward = episodes.Average(e => e.SumReward.Value);
                     if (valReward >= preReward)
@@ -101,7 +103,7 @@ namespace DeepSharp.RL.Trainers
 
         protected virtual void OnLearnEnd(int epoch, LearnOutcome outcome)
         {
-            Print?.Invoke($"<Train> {epoch:D5}:\t {outcome}");
+            Print?.Invoke($"[Tra]\t{epoch:D5}\t{outcome}");
             Callback?.OnLearnEnd(epoch, outcome);
         }
 
@@ -113,7 +115,7 @@ namespace DeepSharp.RL.Trainers
         protected virtual void OnValStop(int epoch, Episode[] episodes)
         {
             var aveReward = episodes.Average(a => a.SumReward.Value);
-            Print?.Invoke($"<Val> E:[{episodes.Length}]:\tR:[{aveReward:F2}]");
+            Print?.Invoke($"[Val]\t{epoch:D5}\tE:{episodes.Length}:\tR:{aveReward:F4}");
             Callback?.OnValEnd(epoch, episodes);
         }
 
