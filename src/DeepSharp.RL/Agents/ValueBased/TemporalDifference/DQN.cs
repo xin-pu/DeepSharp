@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.ExperienceSources;
 using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
@@ -39,7 +40,7 @@ namespace DeepSharp.RL.Agents
             QTarget.load_state_dict(Q.state_dict());
             Optimizer = SGD(Q.parameters(), 0.001);
             Loss = MSELoss();
-            Experience = new ExperienceReplayBuffer(C);
+            UniformExp = new UniformExpReplays(C);
         }
 
         public int ActionSpace { protected set; get; }
@@ -75,7 +76,7 @@ namespace DeepSharp.RL.Agents
 
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { protected set; get; }
 
-        public ExperienceReplayBuffer Experience { protected set; get; }
+        public UniformExpReplays UniformExp { protected set; get; }
 
 
         public override Act GetPolicyAct(torch.Tensor state)
@@ -97,6 +98,7 @@ namespace DeepSharp.RL.Agents
             {
                 Environ.Reset();
                 var epoch = 0;
+                var episode = new Episode();
                 while (Environ.IsComplete(epoch) == false)
                 {
                     epoch++;
@@ -105,14 +107,15 @@ namespace DeepSharp.RL.Agents
                     /// Step 3 get reward and next state
                     var step = Environ.Step(act, epoch);
                     /// Step 4 save to Experience
-                    Experience.Append(step);
+                    episode.Enqueue(step);
 
                     Environ.CallBack?.Invoke(step);
-                    Environ.Observation = step.StateNew; /// It's import for Update Observation
+                    Environ.Observation = step.PostState; /// It's import for Update Observation
                 }
 
                 /// Step 5 update Q from Experience
-                if (Experience.Buffers.Count >= C)
+                UniformExp.Enqueue(episode);
+                if (UniformExp.Buffers.Count >= C)
                     UpdateNet();
             }
 
@@ -135,26 +138,15 @@ namespace DeepSharp.RL.Agents
         private float UpdateNet()
         {
             /// Get batch size Sample
-            var batchStep = Experience.Sample(BatchSize);
+            var batchSample = UniformExp.Sample(BatchSize);
 
-            /// Get Array from Steps
-            var stateArray = batchStep.Select(a => a.State.Value!.unsqueeze(0)).ToArray();
-            var actArray = batchStep.Select(a => a.Action.Value!.unsqueeze(0)).ToArray();
-            var rewardArray = batchStep.Select(a => a.Reward.Value).ToArray();
-            var stateNextArray = batchStep.Select(a => a.StateNew.Value!.unsqueeze(0)).ToArray();
-
-            /// Convert to VStack
-            var state = torch.vstack(stateArray);
-            var actionV = torch.vstack(actArray).to(torch.ScalarType.Int64);
-            var reward = torch.from_array(rewardArray).reshape(BatchSize);
-            var stateNext = torch.vstack(stateNextArray);
 
             /// Calcluate => Q(a,s)
-            var stateActionValue = Q.forward(state).gather(1, actionV).squeeze(-1);
+            var stateActionValue = Q.forward(batchSample.PreState).gather(1, batchSample.Action).squeeze(-1);
 
             /// Calcluate => y = r + γ*argmaxQ'(a,s)
-            var nextStateValue = QTarget.forward(stateNext).max(1).values.detach();
-            var expectedStatedActionValue = reward + Gamma * nextStateValue;
+            var nextStateValue = QTarget.forward(batchSample.PostState).max(1).values.detach();
+            var expectedStatedActionValue = batchSample.Reward + Gamma * nextStateValue;
 
             /// Calcluate => Loss
             var loss = Loss.call(stateActionValue, expectedStatedActionValue);
@@ -185,7 +177,7 @@ namespace DeepSharp.RL.Agents
                 var step = Environ.Step(act, epoch);
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
+                Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
             var orginalReward = episode.Steps.Sum(a => a.Reward.Value);

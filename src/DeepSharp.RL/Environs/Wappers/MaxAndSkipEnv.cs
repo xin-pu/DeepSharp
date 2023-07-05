@@ -21,7 +21,7 @@
             foreach (var _ in Enumerable.Range(0, Skip))
             {
                 var step = Environ.Step(act, epoch);
-                Observations.Enqueue(step.StateNew);
+                Observations.Enqueue(step.PostState);
                 totalReward += step.Reward.Value;
                 if (step.IsComplete)
                 {

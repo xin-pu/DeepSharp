@@ -26,6 +26,10 @@ namespace DeepSharp.RL.Environs
 
         public float Evaluate { set; get; }
 
+        public void Enqueue(Step step)
+        {
+            Steps.Add(step);
+        }
 
         public int[] GetAction()
         {
@@ -41,7 +45,7 @@ namespace DeepSharp.RL.Environs
             str.AppendLine($"Test By Agent: Get Reward {SumReward}");
             Steps.ForEach(s =>
             {
-                var state = s.State.Value!.ToString(torch.numpy);
+                var state = s.PreState.Value!.ToString(torch.numpy);
                 var action = s.Action.Value!.ToInt32();
                 var reward = s.Reward.Value;
                 var line = $"{state},{action},{reward}";

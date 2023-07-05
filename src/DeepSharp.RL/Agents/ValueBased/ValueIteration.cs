@@ -151,7 +151,7 @@ namespace DeepSharp.RL.Agents
 
         private void UpdateTables(Step step)
         {
-            UpdateTables(step.State, step.Action, step.StateNew, step.Reward);
+            UpdateTables(step.PreState, step.Action, step.PostState, step.Reward);
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace DeepSharp.RL.Agents
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
 
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
+                Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
             var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
@@ -60,10 +60,10 @@ namespace DeepSharp.RL.Agents
 
         public void Update(Step step)
         {
-            var s = step.State.Value!;
+            var s = step.PreState.Value!;
             var a = step.Action.Value!;
             var r = step.Reward.Value;
-            var sNext = step.StateNew.Value!;
+            var sNext = step.PostState.Value!;
             var q = QTable[s, a];
 
             var aNext = GetPolicyAct(sNext);

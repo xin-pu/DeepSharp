@@ -5,16 +5,22 @@
     /// </summary>
     public class Step
     {
-        public Step(Observation state, Act action, Observation stateNew, Reward reward, bool isComplete = false)
+        public Step(Observation preState,
+            Act action,
+            Observation postState,
+            Reward reward,
+            bool isComplete = false,
+            float priority = 1f)
         {
-            State = state;
+            PreState = preState;
             Action = action;
             Reward = reward;
-            StateNew = stateNew;
+            PostState = postState;
             IsComplete = isComplete;
+            Priority = priority;
         }
 
-        public Observation State { set; get; }
+        public Observation PreState { set; get; }
 
         /// <summary>
         ///     动作
@@ -24,7 +30,7 @@
         /// <summary>
         ///     动作后的观察
         /// </summary>
-        public Observation StateNew { set; get; }
+        public Observation PostState { set; get; }
 
         /// <summary>
         ///     动作后的奖励
@@ -32,5 +38,7 @@
         public Reward Reward { set; get; }
 
         public bool IsComplete { set; get; }
+
+        public float Priority { set; get; }
     }
 }

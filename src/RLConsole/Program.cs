@@ -9,22 +9,23 @@ static void Print(object obj)
 }
 
 var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
-var agent = new DQN(frozenlake, 100, 1000, 1f);
+var agent = new DQN(frozenlake, 100, 1000, 0.9f, batchSize: 16);
 Print(frozenlake);
 
 
 var i = 0;
 float reward;
 const int testEpisode = 20;
-const float predReward = 0.7f;
+const float predReward = 0.82f;
 do
 {
     i++;
 
     frozenlake.Reset();
     agent.Learn();
-    var e = 1f - (1 - 0.01f) / 1000 * i;
-    agent.Epsilon = e < 0.01f ? 0.01f : e;
+    //var e = 1f - (1 - 0.01f) / 1000 * i;
+    //agent.Epsilon = e < 0.01f ? 0.01f : e;
+
     reward = agent.TestEpisodes(testEpisode);
     Print($"{i}:\t{reward}");
 } while (reward < predReward);

@@ -33,7 +33,7 @@ namespace DeepSharp.RL.Agents
 
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
+                Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
             Update(episode);
@@ -52,7 +52,7 @@ namespace DeepSharp.RL.Agents
             foreach (var t in Enumerable.Range(0, lenth))
             {
                 var step = steps[t];
-                var key = new TransitKey(step.State, step.Action);
+                var key = new TransitKey(step.PreState, step.Action);
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
                 var per = steps.Skip(t).Select(GetTransitPer).Aggregate(1f, (a, b) => a * b); ///Error Here
                 var finalR = r * per;
@@ -65,7 +65,7 @@ namespace DeepSharp.RL.Agents
 
         private float GetTransitPer(Step step)
         {
-            var actPolicy = GetPolicyAct(step.State.Value!).Value!;
+            var actPolicy = GetPolicyAct(step.PreState.Value!).Value!;
             var actStep = step.Action.Value!;
             var actionSpace = Environ.ActionSpace!.N;
             var e = 1f;

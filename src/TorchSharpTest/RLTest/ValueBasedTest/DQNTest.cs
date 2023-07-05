@@ -24,7 +24,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         public void KArmedBanditMain()
         {
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
-            var agent = new DQN(kArmedBandit, 100, 1000);
+            var agent = new DQN(kArmedBandit, 100, 1000, batchSize: 16);
             Print(kArmedBandit);
 
             var i = 0;
@@ -38,7 +38,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                 agent.Learn();
 
                 reward = agent.TestEpisodes(testEpisode);
-                Print($"{i}:\t{reward}");
+                Print($"{i:D5}:\t{reward}");
             } while (reward <= predReward);
 
             var episode = agent.RunEpisode();
@@ -50,14 +50,14 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         public void FrozenlakeMain()
         {
             var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
-            var agent = new DQN(frozenlake, 100, 1000, 0.9f);
+            var agent = new DQN(frozenlake, 100, 1000, 0.9f, batchSize: 16);
             Print(frozenlake);
 
 
             var i = 0;
             float reward;
             const int testEpisode = 20;
-            const float predReward = 0.7f;
+            const float predReward = 0.8f;
             do
             {
                 i++;
@@ -65,7 +65,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
                 agent.Learn();
 
                 reward = agent.TestEpisodes(testEpisode);
-                Print($"{i}:\t{reward}");
+                Print($"{i:D5}:\t{reward}");
             } while (reward < predReward);
 
             Print($"Stop after Learn {i}");

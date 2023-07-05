@@ -38,7 +38,7 @@ namespace DeepSharp.RL.Agents
                 episode.Steps.Add(step);
 
                 Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
+                Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
             Update(episode);
@@ -57,7 +57,7 @@ namespace DeepSharp.RL.Agents
             foreach (var t in Enumerable.Range(0, lenth))
             {
                 var step = steps[t];
-                var key = new TransitKey(step.State, step.Action);
+                var key = new TransitKey(step.PreState, step.Action);
                 var r = steps.Skip(t).Average(a => a.Reward.Value);
                 var count = GetCount(key);
                 QTable[key] = (QTable[key] * count + r) / (count + 1);

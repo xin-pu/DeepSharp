@@ -85,7 +85,7 @@ namespace DeepSharp.RL.Agents
                 var step = Environ.Step(act, epoch);
                 episode.Steps.Add(step);
                 Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.StateNew; /// It's import for Update Observation
+                Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
             var orginalReward = episode.Steps.Sum(a => a.Reward.Value);

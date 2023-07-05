@@ -57,7 +57,7 @@ namespace DeepSharp.RL.Agents
                 .ToList();
 
             var observations = oars
-                .Select(a => a.StateNew.Value)
+                .Select(a => a.PostState.Value)
                 .ToList();
             var actions = oars
                 .Select(a => a.Action.Value)

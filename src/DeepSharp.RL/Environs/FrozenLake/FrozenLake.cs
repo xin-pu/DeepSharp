@@ -200,7 +200,7 @@ namespace DeepSharp.RL.Environs
 
         public override bool IsComplete(int epoch)
         {
-            return this[PlayID].Role == LakeRole.End || this[PlayID].Role == LakeRole.Hole;
+            return this[PlayID].Role == LakeRole.End || this[PlayID].Role == LakeRole.Hole || epoch > 100;
         }
 
         public sealed override Observation Reset()
