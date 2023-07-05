@@ -75,6 +75,16 @@ namespace DeepSharp.RL.Agents
             return new LearnOutcome(episodes, loss);
         }
 
+        public override void Save(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Load(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Replace default Optimizer
         /// </summary>

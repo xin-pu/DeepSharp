@@ -37,6 +37,32 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
             Print(episode);
         }
 
+        [Fact]
+        public void KArmedBanditMainHighLevel()
+        {
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var agent = new QLearning(kArmedBandit);
+            Print(kArmedBandit);
+
+            var i = 0;
+            float reward;
+            const int testEpisode = 20;
+            const float predReward = 17f;
+            do
+            {
+                i++;
+                kArmedBandit.Reset();
+                agent.Learn();
+
+                reward = agent.TestEpisodes(testEpisode);
+            } while (reward < predReward);
+
+            Print($"Stop after Learn {i}");
+
+            var episode = agent.RunEpisode();
+            Print(episode);
+        }
+
 
         [Fact]
         public void FrozenlakeMain()

@@ -29,4 +29,8 @@
     <ProjectReference Include="..\DeepSharp.RL\DeepSharp.RL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="RLTest\TrainerTest\" />
+  </ItemGroup>
+
 </Project>

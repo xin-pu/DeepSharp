@@ -24,5 +24,15 @@ namespace DeepSharp.RL.Agents
             var action = QTable.GetBestAct(state);
             return action ?? GetSampleAct();
         }
+
+        public override void Save(string path)
+        {
+            /// Save Q Table
+        }
+
+        public override void Load(string path)
+        {
+            /// Save Q Table
+        }
     }
 }

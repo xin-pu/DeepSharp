@@ -79,6 +79,16 @@ namespace DeepSharp.RL.Agents
             return new LearnOutcome(episodes);
         }
 
+        public override void Save(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Load(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Update(Episode episode)
         {
             episode.Steps.ForEach(UpdateTables);

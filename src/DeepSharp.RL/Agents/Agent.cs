@@ -16,6 +16,7 @@ namespace DeepSharp.RL.Agents
             Device = env.Device;
         }
 
+
         public string Name { protected set; get; }
         public torch.Device Device { protected set; get; }
 
@@ -28,6 +29,10 @@ namespace DeepSharp.RL.Agents
 
 
         public abstract LearnOutcome Learn();
+
+        public abstract void Save(string path);
+
+        public abstract void Load(string path);
 
 
         /// <summary>

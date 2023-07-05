@@ -128,6 +128,16 @@ namespace DeepSharp.RL.Agents
             return learnOutCome;
         }
 
+        public override void Save(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Load(string path)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         ///     Copy Q to QTarget
         /// </summary>

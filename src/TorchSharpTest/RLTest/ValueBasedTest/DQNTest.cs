@@ -23,14 +23,14 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KArmedBanditMain()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75, 0.88, 0.9, 0.75, 0.75}) {Gamma = 0.95f};
             var agent = new DQN(kArmedBandit, 100, 1000, batchSize: 16);
             Print(kArmedBandit);
 
             var i = 0;
             float reward;
             const int testEpisode = 20;
-            const float predReward = 17f;
+            const float predReward = 18f;
             do
             {
                 i++;
