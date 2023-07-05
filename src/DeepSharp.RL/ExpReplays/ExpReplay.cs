@@ -1,10 +1,11 @@
 ﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.ExperienceSources;
 
-namespace DeepSharp.RL.ExperienceSources
+namespace DeepSharp.RL.ExpReplays
 {
-    public abstract class ExpReplays
+    public abstract class ExpReplay
     {
-        protected ExpReplays(int capacity = 10000)
+        protected ExpReplay(int capacity = 10000)
         {
             Capacity = capacity;
             Buffers = new Queue<Step>(capacity);

@@ -1,5 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.RL.ExperienceSources;
+using DeepSharp.RL.ExpReplays;
 using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
@@ -40,7 +40,7 @@ namespace DeepSharp.RL.Agents
             QTarget.load_state_dict(Q.state_dict());
             Optimizer = SGD(Q.parameters(), 0.001);
             Loss = MSELoss();
-            UniformExp = new UniformExpReplays(C);
+            UniformExp = new UniformExpReplay(C);
         }
 
         public int ActionSpace { protected set; get; }
@@ -76,7 +76,7 @@ namespace DeepSharp.RL.Agents
 
         public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { protected set; get; }
 
-        public UniformExpReplays UniformExp { protected set; get; }
+        public UniformExpReplay UniformExp { protected set; get; }
 
 
         public override Act GetPolicyAct(torch.Tensor state)

@@ -1,16 +1,16 @@
 ﻿using DeepSharp.RL.Environs;
 
-namespace DeepSharp.RL.ExperienceSources
+namespace DeepSharp.RL.ExpReplays
 {
     /// <summary>
     ///     Uniform sample from Experience Source Cache
     /// </summary>
-    public class UniformExpReplays : ExpReplays
+    public class UniformExpReplay : ExpReplay
     {
         /// <summary>
         /// </summary>
         /// <param name="c">Capacity of Experience Replay Buffer,recommend 10^5 ~ 10^6</param>
-        public UniformExpReplays(int capacity = 10000)
+        public UniformExpReplay(int capacity = 10000)
             : base(capacity)
         {
         }
