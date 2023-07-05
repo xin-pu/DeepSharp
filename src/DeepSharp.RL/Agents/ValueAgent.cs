@@ -12,7 +12,6 @@ namespace DeepSharp.RL.Agents
 
         public QTable QTable { protected set; get; }
 
-        public abstract Episode Learn();
 
         /// <summary>
         ///     argmax(a') Q(state,a')

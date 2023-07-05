@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs;
+﻿using DeepSharp.RL.Enumerates;
+using DeepSharp.RL.Environs;
 using MathNet.Numerics.Random;
 
 namespace DeepSharp.RL.Agents
@@ -24,6 +25,10 @@ namespace DeepSharp.RL.Agents
 
         public Environ<Space, Space> Environ { protected set; get; }
         public float Epsilon { set; get; } = 0.2f;
+
+
+        public abstract LearnOutcome Learn();
+
 
         /// <summary>
         ///     Get a random Action
@@ -126,12 +131,5 @@ namespace DeepSharp.RL.Agents
         {
             return $"Agent[{Name}]";
         }
-    }
-
-    public enum PlayMode
-    {
-        Sample,
-        Agent,
-        EpsilonGreedy
     }
 }

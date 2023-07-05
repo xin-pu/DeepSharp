@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Enumerates;
 using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest.EnvironTest
@@ -53,7 +54,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
             var episodesEachBatch = 20;
 
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(2, DeviceType.CPU)
+            var kArmedBandit = new KArmedBandit(2)
             {
                 [0] = {Prob = 0.4},
                 [1] = {Prob = 0.75}
@@ -61,12 +62,12 @@ namespace TorchSharpTest.RLTest.EnvironTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new CrossEntropy(kArmedBandit);
+            var agent = new CrossEntropy(kArmedBandit, episodesEachBatch);
 
             /// Step 3 Learn and Optimize
             foreach (var i in Enumerable.Range(0, epoch))
             {
-                var loss = agent.Learn(episodesEachBatch);
+                var loss = agent.Learn();
 
                 var test = agent.RunEpisodes(episodesEachBatch);
 
@@ -85,7 +86,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
             Print(kArmedBandit);
 
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new ValueIteration(kArmedBandit);
+            var agent = new ValueIteration(kArmedBandit, 20);
             agent.RunEpisodes(20, PlayMode.Sample);
             Print(kArmedBandit);
         }
@@ -94,7 +95,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
         public void QLearningMain()
         {
             /// Step 1 Create a 4-Armed Bandit
-            var kArmedBandit = new KArmedBandit(4, DeviceType.CPU)
+            var kArmedBandit = new KArmedBandit(4)
             {
                 [0] = {Prob = 0.5},
                 [1] = {Prob = 0.2},
@@ -102,14 +103,14 @@ namespace TorchSharpTest.RLTest.EnvironTest
                 [3] = {Prob = 0.8}
             };
             /// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-            var agent = new ValueIteration(kArmedBandit);
+            var agent = new ValueIteration(kArmedBandit, 100);
             Print(kArmedBandit);
 
             var i = 0;
             var bestReward = 0f;
             while (i < 100)
             {
-                agent.Learns(100);
+                agent.Learn();
 
                 var episodes = agent.RunEpisodes(10);
                 foreach (var episode in episodes)

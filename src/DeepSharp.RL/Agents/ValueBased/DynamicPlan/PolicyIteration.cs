@@ -37,7 +37,7 @@ namespace DeepSharp.RL.Agents
         protected RewardKey[] RewardKeys { set; get; }
 
 
-        public override Episode Learn()
+        public override LearnOutcome Learn()
         {
             while (true)
             {
@@ -55,7 +55,7 @@ namespace DeepSharp.RL.Agents
                 QTable = qTable;
             }
 
-            return new Episode();
+            return new LearnOutcome();
         }
 
         protected abstract VTable GetVTable(int t);

@@ -15,9 +15,10 @@ namespace DeepSharp.RL.Agents
         public List<DateTime> Start = new();
 
         public CrossEntropyExt(Environ<Space, Space> environ,
+            int t,
             float percentElite = 0.7f,
             int hiddenSize = 100)
-            : base(environ, percentElite, hiddenSize)
+            : base(environ, t, percentElite, hiddenSize)
         {
             Optimizer = Adam(AgentNet.parameters(), 0.01);
         }

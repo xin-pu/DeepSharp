@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.ActionSelectors;
+using DeepSharp.RL.Enumerates;
 using DeepSharp.RL.Environs;
 using FluentAssertions;
 using static TorchSharp.torch.optim;
@@ -13,9 +14,11 @@ namespace DeepSharp.RL.Agents
     public class CrossEntropy : Agent
     {
         public CrossEntropy(Environ<Space, Space> environ,
+            int t,
             float percentElite = 0.7f,
             int hiddenSize = 100) : base(environ, "CrossEntropy")
         {
+            T = t;
             PercentElite = percentElite;
             AgentNet = new Net((int) environ.ObservationSpace!.N, hiddenSize, (int) environ.ActionSpace!.N,
                 Device.type);
@@ -23,6 +26,7 @@ namespace DeepSharp.RL.Agents
             Loss = CrossEntropyLoss();
         }
 
+        public int T { protected set; get; }
 
         public float PercentElite { protected set; get; }
 
@@ -48,12 +52,12 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public float Learn(int count)
+        public override LearnOutcome Learn()
         {
-            var steps = RunEpisodes(count, PlayMode.Sample);
-            var eliteSteps = GetElite(steps);
+            var episodes = RunEpisodes(T, PlayMode.Sample);
+            var elite = GetElite(episodes);
 
-            var oars = eliteSteps.SelectMany(a => a.Steps)
+            var oars = elite.SelectMany(a => a.Steps)
                 .ToList();
 
             var observations = oars
@@ -68,7 +72,7 @@ namespace DeepSharp.RL.Agents
 
             var loss = Learn(observation, action);
 
-            return loss;
+            return new LearnOutcome(episodes, loss);
         }
 
         /// <summary>

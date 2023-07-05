@@ -33,7 +33,7 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public override Episode Learn()
+        public override LearnOutcome Learn()
         {
             Environ.Reset();
             var episode = new Episode();
@@ -52,10 +52,10 @@ namespace DeepSharp.RL.Agents
                 Environ.Observation = step.PostState; /// It's import for Update Observation
             }
 
-            var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward;
+            var sumReward = episode.Steps.Sum(a => a.Reward.Value);
             episode.SumReward = new Reward(sumReward);
-            return episode;
+
+            return new LearnOutcome(episode);
         }
 
         public void Update(Step step)

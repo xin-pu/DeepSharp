@@ -23,7 +23,7 @@ namespace DeepSharp.RL.Agents
         public float Alpha { protected set; get; }
         public float Gamma { protected set; get; }
 
-        public override Episode Learn()
+        public override LearnOutcome Learn()
         {
             Environ.Reset();
             var episode = new Episode();
@@ -43,10 +43,10 @@ namespace DeepSharp.RL.Agents
                 act = actNext;
             }
 
-            var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward;
+            var sumReward = episode.Steps.Sum(a => a.Reward.Value);
             episode.SumReward = new Reward(sumReward);
-            return episode;
+
+            return new LearnOutcome(episode);
         }
 
 

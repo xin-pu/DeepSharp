@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs;
+﻿using DeepSharp.RL.Enumerates;
+using DeepSharp.RL.Environs;
 using DeepSharp.RL.ExpReplays;
 using static TorchSharp.torch.optim;
 
@@ -92,8 +93,9 @@ namespace DeepSharp.RL.Agents
         /// <summary>
         ///     Update Net after N
         /// </summary>
-        public void Learn()
+        public override LearnOutcome Learn()
         {
+            var learnOutCome = new LearnOutcome();
             foreach (var _ in Enumerable.Range(0, N))
             {
                 Environ.Reset();
@@ -114,6 +116,7 @@ namespace DeepSharp.RL.Agents
                 }
 
                 /// Step 5 update Q from Experience
+                learnOutCome.AppendStep(episode);
                 UniformExp.Enqueue(episode);
                 if (UniformExp.Buffers.Count >= C)
                     UpdateNet();
@@ -121,6 +124,8 @@ namespace DeepSharp.RL.Agents
 
             /// 每隔C次刚更新权重 Net -> TargetNet
             CopyQToTagget();
+
+            return learnOutCome;
         }
 
         /// <summary>

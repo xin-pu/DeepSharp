@@ -1,4 +1,5 @@
-﻿using DeepSharp.RL.Environs;
+﻿using DeepSharp.RL.Enumerates;
+using DeepSharp.RL.Environs;
 using FluentAssertions;
 
 namespace DeepSharp.RL.Agents
@@ -11,13 +12,16 @@ namespace DeepSharp.RL.Agents
     public class ValueIteration : Agent
 
     {
-        public ValueIteration(Environ<Space, Space> env)
+        public ValueIteration(Environ<Space, Space> env, int t)
             : base(env, "ValueIteration")
         {
             Rewards = new Dictionary<RewardKey, Reward>();
             Transits = new Dictionary<TransitKey, Dictionary<torch.Tensor, int>>();
             Values = new Dictionary<torch.Tensor, float>();
+            T = t;
         }
+
+        public int T { protected set; get; }
 
         /// <summary>
         ///     奖励表
@@ -68,11 +72,11 @@ namespace DeepSharp.RL.Agents
         }
 
 
-        public Episode[] Learns(int count)
+        public override LearnOutcome Learn()
         {
-            var episodes = RunEpisodes(count, PlayMode.Sample);
+            var episodes = RunEpisodes(T, PlayMode.Sample);
             UpdateValueIteration();
-            return episodes;
+            return new LearnOutcome(episodes);
         }
 
         public void Update(Episode episode)

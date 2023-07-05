@@ -42,7 +42,7 @@ namespace DeepSharp.RL.Agents
         protected RewardKey[] RewardKeys { set; get; }
 
 
-        public override Episode Learn()
+        public override LearnOutcome Learn()
         {
             /// Value Iterate
             foreach (var t in Enumerable.Range(1, T))
@@ -56,7 +56,7 @@ namespace DeepSharp.RL.Agents
             /// Get Policy (argmax Q=> Update QTable) by Value
             var qTable = GetQTable(VTable, T);
             QTable = qTable;
-            return new Episode();
+            return new LearnOutcome();
         }
 
         protected abstract VTable GetVTable(int t);

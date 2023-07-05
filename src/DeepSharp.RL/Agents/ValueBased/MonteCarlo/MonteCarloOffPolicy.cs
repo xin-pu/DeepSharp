@@ -20,7 +20,7 @@ namespace DeepSharp.RL.Agents
         public Dictionary<TransitKey, int> Count { protected set; get; }
 
 
-        public override Episode Learn()
+        public override LearnOutcome Learn()
         {
             Environ.Reset();
             var episode = new Episode();
@@ -38,10 +38,12 @@ namespace DeepSharp.RL.Agents
 
             Update(episode);
 
-            var orginalReward = episode.Steps.Sum(a => a.Reward.Value);
-            var sumReward = orginalReward;
+            var sumReward = episode.Steps.Sum(a => a.Reward.Value);
             episode.SumReward = new Reward(sumReward);
-            return episode;
+
+            var learnOut = new LearnOutcome(episode);
+
+            return learnOut;
         }
 
 
