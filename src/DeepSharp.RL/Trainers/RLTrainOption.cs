@@ -10,6 +10,7 @@
             ValInterval = 0;
             SaveFolder = string.Empty;
             OutTimeSpan = TimeSpan.FromHours(1);
+            AutoSave = false;
         }
 
         public float StopReward { set; get; }
@@ -18,5 +19,6 @@
         public int ValEpisode { set; get; }
         public string SaveFolder { set; get; }
         public TimeSpan OutTimeSpan { set; get; }
+        public bool AutoSave { set; get; }
     }
 }

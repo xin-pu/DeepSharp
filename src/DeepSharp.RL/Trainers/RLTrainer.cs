@@ -39,7 +39,8 @@ namespace DeepSharp.RL.Trainers
             int trainEpoch,
             string saveFolder,
             int testEpisodes = -1,
-            int testInterval = 5)
+            int testInterval = 5,
+            bool autoSave = false)
         {
             OnTrainStart();
 
@@ -62,17 +63,29 @@ namespace DeepSharp.RL.Trainers
                     OnValStop(valEpoch, episodes);
 
                     var valReward = episodes.Average(e => e.SumReward.Value);
-                    if (valReward >= preReward)
+
+                    if (!(valReward >= preReward)) continue;
+
+                    if (autoSave)
                     {
                         OnSaveStart();
                         Agent.Save(Path.Combine(saveFolder, $"[{Agent}]_{epoch}_{valReward:F2}.st"));
                         OnSaveEnd();
-                        break;
                     }
+
+                    break;
                 }
             }
 
             OnTrainEnd();
+        }
+
+
+        public virtual void Val(int valEpoch)
+        {
+            var episodes = Agent.RunEpisodes(valEpoch);
+            var aveReward = episodes.Average(a => a.SumReward.Value);
+            Print?.Invoke($"[Val] {valEpoch:D5}\tR:[{aveReward}]");
         }
 
 
@@ -81,6 +94,8 @@ namespace DeepSharp.RL.Trainers
             Train(tp.StopReward, tp.TrainEpoch, tp.SaveFolder, tp.ValEpisode, tp.ValInterval);
         }
 
+
+        #region MyRegion
 
         protected virtual void OnTrainStart()
         {
@@ -128,5 +143,7 @@ namespace DeepSharp.RL.Trainers
         {
             Callback?.OnSaveEnd();
         }
+
+        #endregion
     }
 }

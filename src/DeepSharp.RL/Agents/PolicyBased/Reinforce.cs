@@ -1,4 +1,5 @@
 ﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.ExpReplays;
 using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
@@ -15,6 +16,7 @@ namespace DeepSharp.RL.Agents
             Gamma = gamma;
             Alpha = alpha;
 
+            ExpReplays = new UniformExpReplay();
             Optimizer = Adam(PolicyNet.parameters(), Alpha);
         }
 
@@ -22,14 +24,66 @@ namespace DeepSharp.RL.Agents
         ///     Episodes send to train
         /// </summary>
         public int Batchsize { protected set; get; }
+
         public float Gamma { protected set; get; }
         public float Alpha { protected set; get; }
 
 
         public Optimizer Optimizer { protected set; get; }
 
+        public ExpReplay ExpReplays { protected set; get; }
+
 
         public override LearnOutcome Learn()
+        {
+            var learnOutCome = new LearnOutcome();
+
+            var episodes = RunEpisodes(Batchsize);
+
+            Optimizer.zero_grad();
+
+            episodes.ToList().ForEach(e =>
+            {
+                learnOutCome.AppendStep(e);
+                ExpReplays.Enqueue(e);
+            });
+
+            var experienceCase = ExpReplays.All();
+            var state = experienceCase.PreState;
+            var action = experienceCase.Action;
+            var qValues = torch.from_array(episodes.SelectMany(a => GetQValues(a)).ToArray()).view(-1, 1);
+
+
+            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
+            var logProbActionV = qValues * logProbV;
+            var loss = -logProbActionV.mean();
+
+
+            loss.backward();
+            Optimizer.step();
+
+            ExpReplays.Clear();
+            return learnOutCome;
+        }
+
+        private float[] GetQValues(Episode episode)
+        {
+            var res = new List<float>();
+            var sumR = 0f;
+            var steps = episode.Steps;
+            steps.Reverse();
+            foreach (var s in steps)
+            {
+                sumR *= Gamma;
+                sumR += s.Reward.Value;
+                res.Add(sumR);
+            }
+
+            res.Reverse();
+            return res.ToArray();
+        }
+
+        public LearnOutcome LearnEpisode()
         {
             var learnOutCome = new LearnOutcome();
 
@@ -53,6 +107,7 @@ namespace DeepSharp.RL.Agents
 
                 var loss = -logProb * g;
                 loss.backward();
+                learnOutCome.Evaluate = loss.item<float>();
             }
 
             Optimizer.step();
@@ -60,7 +115,6 @@ namespace DeepSharp.RL.Agents
             return learnOutCome;
         }
 
-        
 
         public override void Save(string path)
         {
