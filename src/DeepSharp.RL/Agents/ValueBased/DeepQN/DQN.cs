@@ -32,19 +32,15 @@ namespace DeepSharp.RL.Agents
             Gamma = gamma;
 
 
-            ObservationSpace = (int) env.ObservationSpace!.N;
-            ActionSpace = (int) env.ActionSpace!.N;
-
-            Q = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
-            QTarget = new Net(ObservationSpace, 128, ActionSpace, DeviceType.CPU);
+            Q = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
+            QTarget = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
             QTarget.load_state_dict(Q.state_dict());
             Optimizer = SGD(Q.parameters(), 0.001);
             Loss = MSELoss();
             UniformExp = new UniformExpReplay(C);
         }
 
-        public int ActionSpace { protected set; get; }
-        public int ObservationSpace { protected set; get; }
+
         public float Gamma { protected set; get; }
 
         /// <summary>
@@ -60,12 +56,12 @@ namespace DeepSharp.RL.Agents
         /// <summary>
         ///     Core Net
         /// </summary>
-        public Net Q { protected set; get; }
+        public Module<torch.Tensor, torch.Tensor> Q { protected set; get; }
 
         /// <summary>
         ///     Target Net
         /// </summary>
-        public Net QTarget { protected set; get; }
+        public Module<torch.Tensor, torch.Tensor> QTarget { protected set; get; }
 
         /// <summary>
         ///     Batch size of training
