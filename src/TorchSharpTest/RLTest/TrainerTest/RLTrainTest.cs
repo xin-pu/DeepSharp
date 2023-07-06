@@ -17,7 +17,7 @@ namespace TorchSharpTest.RLTest.TrainerTest
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
             var agent = new QLearning(kArmedBandit);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(17f, 20, "", 20, 2);
+            trainer.Train(0.9f, 1, "", 20, 2);
         }
 
 
@@ -25,12 +25,12 @@ namespace TorchSharpTest.RLTest.TrainerTest
         public void TrainCallBackTest()
         {
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
-            var agent = new DQN(kArmedBandit);
+            var agent = new DQN(kArmedBandit, 100, 1000);
             var trainer = new RLTrainer(agent, Print)
             {
                 Callback = new TestCallBack()
             };
-            trainer.Train(0.85f, 500, "", 20);
+            trainer.Train(0.9f, 500, "", 20);
         }
 
 

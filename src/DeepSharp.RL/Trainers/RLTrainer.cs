@@ -47,9 +47,7 @@ namespace DeepSharp.RL.Trainers
             foreach (var epoch in Enumerable.Range(1, trainEpoch))
             {
                 OnLearnStart(epoch);
-
                 var outcome = Agent.Learn();
-
                 OnLearnEnd(epoch, outcome);
 
 
@@ -73,6 +71,8 @@ namespace DeepSharp.RL.Trainers
                     }
                 }
             }
+
+            OnTrainEnd();
         }
 
 
