@@ -5,7 +5,7 @@ using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
 {
-    internal class A2C : PolicyGradientAgengt
+    public class A2C : PolicyGradientAgengt
     {
         public A2C(Environ<Space, Space> env,
             int batchsize,

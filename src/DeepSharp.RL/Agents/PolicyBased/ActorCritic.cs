@@ -52,7 +52,7 @@ namespace DeepSharp.RL.Agents
             episodes.ToList().ForEach(e =>
             {
                 learnOutCome.AppendStep(e);
-                ExpReplays.Enqueue(e, false); /// todo
+                ExpReplays.Enqueue(e,false); /// todo
             });
 
             var experienceCase = ExpReplays.All();
@@ -64,16 +64,16 @@ namespace DeepSharp.RL.Agents
 
             Optimizer.zero_grad();
 
-            var value = Q.forward(state).gather(1, action);
+            var value = Q.forward(state).gather(1,action);
+            var valueNext = Q.forward(poststate);
+            var preIndex = valueNext.argmax(-1,true);
+            var qnext=valueNext.gather(1, preIndex);
 
-            var actionNext = PolicyNet.forward(poststate);
-            var actIndex = torch.multinomial(actionNext, 1, true);
-            var valueNext = Q.forward(poststate).gather(1, actIndex);
-
-            var lossValue = new MSELoss().forward(value, valueNext * Gamma + reward);
+            var y = qnext * Gamma + reward;
+            var lossValue = new MSELoss().forward(reward, y);
             lossValue.backward();
 
-            var logProbV = torch.log(PolicyNet.forward(poststate)).gather(1, action);
+            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
             var logProbActionV = value.detach() * logProbV;
             var lossPolicy = -logProbActionV.mean();
 
