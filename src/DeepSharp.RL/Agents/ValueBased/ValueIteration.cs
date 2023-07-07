@@ -12,16 +12,18 @@ namespace DeepSharp.RL.Agents
     public class ValueIteration : Agent
 
     {
-        public ValueIteration(Environ<Space, Space> env, int t)
+        public ValueIteration(Environ<Space, Space> env, int t, float gamma = 0.9f)
             : base(env, "ValueIteration")
         {
             Rewards = new Dictionary<RewardKey, Reward>();
             Transits = new Dictionary<TransitKey, Dictionary<torch.Tensor, int>>();
             Values = new Dictionary<torch.Tensor, float>();
             T = t;
+            Gamma = gamma;
         }
 
         public int T { protected set; get; }
+        public float Gamma { protected set; get; }
 
         /// <summary>
         ///     奖励表
@@ -182,7 +184,7 @@ namespace DeepSharp.RL.Agents
             foreach (var i in targetCounts)
             {
                 var reward = getReward(new RewardKey(transitKey.State, transitKey.Act, i.Key));
-                var value = reward.Value + Environ.Gamma * getValue(i.Key);
+                var value = reward.Value + Gamma * getValue(i.Key);
                 activaValue += 1f * i.Value / total * value;
             }
 

@@ -13,7 +13,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KABOnPolicyTest()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75});
             var agent = new MonteCarloOnPolicy(kArmedBandit);
             Print(kArmedBandit);
 
@@ -39,7 +39,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KABOffPolicyTest()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75});
             var agent = new MonteCarloOffPolicy(kArmedBandit);
             Print(kArmedBandit);
 

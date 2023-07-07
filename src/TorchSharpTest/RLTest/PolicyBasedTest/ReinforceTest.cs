@@ -12,40 +12,40 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
         }
 
         [Fact]
-        public void TestReinforce()
+        public void ReinforceKMTest()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25});
             var agent = new Reinforce(kArmedBandit, 16);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(0.90f, 500, "", 20, 2, false);
-            agent.Save("Reinforce.st");
+            trainer.Train(0.90f, 500, testEpisodes: 20, testInterval: 2, autoSave: false);
+            agent.Save("ReinKM.st");
         }
 
         [Fact]
-        public void VeirfyReinforce()
+        public void ReinforceKMVal()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25});
             var agent = new Reinforce(kArmedBandit);
-            agent.Load("Reinforce.st");
+            agent.Load("ReinKM.st");
             var trainer = new RLTrainer(agent, Print);
             trainer.Val(20);
         }
 
         [Fact]
-        public void TestReinforce2()
+        public void ReinforceFLTest()
         {
-            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
+            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f});
             var agent = new Reinforce(frozenlake, 16);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(0.95f, 500, "", 20, 2, false);
+            trainer.Train(0.95f, 500, testEpisodes: 20, testInterval: 2, autoSave: false);
             agent.Save("ReinFrozen.st");
         }
 
 
         [Fact]
-        public void verifyReinforce2()
+        public void ReinforceFLVal()
         {
-            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
+            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f});
             var agent = new Reinforce(frozenlake);
             agent.Load("ReinFrozen.st");
             frozenlake.ChangeToRough();

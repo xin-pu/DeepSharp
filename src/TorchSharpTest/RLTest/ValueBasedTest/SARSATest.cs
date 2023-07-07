@@ -14,7 +14,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void KArmedBanditMain()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75});
             var agent = new SARSA(kArmedBandit);
             Print(kArmedBandit);
 
@@ -41,7 +41,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
         [Fact]
         public void FrozenlakeMain()
         {
-            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
+            var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f});
             var agent = new SARSA(frozenlake);
             Print(frozenlake);
 

@@ -37,7 +37,7 @@ namespace DeepSharp.RL.Trainers
         public virtual void Train(
             float preReward,
             int trainEpoch,
-            string saveFolder,
+            string saveFolder = "",
             int testEpisodes = -1,
             int testInterval = 5,
             bool autoSave = false)

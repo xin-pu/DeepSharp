@@ -33,7 +33,6 @@ namespace DeepSharp.RL.Environs
         public torch.Device Device { set; get; }
         public T1? ActionSpace { protected set; get; }
         public T2? ObservationSpace { protected set; get; }
-        public float Gamma { set; get; } = 1f;
 
 
         /// <summary>
