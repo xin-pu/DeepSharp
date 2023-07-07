@@ -15,9 +15,9 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
         public void ACKMTest()
         {
             var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25});
-            var agent = new ActorCritic(kArmedBandit, 16);
+            var agent = new ActorCritic(kArmedBandit, 16, gamma: 0.9f);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(0.90f, 200, testEpisodes: 20, testInterval: 2, autoSave: false);
+            trainer.Train(0.90f, 300, testEpisodes: 20, testInterval: 2, autoSave: false);
             agent.Save("ACKM.st");
         }
 

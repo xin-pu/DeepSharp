@@ -55,7 +55,7 @@ namespace DeepSharp.RL.Agents
             var state = experienceCase.PreState;
             var action = experienceCase.Action;
             var qValues = experienceCase.Reward;
-
+            ExpReplays.Clear();
 
             var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
             var logProbActionV = qValues * logProbV;
@@ -65,7 +65,6 @@ namespace DeepSharp.RL.Agents
             loss.backward();
             Optimizer.step();
 
-            ExpReplays.Clear();
 
             learnOutCome.Evaluate = loss.item<float>();
 

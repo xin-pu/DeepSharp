@@ -18,8 +18,7 @@ namespace DeepSharp.RL.Agents
             Gamma = gamma;
             Alpha = alpha;
             Beta = beta;
-            /// Out is V[batchsize,1]
-            Q = new Net(ObservationSize, 128, 1, DeviceType.CPU);
+            Q = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
             ExpReplays = new EpisodeExpReplay(batchsize, gamma);
 
             var parameters = new[] {Q, PolicyNet}
@@ -53,24 +52,29 @@ namespace DeepSharp.RL.Agents
             episodes.ToList().ForEach(e =>
             {
                 learnOutCome.AppendStep(e);
-                ExpReplays.Enqueue(e);
+                ExpReplays.Enqueue(e, false); /// todo
             });
 
             var experienceCase = ExpReplays.All();
             var state = experienceCase.PreState;
             var action = experienceCase.Action;
-            var valsRef = experienceCase.Reward;
+            var reward = experienceCase.Reward;
+            var poststate = experienceCase.PostState;
             ExpReplays.Clear();
 
             Optimizer.zero_grad();
 
-            var value = Q.forward(state);
+            var value = Q.forward(state).gather(1, action);
 
-            var lossValue = new MSELoss().forward(value, valsRef);
+            var actionNext = PolicyNet.forward(poststate);
+            var actIndex = torch.multinomial(actionNext, 1, true);
+            var valueNext = Q.forward(poststate).gather(1, actIndex);
+
+            var lossValue = new MSELoss().forward(value, valueNext * Gamma + reward);
             lossValue.backward();
 
-            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
-            var logProbActionV = (valsRef - value.detach()) * logProbV;
+            var logProbV = torch.log(PolicyNet.forward(poststate)).gather(1, action);
+            var logProbActionV = value.detach() * logProbV;
             var lossPolicy = -logProbActionV.mean();
 
 
