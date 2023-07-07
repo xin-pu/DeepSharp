@@ -32,11 +32,18 @@ namespace DeepSharp.RL.ExpReplays
 
         public int Size => Buffers.Sum(a => a.Length);
 
-        public void Enqueue(Episode episode)
+        public void Enqueue(Episode episode, bool isU = true)
         {
             if (Buffers.Count == Capacity) Buffers.Dequeue();
-            var e = episode.GetReturnEpisode(Gamma);
-            Buffers.Enqueue(e);
+            if (isU)
+            {
+                var e = episode.GetReturnEpisode(Gamma);
+                Buffers.Enqueue(e);
+            }
+            else
+            {
+                Buffers.Enqueue(episode);
+            }
         }
 
         public virtual ExperienceCase All()
