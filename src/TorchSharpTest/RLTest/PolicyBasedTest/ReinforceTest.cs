@@ -14,29 +14,31 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
         [Fact]
         public void TestReinforce()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
-            var agent = new Reinforce(kArmedBandit);
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25}) {Gamma = 0.95f};
+            var agent = new Reinforce(kArmedBandit, 16);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(0.85f, 1000, "", 20, 2);
+            trainer.Train(0.90f, 500, "", 20, 2, false);
+            agent.Save("Reinforce.st");
         }
 
         [Fact]
         public void VeirfyReinforce()
         {
-            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.75, 0.75}) {Gamma = 0.95f};
+            var kArmedBandit = new KArmedBandit(new[] {0.4, 0.85, 0.7, 0.25}) {Gamma = 0.95f};
             var agent = new Reinforce(kArmedBandit);
-            agent.Load("[Agent[Reinforce]]_230_0.90.st");
+            agent.Load("Reinforce.st");
             var trainer = new RLTrainer(agent, Print);
-            trainer.Val(1020);
+            trainer.Val(20);
         }
 
         [Fact]
         public void TestReinforce2()
         {
             var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
-            var agent = new Reinforce(frozenlake);
+            var agent = new Reinforce(frozenlake, 16);
             var trainer = new RLTrainer(agent, Print);
-            trainer.Train(0.9f, 1000, "", 20, 2);
+            trainer.Train(0.95f, 500, "", 20, 2, false);
+            agent.Save("ReinFrozen.st");
         }
 
 
@@ -45,7 +47,8 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
         {
             var frozenlake = new Frozenlake(new[] {0.8f, 0.1f, 0.1f}) {Gamma = 0.95f};
             var agent = new Reinforce(frozenlake);
-            agent.Load("[Agent[Reinforce]]_304_0.90.st");
+            agent.Load("ReinFrozen.st");
+            frozenlake.ChangeToRough();
             var episode = agent.RunEpisode();
             Print(episode);
         }

@@ -86,6 +86,7 @@ namespace DeepSharp.RL.Trainers
             var episodes = Agent.RunEpisodes(valEpoch);
             var aveReward = episodes.Average(a => a.SumReward.Value);
             Print?.Invoke($"[Val] {valEpoch:D5}\tR:[{aveReward}]");
+            foreach (var episode in episodes) Print?.Invoke(episode);
         }
 
 

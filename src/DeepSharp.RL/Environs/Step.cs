@@ -3,7 +3,7 @@
     /// <summary>
     ///     Step
     /// </summary>
-    public class Step
+    public class Step : ICloneable
     {
         public Step(Observation preState,
             Act action,
@@ -40,5 +40,11 @@
         public bool IsComplete { set; get; }
 
         public float Priority { set; get; }
+
+
+        public object Clone()
+        {
+            return new Step(PreState, Action, PostState, Reward, IsComplete);
+        }
     }
 }

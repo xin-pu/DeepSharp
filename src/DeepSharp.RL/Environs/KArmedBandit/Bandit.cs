@@ -11,7 +11,10 @@ namespace DeepSharp.RL.Environs
         {
             Name = name;
             Prob = prob;
+            RandomSource = new SystemRandomSource();
         }
+
+        protected SystemRandomSource RandomSource { set; get; }
 
         public double Prob { set; get; }
 
@@ -20,8 +23,7 @@ namespace DeepSharp.RL.Environs
 
         public float Step()
         {
-            var d = new SystemRandomSource();
-            var pro = d.NextDouble();
+            var pro = RandomSource.NextDouble();
             return pro <= Prob ? 1 : 0;
         }
 

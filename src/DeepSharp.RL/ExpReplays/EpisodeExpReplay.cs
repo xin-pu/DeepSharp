@@ -4,14 +4,15 @@ using DeepSharp.RL.ExperienceSources;
 namespace DeepSharp.RL.ExpReplays
 {
     /// <summary>
-    ///     Exp Relay apply for Store steps
+    ///     Exp Relay apply for Store Episode
     /// </summary>
-    public abstract class ExpReplay
+    public class EpisodeExpReplay
     {
-        protected ExpReplay(int capacity = 10000)
+        public EpisodeExpReplay(int capacity, float gamma)
         {
             Capacity = capacity;
-            Buffers = new Queue<Step>(capacity);
+            Gamma = gamma;
+            Buffers = new Queue<Episode>(capacity);
         }
 
         /// <summary>
@@ -20,40 +21,28 @@ namespace DeepSharp.RL.ExpReplays
         public int Capacity { protected set; get; }
 
         /// <summary>
+        ///     Capacity of Experience Replay Buffer
+        /// </summary>
+        public float Gamma { protected set; get; }
+
+        /// <summary>
         ///     Cache
         /// </summary>
-        public Queue<Step> Buffers { set; get; }
+        public Queue<Episode> Buffers { set; get; }
 
-        public int Size => Buffers.Count();
+        public int Size => Buffers.Sum(a => a.Length);
 
-        /// <summary>
-        ///     Record a step [State, Action, Reward, NewState]
-        /// </summary>
-        /// <param name="step"></param>
-        public virtual void Enqueue(Step step)
+        public void Enqueue(Episode episode)
         {
             if (Buffers.Count == Capacity) Buffers.Dequeue();
-            Buffers.Enqueue(step);
+            var e = episode.GetReturnEpisode(Gamma);
+            Buffers.Enqueue(e);
         }
 
-        /// <summary>
-        ///     Record steps {[State , Action, Reward, NewState],...,[State , Action, Reward, NewState]}
-        /// </summary>
-        public void Enqueue(IEnumerable<Step> steps)
+        public virtual ExperienceCase All()
         {
-            steps.ToList().ForEach(Enqueue);
-        }
-
-        protected abstract Step[] SampleSteps(int batchsize);
-
-        public virtual void Enqueue(Episode episode)
-        {
-            Enqueue(episode.Steps);
-        }
-
-        public virtual ExperienceCase Sample(int batchsize)
-        {
-            var batchStep = SampleSteps(batchsize);
+            var episodes = Buffers;
+            var batchStep = episodes.SelectMany(a => a.Steps).ToArray();
 
             /// Get Array from Steps
             var stateArray = batchStep.Select(a => a.PreState.Value!.unsqueeze(0)).ToArray();
@@ -65,14 +54,13 @@ namespace DeepSharp.RL.ExpReplays
             /// Convert to VStack
             var state = torch.vstack(stateArray);
             var actionV = torch.vstack(actArray).to(torch.ScalarType.Int64);
-            var reward = torch.from_array(rewardArray).reshape(batchsize);
+            var reward = torch.from_array(rewardArray).view(-1, 1);
             var stateNext = torch.vstack(stateNextArray);
-            var done = torch.from_array(doneArray).reshape(batchsize);
+            var done = torch.from_array(doneArray).reshape(Size);
 
             var excase = new ExperienceCase(state, actionV, reward, stateNext, done);
             return excase;
         }
-
 
         public void Clear()
         {

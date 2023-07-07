@@ -15,6 +15,14 @@ namespace DeepSharp.RL.Environs
             Evaluate = 0;
         }
 
+        public Episode(List<Step> steps)
+        {
+            Steps = steps;
+            SumReward = new Reward(0);
+            DateTime = DateTime.Now;
+            Evaluate = 0;
+        }
+
         public List<Step> Steps { set; get; }
         public Step this[int i] => Steps[i];
 
@@ -52,6 +60,36 @@ namespace DeepSharp.RL.Environs
                 str.AppendLine(line);
             });
             return str.ToString();
+        }
+
+
+        /// <summary>
+        ///     Get a Episode which each step's reward estimate to QValue (discount by Gamma)
+        /// </summary>
+        /// <param name="gamma"></param>
+        /// <returns></returns>
+        public Episode GetReturnEpisode(float gamma = 0.9f)
+        {
+            var stepsWithReturn = new List<Step>();
+
+
+            var sumR = 0f;
+            var steps = Steps;
+            steps.Reverse();
+            foreach (var s in steps)
+            {
+                sumR *= gamma;
+                sumR += s.Reward.Value;
+
+                var sNew = (Step) s.Clone();
+                sNew.Reward = new Reward(sumR);
+                stepsWithReturn.Add(sNew);
+            }
+
+            steps.Reverse();
+            stepsWithReturn.Reverse();
+            var res = new Episode(stepsWithReturn);
+            return res;
         }
     }
 }

@@ -1,25 +1,20 @@
 ﻿using DeepSharp.RL.Environs;
-using DeepSharp.RL.ExpReplays;
 using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
 {
     /// <summary>
-    ///     ReinforceOriginal: Learn by a batch episodes
+    ///     ReinforceOriginal: Learn after each episode
     /// </summary>
-    public class Reinforce : PolicyGradientAgengt
+    public class ReinforceOriginal : PolicyGradientAgengt
     {
-        public Reinforce(Environ<Space, Space> env,
-            int batchsize = 4,
+        public ReinforceOriginal(Environ<Space, Space> env,
             float gamma = 0.99f,
             float alpha = 0.01f)
-            : base(env, "Reinforce")
+            : base(env, "ReinforceOriginal")
         {
-            Batchsize = batchsize;
             Gamma = gamma;
             Alpha = alpha;
-
-            ExpReplays = new EpisodeExpReplay(batchsize, gamma);
             Optimizer = Adam(PolicyNet.parameters(), Alpha);
         }
 
@@ -34,46 +29,8 @@ namespace DeepSharp.RL.Agents
 
         public Optimizer Optimizer { protected set; get; }
 
-        public EpisodeExpReplay ExpReplays { protected set; get; }
-
 
         public override LearnOutcome Learn()
-        {
-            var learnOutCome = new LearnOutcome();
-
-            var episodes = RunEpisodes(Batchsize);
-
-            Optimizer.zero_grad();
-
-            episodes.ToList().ForEach(e =>
-            {
-                learnOutCome.AppendStep(e);
-                ExpReplays.Enqueue(e);
-            });
-
-            var experienceCase = ExpReplays.All();
-            var state = experienceCase.PreState;
-            var action = experienceCase.Action;
-            var qValues = experienceCase.Reward;
-
-
-            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
-            var logProbActionV = qValues * logProbV;
-            var loss = -logProbActionV.mean();
-
-
-            loss.backward();
-            Optimizer.step();
-
-            ExpReplays.Clear();
-
-            learnOutCome.Evaluate = loss.item<float>();
-
-            return learnOutCome;
-        }
-
-
-        public LearnOutcome LearnEpisode()
         {
             var learnOutCome = new LearnOutcome();
 
