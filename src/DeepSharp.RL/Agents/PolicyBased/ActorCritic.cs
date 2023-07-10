@@ -1,5 +1,6 @@
 ﻿using DeepSharp.RL.Environs;
 using DeepSharp.RL.ExpReplays;
+using OpenCvSharp.Dnn;
 using TorchSharp.Modules;
 using static TorchSharp.torch.optim;
 
@@ -20,7 +21,7 @@ namespace DeepSharp.RL.Agents
             Beta = beta;
             Q = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
             ExpReplays = new EpisodeExpReplay(batchsize, gamma);
-
+            ExpReplaysForPolicy = new EpisodeExpReplay(batchsize, gamma);
             var parameters = new[] {Q, PolicyNet}
                 .SelectMany(a => a.parameters());
             Optimizer = Adam(parameters, Alpha);
@@ -36,6 +37,7 @@ namespace DeepSharp.RL.Agents
         public float Gamma { protected set; get; }
         public Module<torch.Tensor, torch.Tensor> Q { protected set; get; }
         public EpisodeExpReplay ExpReplays { protected set; get; }
+        public EpisodeExpReplay ExpReplaysForPolicy { protected set; get; }
         public Optimizer Optimizer { protected set; get; }
 
         /// <summary>
@@ -52,7 +54,8 @@ namespace DeepSharp.RL.Agents
             episodes.ToList().ForEach(e =>
             {
                 learnOutCome.AppendStep(e);
-                ExpReplays.Enqueue(e,false); /// todo
+                ExpReplays.Enqueue(e,false);
+                ExpReplaysForPolicy.Enqueue(e);
             });
 
             var experienceCase = ExpReplays.All();
@@ -64,17 +67,14 @@ namespace DeepSharp.RL.Agents
 
             Optimizer.zero_grad();
 
-            var value = Q.forward(state).gather(1,action);
-            var valueNext = Q.forward(poststate);
-            var preIndex = valueNext.argmax(-1,true);
-            var qnext=valueNext.gather(1, preIndex);
-
-            var y = qnext * Gamma + reward;
-            var lossValue = new MSELoss().forward(reward, y);
+            var stateActionValue = Q.forward(state).gather(1,action);
+            var nextStateValue = Q.forward(poststate).max(1).values.detach();
+            var expectedStatedActionValuey = reward+ nextStateValue * Gamma ;
+            var lossValue = new MSELoss().forward(stateActionValue, expectedStatedActionValuey);
             lossValue.backward();
 
-            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action);
-            var logProbActionV = value.detach() * logProbV;
+            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action); 
+            var logProbActionV = stateActionValue.detach() * logProbV;
             var lossPolicy = -logProbActionV.mean();
 
 
