@@ -92,18 +92,6 @@ namespace DeepSharp.RL.Environs
 
 
         /// <summary>
-        ///     Discount Reward
-        ///     该环境无奖励折扣
-        /// </summary>
-        /// <param name="episode"></param>
-        /// <param name="gamma"></param>
-        /// <returns></returns>
-        public override float DiscountReward(Episode episode, float gamma)
-        {
-            return 1;
-        }
-
-        /// <summary>
         ///     没满20次采样，环境关闭
         /// </summary>
         /// <param name="epoch"></param>

@@ -6,29 +6,27 @@ namespace DeepSharp.RL.Environs
     ///     环境
     ///     提供观察 并给与奖励
     /// </summary>
-    public abstract class Environ<T1, T2> : ObservableObject
+    public abstract class Environ<T1, T2>
         where T1 : Space
         where T2 : Space
     {
-        private string _name;
-        private Observation? _observation;
-        private List<Observation> _observationList = new();
-        private Reward _reward = new(0);
-
         public Action<Step>? CallBack;
 
         protected Environ(string name, DeviceType deviceType = DeviceType.CUDA)
         {
-            _name = name;
+            Name = name;
             Device = new torch.Device(deviceType);
+            Reward = new Reward(0);
+            ObservationList = new List<Observation>();
         }
 
-
-        public string Name
+        protected Environ(string name)
+            : this(name, DeviceType.CPU)
         {
-            internal set => SetProperty(ref _name, value);
-            get => _name;
         }
+
+
+        public string Name { set; get; }
 
         public torch.Device Device { set; get; }
         public T1? ActionSpace { protected set; get; }
@@ -38,29 +36,17 @@ namespace DeepSharp.RL.Environs
         /// <summary>
         ///     Observation Current
         /// </summary>
-        public Observation? Observation
-        {
-            set => SetProperty(ref _observation, value);
-            get => _observation;
-        }
+        public Observation? Observation { set; get; }
 
         /// <summary>
         ///     Reward Current
         /// </summary>
-        public Reward Reward
-        {
-            set => SetProperty(ref _reward, value);
-            get => _reward;
-        }
+        public Reward Reward { set; get; }
 
         /// <summary>
         ///     Observation Temp List
         /// </summary>
-        public List<Observation> ObservationList
-        {
-            internal set => SetProperty(ref _observationList, value);
-            get => _observationList;
-        }
+        public List<Observation> ObservationList { set; get; }
 
         public int Life => ObservationList.Count;
 
@@ -117,15 +103,6 @@ namespace DeepSharp.RL.Environs
         /// <returns>one reward</returns>
         public abstract Reward GetReward(Observation observation);
 
-
-        /// <summary>
-        ///     Discount Reward
-        ///     长期奖励折扣
-        /// </summary>
-        /// <param name="episode"></param>
-        /// <param name="gamma"></param>
-        /// <returns></returns>
-        public abstract float DiscountReward(Episode episode, float gamma);
 
         /// <summary>
         ///     Check Environ is Complete

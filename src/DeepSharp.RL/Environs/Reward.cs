@@ -3,11 +3,8 @@
     /// <summary>
     ///     Reward
     /// </summary>
-    public class Reward : ObservableObject
+    public class Reward
     {
-        private DateTime _timeStamp;
-        private float _value;
-
         public Reward(float value)
         {
             Value = value;
@@ -17,20 +14,12 @@
         /// <summary>
         ///     reward
         /// </summary>
-        public float Value
-        {
-            set => SetProperty(ref _value, value);
-            get => _value;
-        }
+        public float Value { set; get; }
 
         /// <summary>
         ///     TimeStamp of get reward
         /// </summary>
-        public DateTime TimeStamp
-        {
-            set => SetProperty(ref _timeStamp, value);
-            get => _timeStamp;
-        }
+        public DateTime TimeStamp { set; get; }
 
         public override string ToString()
         {

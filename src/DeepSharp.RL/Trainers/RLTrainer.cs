@@ -64,8 +64,11 @@ namespace DeepSharp.RL.Trainers
 
                     var valReward = episodes.Average(e => e.SumReward.Value);
 
-                    if (!(valReward >= preReward)) continue;
+                    if (valReward < preReward)
+                        continue;
 
+                    /// val reward > pre reward
+                    /// save and break from training
                     if (autoSave)
                     {
                         OnSaveStart();
@@ -81,6 +84,11 @@ namespace DeepSharp.RL.Trainers
         }
 
 
+        public virtual void Train(RLTrainOption tp)
+        {
+            Train(tp.StopReward, tp.TrainEpoch, tp.SaveFolder, tp.ValEpisode, tp.ValInterval);
+        }
+
         public virtual void Val(int valEpoch)
         {
             var episodes = Agent.RunEpisodes(valEpoch);
@@ -90,10 +98,6 @@ namespace DeepSharp.RL.Trainers
         }
 
 
-        public virtual void Train(RLTrainOption tp)
-        {
-            Train(tp.StopReward, tp.TrainEpoch, tp.SaveFolder, tp.ValEpisode, tp.ValInterval);
-        }
 
 
         #region MyRegion

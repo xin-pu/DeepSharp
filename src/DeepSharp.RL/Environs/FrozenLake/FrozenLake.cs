@@ -192,11 +192,6 @@ namespace DeepSharp.RL.Environs
             return new Observation(stateTensor);
         }
 
-        public override float DiscountReward(Episode episode, float gamma)
-        {
-            var res = 1f;
-            return res;
-        }
 
         /// <summary>
         ///     获取一个片段的奖励

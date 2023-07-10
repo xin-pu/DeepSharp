@@ -3,11 +3,8 @@
     /// <summary>
     ///     动作
     /// </summary>
-    public class Act : ObservableObject, IEqualityComparer<Act>
+    public class Act : IEqualityComparer<Act>
     {
-        private DateTime _timeStamp;
-        private torch.Tensor? _value;
-
         public Act(torch.Tensor? action)
         {
             Value = action;
@@ -17,20 +14,13 @@
         /// <summary>
         ///     奖励的张量格式
         /// </summary>
-        public torch.Tensor? Value
-        {
-            set => SetProperty(ref _value, value);
-            get => _value;
-        }
+        public torch.Tensor? Value { set; get; }
 
         /// <summary>
         ///     奖励产生的时间戳
         /// </summary>
-        public DateTime TimeStamp
-        {
-            set => SetProperty(ref _timeStamp, value);
-            get => _timeStamp;
-        }
+        public DateTime TimeStamp { set; get; }
+
 
         public bool Equals(Act? x, Act? y)
         {
@@ -42,7 +32,7 @@
 
         public int GetHashCode(Act obj)
         {
-            return HashCode.Combine(obj._timeStamp, obj._value);
+            return HashCode.Combine(obj.TimeStamp, obj.Value);
         }
 
         public Act To(torch.Device device)

@@ -3,11 +3,8 @@
     /// <summary>
     ///     观察
     /// </summary>
-    public class Observation : ObservableObject
+    public class Observation
     {
-        private DateTime _timeStamp;
-        private torch.Tensor? _value;
-
         public Observation(torch.Tensor? state)
         {
             Value = state;
@@ -17,20 +14,12 @@
         /// <summary>
         ///     观察的张量格式
         /// </summary>
-        public torch.Tensor? Value
-        {
-            set => SetProperty(ref _value, value);
-            get => _value;
-        }
+        public torch.Tensor? Value { set; get; }
 
         /// <summary>
         ///     观察产生的时间戳
         /// </summary>
-        public DateTime TimeStamp
-        {
-            set => SetProperty(ref _timeStamp, value);
-            get => _timeStamp;
-        }
+        public DateTime TimeStamp { set; get; }
 
         public Observation To(torch.Device device)
         {
