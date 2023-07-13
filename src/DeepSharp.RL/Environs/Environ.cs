@@ -62,6 +62,11 @@ namespace DeepSharp.RL.Environs
             return Observation;
         }
 
+        /// <summary>
+        ///     获取一个回合的最终奖励
+        /// </summary>
+        /// <param name="episode"></param>
+        /// <returns></returns>
         public abstract float GetReturn(Episode episode);
 
         public virtual Act SampleAct()

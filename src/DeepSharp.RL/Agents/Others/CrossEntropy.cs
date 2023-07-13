@@ -46,7 +46,7 @@ namespace DeepSharp.RL.Agents
             var input = state.unsqueeze(0);
             var sm = Softmax(1);
             var actionProbs = sm.forward(AgentNet.forward(input));
-            var nextAction = new ProbabilityActionSelector().Select(actionProbs);
+            var nextAction = new ProbActionSelector().Select(actionProbs);
             var action = new Act(nextAction);
             return action;
         }

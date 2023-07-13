@@ -53,5 +53,25 @@ namespace TorchSharpTest.TorchTests
             var a3 = arr.Count(a => a == 2);
             Print($"{a1},{a2},{a3}");
         }
+
+
+        [Fact]
+        public void TestGreatAndLess()
+        {
+            var input = torch.tensor(new[] {1.1f, 3f, 3.3f, 5.2f});
+            var targetLower = 2f;
+            var targetUpper = 4f;
+
+            var mean = (targetUpper + targetLower) / 2;
+            var half = (targetUpper - targetLower) / 2;
+            var dis = 1 - torch.abs(input - mean) / half;
+            Print(dis);
+
+            var condition = dis.greater(0);
+            Print(condition);
+
+            var final = dis.where(condition, 0);
+            Print(final);
+        }
     }
 }

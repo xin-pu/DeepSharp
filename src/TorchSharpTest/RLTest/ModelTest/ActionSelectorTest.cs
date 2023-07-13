@@ -22,7 +22,7 @@ namespace TorchSharpTest.RLTest.ModelTest
         public void ProbabilityActionSelectorTest()
         {
             var input = torch.from_array(new[,] {{1f, 0, 0}, {0, 1f, 0}});
-            var res = new ProbabilityActionSelector().Select(input);
+            var res = new ProbActionSelector().Select(input);
             res.Equals(torch.from_array(new long[] {0, 1})).Should().BeTrue();
         }
     }

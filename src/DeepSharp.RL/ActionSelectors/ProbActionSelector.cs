@@ -3,7 +3,7 @@
     /// <summary>
     ///     输入归一化概率,返回从分布中采样的结果
     /// </summary>
-    public class ProbabilityActionSelector : ActionSelector
+    public class ProbActionSelector : ActionSelector
     {
         /// <summary>
         /// </summary>
