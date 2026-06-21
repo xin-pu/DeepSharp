@@ -11,7 +11,7 @@ namespace TorchSharpTest.DemoTest
 		}
 
 
-		private torch.Device device => new(DeviceType.CPU);
+		private Device device => new(DeviceType.CPU);
 
 		public string SaveFile => "Iris.txt";
 
@@ -29,7 +29,7 @@ namespace TorchSharpTest.DemoTest
 
 			var net = new DemoNet(4, 3).to(device);
 
-			var optimizer        = torch.optim.Adam(net.parameters());
+			var optimizer        = optim.Adam(net.parameters());
 			var crossEntropyLoss = CrossEntropyLoss();
 			foreach (var epoch in Enumerable.Range(0, 500))
 			{

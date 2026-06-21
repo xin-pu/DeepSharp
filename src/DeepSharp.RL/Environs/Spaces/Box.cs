@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Environs.Spaces
+﻿using System.Diagnostics;
+
+namespace DeepSharp.RL.Environs.Spaces
 {
 	/// <summary>
 	///     A T-dimensional box that contains every point in the action space.
@@ -100,13 +102,13 @@
 				torch.ScalarType.Float32,
 				torch.ScalarType.Float64
 			};
-			Type.Should().BeOneOf(acceptType, $"Disperse accept Type in {string.Join(",", acceptType)}");
+			Debug.Assert(acceptType.Contains(Type), $"Disperse accept Type in {string.Join(",", acceptType)}");
 		}
 
 		private void CoculateBounded()
 		{
-			Low.shape.Should().Equal(Shape);
-			High.shape.Should().Equal(Shape);
+			Debug.Assert(Low.shape.SequenceEqual(Shape));
+			Debug.Assert(High.shape.SequenceEqual(Shape));
 			BoundedBelow = Low  > torch.tensor(double.NegativeInfinity);
 			BoundedAbove = High < torch.tensor(double.PositiveInfinity);
 		}

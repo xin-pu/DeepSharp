@@ -9,10 +9,10 @@
 		{
 			Name         = name;
 			Prob         = prob;
-			RandomSource = new SystemRandomSource();
+			RandomSource = new Random();
 		}
 
-		protected SystemRandomSource RandomSource { get; set; }
+		protected Random RandomSource { get; set; }
 
 		public double Prob { get; set; }
 

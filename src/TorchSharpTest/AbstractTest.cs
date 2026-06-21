@@ -29,9 +29,9 @@
 		///     Todo optimize print Tensor
 		/// </summary>
 		/// <param name="tensor"></param>
-		internal void Print(torch.Tensor tensor)
+		internal void Print(Tensor tensor)
 		{
-			writeLine(tensor.ToString(torch.numpy));
+			writeLine(tensor.ToString(numpy));
 			writeLine(tensor);
 			writeLine("");
 		}

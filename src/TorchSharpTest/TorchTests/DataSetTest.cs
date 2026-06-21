@@ -22,10 +22,9 @@ namespace TorchSharpTest.TorchTests
 		public void OriginalDataloaderTest()
 		{
 			var dataset = new Dataset<Iris>(@"F:\Iris\iris-train.txt");
-			var device  = new torch.Device(DeviceType.CUDA);
+			var device  = new Device(DeviceType.CUDA);
 			var dataloader =
-				new torch.utils.data.DataLoader<Iris, DataViewPair>(dataset, 4,
-					DataView.FromDataViews, true, device);
+				new DataLoader<Iris>(dataset, new DataLoaderConfig { BatchSize = 4, Shuffle = true, Device = device });
 
 			using var iterator = dataloader.GetEnumerator();
 			while (iterator.MoveNext())
@@ -41,7 +40,7 @@ namespace TorchSharpTest.TorchTests
 			var dataset = new Dataset<Iris>(@"F:\Iris\iris-train.txt");
 			var dataConfig = new DataLoaderConfig
 			{
-				Device = new torch.Device(DeviceType.CUDA)
+				Device = new Device(DeviceType.CUDA)
 			};
 			var dataloader = new DataLoader<Iris>(dataset, dataConfig);
 

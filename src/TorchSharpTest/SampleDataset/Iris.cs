@@ -25,14 +25,14 @@ namespace TorchSharpTest.SampleDataset
 		[StreamHeader(4)]
 		public float PetalWidth { get; set; }
 
-		public override torch.Tensor GetFeatures()
+		public override Tensor GetFeatures()
 		{
-			return torch.tensor(new[] { SepalLength, SepalWidth, PetalLength, PetalWidth });
+			return tensor(new[] { SepalLength, SepalWidth, PetalLength, PetalWidth });
 		}
 
-		public override torch.Tensor GetLabels()
+		public override Tensor GetLabels()
 		{
-			return torch.tensor(new[] { Label });
+			return tensor(new[] { Label });
 		}
 
 		public override string ToString()

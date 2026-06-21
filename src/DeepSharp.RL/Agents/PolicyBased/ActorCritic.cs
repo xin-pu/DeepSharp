@@ -73,7 +73,7 @@ namespace DeepSharp.RL.Agents
 			var stateActionValue           = Q.forward(state).gather(1, action);
 			var nextStateValue             = Q.forward(poststate).max(1).values.detach();
 			var expectedStatedActionValuey = reward + nextStateValue * Gamma;
-			var lossValue                  = new MSELoss().forward(stateActionValue, expectedStatedActionValuey);
+			var lossValue                  = MSELoss().forward(stateActionValue, expectedStatedActionValuey);
 			lossValue.backward();
 
 			var logProbV       = torch.log(PolicyNet.forward(state)).gather(1, action);

@@ -41,7 +41,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
 
 			foreach (var _ in Enumerable.Repeat(0, 10))
 			{
-				var res   = torch.multinomial(torch.from_array(probs), 1, true);
+				var res   = multinomial(from_array(probs), 1, true);
 				var index = res.item<long>();
 				Print(index);
 			}

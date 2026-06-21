@@ -39,7 +39,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
 			foreach (var i in Enumerable.Range(0, testEpoch))
 			{
 				frozenlake.SetPlayID(1);
-				frozenlake.Step(new Act(torch.from_array(new[] { 1 })), 1);
+				frozenlake.Step(new Act(from_array(new[] { 1 })), 1);
 				if (frozenlake.PlayID == 5) count++;
 				if (frozenlake.PlayID == 0) countL++;
 				if (frozenlake.PlayID == 2) countR++;

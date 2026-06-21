@@ -69,7 +69,7 @@ namespace DeepSharp.RL.Agents
 
 			var value = Q.forward(state);
 
-			var lossValue = new MSELoss().forward(value, valsRef);
+			var lossValue = MSELoss().forward(value, valsRef);
 			lossValue.backward();
 
 			var logProbV       = torch.log(PolicyNet.forward(state)).gather(1, action);

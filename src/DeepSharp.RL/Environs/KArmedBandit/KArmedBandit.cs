@@ -37,7 +37,7 @@ namespace DeepSharp.RL.Environs
 
 		private void Create(int k)
 		{
-			var random = new SystemRandomSource();
+			var random = new Random();
 			foreach (var i in Enumerable.Range(0, k))
 				bandits[i] = new Bandit($"{i}", random.NextDouble());
 		}

@@ -27,25 +27,25 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void DisperseGenerate()
 		{
-			var disperse = new Disperse(5, torch.ScalarType.Int8);
+			var disperse = new Disperse(5, ScalarType.Int8);
 			var one      = disperse.Generate();
 			Print(one);
-			one.dtype.Should().Be(torch.ScalarType.Int8);
+			one.dtype.Should().Be(ScalarType.Int8);
 
-			disperse = new Disperse(5, torch.ScalarType.Int16);
+			disperse = new Disperse(5, ScalarType.Int16);
 			one      = disperse.Generate();
 			Print(one);
-			one.dtype.Should().Be(torch.ScalarType.Int16);
+			one.dtype.Should().Be(ScalarType.Int16);
 
-			disperse = new Disperse(5, torch.ScalarType.Int32);
+			disperse = new Disperse(5, ScalarType.Int32);
 			one      = disperse.Generate();
 			Print(one);
-			one.dtype.Should().Be(torch.ScalarType.Int32);
+			one.dtype.Should().Be(ScalarType.Int32);
 
 			disperse = new Disperse(5);
 			one      = disperse.Generate();
 			Print(one);
-			one.dtype.Should().Be(torch.ScalarType.Int64);
+			one.dtype.Should().Be(ScalarType.Int64);
 		}
 
 		[Fact]
@@ -137,10 +137,10 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void CreateMultiDisperse1()
 		{
-			var low           = torch.tensor(new long[] { 0, 0 });
-			var high          = torch.tensor(new long[] { 3, 4 });
+			var low           = tensor(new long[] { 0, 0 });
+			var high          = tensor(new long[] { 3, 4 });
 			var shape         = new long[] { 2 };
-			var multiDisperse = new MultiDisperse(low, high, shape, torch.ScalarType.Int32);
+			var multiDisperse = new MultiDisperse(low, high, shape, ScalarType.Int32);
 			var r             = multiDisperse.Sample();
 			Print(r);
 			Print(multiDisperse);
@@ -149,7 +149,7 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void CreateMultiDisperse2()
 		{
-			var multiDisperse = new MultiDisperse(0, 1, new long[] { 2 }, torch.ScalarType.Int64);
+			var multiDisperse = new MultiDisperse(0, 1, new long[] { 2 }, ScalarType.Int64);
 			var r             = multiDisperse.Sample();
 			Print(r);
 			Print(multiDisperse);
@@ -159,7 +159,7 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void CreateBinary()
 		{
-			var binary = new Binary(torch.ScalarType.Int64);
+			var binary = new Binary(ScalarType.Int64);
 			var r      = binary.Sample();
 			Print(r);
 			Print(binary);
@@ -178,7 +178,7 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void CreateMultiBinary2()
 		{
-			var binary = new MultiBinary(new long[] { 2, 2 }, torch.ScalarType.Int64);
+			var binary = new MultiBinary(new long[] { 2, 2 }, ScalarType.Int64);
 			var r      = binary.Sample();
 			Print(r);
 			Print(binary);

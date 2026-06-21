@@ -1,25 +1,60 @@
-﻿namespace DeepSharp.Dataset
+﻿using System.Collections;
+
+namespace DeepSharp.Dataset
 {
 	/// <summary>
-	///     Basic DataLoader inherit from torch.utils.data.DataLoader
+	///     Custom DataLoader implementing batching, shuffling, and device transfer.
+	///     (torch.utils.data.DataLoader removed in TorchSharp 0.107.0)
 	/// </summary>
-	/// <typeparam name="T"></typeparam>
-	public class DataLoader<T> : torch.utils.data.DataLoader<T, DataViewPair>
+	/// <typeparam name="T">DataView type</typeparam>
+	public class DataLoader<T> : IEnumerable<DataViewPair>
 		where T : DataView
 	{
 		public DataLoader(Dataset<T> dataset, DataLoaderConfig config)
-			: base(dataset, config.BatchSize, CollateFunc, config.Shuffle, config.Device, config.Seed, config.NumWorker,
-				config.DropLast)
 		{
+			Dataset    = dataset;
+			Config     = config;
+			BatchCount = (int)Math.Ceiling((double)dataset.Count / config.BatchSize);
 		}
 
-		public static DataViewPair CollateFunc(IEnumerable<DataView> dataViews, torch.Device device)
+		public Dataset<T> Dataset { get; }
+
+		public DataLoaderConfig Config { get; }
+
+		public int BatchCount { get; }
+
+		public IEnumerator<DataViewPair> GetEnumerator()
 		{
-			var views    = dataViews.ToList();
-			var features = views.Select(a => a.GetFeatures()).ToList();
-			var labels   = views.Select(a => a.GetLabels()).ToList();
-			var result   = new DataViewPair(labels, features).To(device);
-			return result;
+			var indices = Enumerable.Range(0, (int)Dataset.Count).ToArray();
+
+			if (Config.Shuffle)
+			{
+				var rng = Config.Seed is { } seed ? new Random(seed) : new Random();
+				for (var i = indices.Length - 1; i > 0; i--)
+				{
+					var j = rng.Next(i + 1);
+					(indices[i], indices[j]) = (indices[j], indices[i]);
+				}
+			}
+
+			for (var i = 0; i < indices.Length; i += Config.BatchSize)
+			{
+				var batchSize = Math.Min(Config.BatchSize, indices.Length - i);
+
+				if (Config.DropLast && batchSize < Config.BatchSize)
+					yield break;
+
+				var batch = indices[i..(i + batchSize)]
+					.Select(idx => (DataView)Dataset.GetTensor(idx))
+					.ToList();
+
+				yield return DataView.FromDataViews(batch, Config.Device);
+			}
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 
 		public async IAsyncEnumerable<DataViewPair> GetBatchSample()

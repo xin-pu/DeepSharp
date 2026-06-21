@@ -1,4 +1,6 @@
-﻿namespace DeepSharp.RL.Environs.Spaces
+﻿using System.Diagnostics;
+
+namespace DeepSharp.RL.Environs.Spaces
 {
 	public abstract class DigitalSpace : Space
 	{
@@ -44,9 +46,9 @@
 
 		private void CheckParameters(torch.Tensor low, torch.Tensor high)
 		{
-			low.Should().NotBeNull();
-			high.Should().NotBeNull();
-			torch.all(low < high).Equals(torch.tensor(true)).Should().Be(true);
+			Debug.Assert(low is not null);
+			Debug.Assert(high is not null);
+			Debug.Assert(torch.all(low < high).Equals(torch.tensor(true)));
 		}
 
 
@@ -59,7 +61,7 @@
 				torch.ScalarType.Int32,
 				torch.ScalarType.Int64
 			};
-			Type.Should().BeOneOf(acceptType, $"Disperse accept Type in {string.Join(",", acceptType)}");
+			Debug.Assert(acceptType.Contains(Type), $"Disperse accept Type in {string.Join(",", acceptType)}");
 		}
 	}
 }

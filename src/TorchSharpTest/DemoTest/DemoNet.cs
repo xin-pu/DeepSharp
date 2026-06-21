@@ -3,13 +3,13 @@
 	/// <summary>
 	///     This is demo net to guide how to create a new Module
 	/// </summary>
-	public sealed class DemoNet : Module<torch.Tensor, torch.Tensor>
+	public sealed class DemoNet : Module<Tensor, Tensor>
 	{
-		private readonly Module<torch.Tensor, torch.Tensor> layers;
+		private readonly Module<Tensor, Tensor> layers;
 
 		public DemoNet(int obsSize, int actionNum) : base("Net")
 		{
-			var modules = new List<(string, Module<torch.Tensor, torch.Tensor>)>
+			var modules = new List<(string, Module<Tensor, Tensor>)>
 			{
 				("line1", Linear(obsSize, 10)),
 				("line2", Linear(10, actionNum))
@@ -19,7 +19,7 @@
 		}
 
 
-		public override torch.Tensor forward(torch.Tensor input)
+		public override Tensor forward(Tensor input)
 		{
 			return layers.forward(input);
 		}
