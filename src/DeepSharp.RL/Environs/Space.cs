@@ -1,65 +1,69 @@
-﻿using FluentAssertions;
-using MathNet.Numerics.Random;
+﻿using System.Diagnostics;
 
 namespace DeepSharp.RL.Environs
 {
-    /// <summary>
-    ///     空间 动作空间和观察空间父类
-    /// </summary>
-    public abstract class Space : IDisposable
-    {
-        protected Space(
-            long[] shape,
-            torch.ScalarType type,
-            DeviceType deviceType,
-            long seed)
-        {
-            (Shape, Type, DeviceType) = (shape, type, deviceType);
-            CheckInitParameter(shape, type);
-            CheckType();
-            Generator = torch.random.manual_seed(new SystemRandomSource().NextInt64(0, 1000));
-            N = shape.Aggregate(1, (a, b) => (int) (a * b));
-        }
+	/// <summary>
+	///     空间 动作空间和观察空间父类
+	/// </summary>
+	public abstract class Space : IDisposable
+	{
+		protected Space(
+			long[]           shape,
+			torch.ScalarType type,
+			DeviceType       deviceType,
+			long             seed)
+		{
+			(Shape, Type, DeviceType) = (shape, type, deviceType);
+			CheckInitParameter(shape, type);
+			CheckType();
+			Generator = torch.random.manual_seed(new Random().NextInt64(0, 1000));
+			N         = shape.Aggregate(1, (a, b) => (int)(a * b));
+		}
 
-        public long N { get; init; }
-        public long[] Shape { get; }
-        public torch.ScalarType Type { get; }
-        public DeviceType DeviceType { get; }
-        internal torch.Generator Generator { get; }
-        internal torch.Device Device => new(DeviceType);
+		public long N { get; init; }
 
-        public void Dispose()
-        {
-            Generator.Dispose();
-        }
+		public long[] Shape { get; }
 
-        /// <summary>
-        ///     Returns a sample from the space.
-        /// </summary>
-        /// <returns></returns>
-        public abstract torch.Tensor Sample();
+		public torch.ScalarType Type { get; }
 
-        public abstract void CheckType();
+		public DeviceType DeviceType { get; }
 
-        /// <summary>
-        ///     Generates a tensor whose shape and type are consistent with the space definition.
-        /// </summary>
-        /// <returns></returns>
-        public virtual torch.Tensor Generate()
-        {
-            return torch.zeros(Shape, Type, Device);
-        }
+		internal torch.Generator Generator { get; }
+
+		internal torch.Device Device => new(DeviceType);
+
+		public void Dispose()
+		{
+			Generator.Dispose();
+		}
+
+		/// <summary>
+		///     Returns a sample from the space.
+		/// </summary>
+		/// <returns></returns>
+		public abstract torch.Tensor Sample();
+
+		public abstract void CheckType();
+
+		/// <summary>
+		///     Generates a tensor whose shape and type are consistent with the space definition.
+		/// </summary>
+		/// <returns></returns>
+		public virtual torch.Tensor Generate()
+		{
+			return torch.zeros(Shape, Type, Device);
+		}
 
 
-        public override string ToString()
-        {
-            return $"Space Type: {GetType().Name}\nShape: {Shape}\ndType: {Type} \nN:{N}";
-        }
+		public override string ToString()
+		{
+			return $"Space Type: {GetType().Name}\nShape: {Shape}\ndType: {Type} \nN:{N}";
+		}
 
-        private static void CheckInitParameter(long[] shape, torch.ScalarType type)
-        {
-            shape.Should().NotBeNull();
-            shape.Length.Should().BeGreaterThan(0);
-        }
-    }
+		private static void CheckInitParameter(long[] shape, torch.ScalarType type)
+		{
+			Debug.Assert(shape        != null);
+			Debug.Assert(shape.Length > 0);
+		}
+	}
 }

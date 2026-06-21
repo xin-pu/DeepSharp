@@ -1,17 +1,22 @@
 ﻿namespace DeepSharp.Dataset
 {
-    public struct DataLoaderConfig
-    {
-        public DataLoaderConfig()
-        {
-            Seed = null;
-        }
+	public struct DataLoaderConfig
+	{
+		public DataLoaderConfig()
+		{
+			Seed = null;
+		}
 
-        public int BatchSize { set; get; } = 4;
-        public bool Shuffle { set; get; } = true;
-        public bool DropLast { set; get; } = true;
-        public int NumWorker { set; get; } = 1;
-        public int? Seed { set; get; }
-        public torch.Device Device { set; get; } = new(DeviceType.CUDA);
-    }
+		public int BatchSize { get; set; } = 4;
+
+		public bool Shuffle { get; set; } = true;
+
+		public bool DropLast { get; set; } = true;
+
+		public int NumWorker { get; set; } = 1;
+
+		public int? Seed { get; set; }
+
+		public torch.Device Device { get; set; } = new(DeviceType.CUDA);
+	}
 }

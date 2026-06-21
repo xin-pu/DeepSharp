@@ -1,6 +1,6 @@
 ﻿namespace DeepSharp.RL.Agents
 {
-    internal class DuelingDQN
-    {
-    }
+	internal class DuelingDQN
+	{
+	}
 }

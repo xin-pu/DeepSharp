@@ -1,6 +1,6 @@
 ﻿namespace DeepSharp.RL.Agents
 {
-    internal class CategoricalDQN
-    {
-    }
+	internal class CategoricalDQN
+	{
+	}
 }

@@ -1,102 +1,105 @@
 ﻿using DeepSharp.RL.Environs;
 using DeepSharp.RL.ExpReplays;
-using OpenCvSharp.Dnn;
-using TorchSharp.Modules;
-using static TorchSharp.torch.optim;
 
 namespace DeepSharp.RL.Agents
 {
-    public class ActorCritic : PolicyGradientAgengt
-    {
-        public ActorCritic(Environ<Space, Space> env,
-            int batchsize,
-            float alpha = 0.01f,
-            float beta = 0.01f,
-            float gamma = 0.99f)
-            : base(env, "ActorCritic")
-        {
-            Batchsize = batchsize;
-            Gamma = gamma;
-            Alpha = alpha;
-            Beta = beta;
-            Q = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
-            ExpReplays = new EpisodeExpReplay(batchsize, gamma);
-            ExpReplaysForPolicy = new EpisodeExpReplay(batchsize, gamma);
-            var parameters = new[] {Q, PolicyNet}
-                .SelectMany(a => a.parameters());
-            Optimizer = Adam(parameters, Alpha);
-        }
+	public class ActorCritic : PolicyGradientAgengt
+	{
+		public ActorCritic(Environ<Space, Space> env,
+			int                                  batchsize,
+			float                                alpha = 0.01f,
+			float                                beta  = 0.01f,
+			float                                gamma = 0.99f)
+			: base(env, "ActorCritic")
+		{
+			Batchsize           = batchsize;
+			Gamma               = gamma;
+			Alpha               = alpha;
+			Beta                = beta;
+			Q                   = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
+			ExpReplays          = new EpisodeExpReplay(batchsize, gamma);
+			ExpReplaysForPolicy = new EpisodeExpReplay(batchsize, gamma);
+			var parameters = new[] { Q, PolicyNet }
+				.SelectMany(a => a.parameters());
+			Optimizer = Adam(parameters, Alpha);
+		}
 
-        /// <summary>
-        ///     Episodes send to train
-        /// </summary>
-        public int Batchsize { protected set; get; }
+		/// <summary>
+		///     Episodes send to train
+		/// </summary>
+		public int Batchsize { get; protected set; }
 
-        public float Alpha { protected set; get; }
-        public float Beta { protected set; get; }
-        public float Gamma { protected set; get; }
-        public Module<torch.Tensor, torch.Tensor> Q { protected set; get; }
-        public EpisodeExpReplay ExpReplays { protected set; get; }
-        public EpisodeExpReplay ExpReplaysForPolicy { protected set; get; }
-        public Optimizer Optimizer { protected set; get; }
+		public float Alpha { get; protected set; }
 
-        /// <summary>
-        ///     QLearning for VNet
-        /// </summary>
-        /// <returns></returns>
-        public override LearnOutcome Learn()
-        {
-            var learnOutCome = new LearnOutcome();
+		public float Beta { get; protected set; }
 
-            var episodes = RunEpisodes(Batchsize);
+		public float Gamma { get; protected set; }
 
+		public Module<torch.Tensor, torch.Tensor> Q { get; protected set; }
 
-            episodes.ToList().ForEach(e =>
-            {
-                learnOutCome.AppendStep(e);
-                ExpReplays.Enqueue(e,false);
-                ExpReplaysForPolicy.Enqueue(e);
-            });
+		public EpisodeExpReplay ExpReplays { get; protected set; }
 
-            var experienceCase = ExpReplays.All();
-            var state = experienceCase.PreState;
-            var action = experienceCase.Action;
-            var reward = experienceCase.Reward;
-            var poststate = experienceCase.PostState;
-            ExpReplays.Clear();
+		public EpisodeExpReplay ExpReplaysForPolicy { get; protected set; }
 
-            Optimizer.zero_grad();
+		public Optimizer Optimizer { get; protected set; }
 
-            var stateActionValue = Q.forward(state).gather(1,action);
-            var nextStateValue = Q.forward(poststate).max(1).values.detach();
-            var expectedStatedActionValuey = reward+ nextStateValue * Gamma ;
-            var lossValue = new MSELoss().forward(stateActionValue, expectedStatedActionValuey);
-            lossValue.backward();
+		/// <summary>
+		///     QLearning for VNet
+		/// </summary>
+		/// <returns></returns>
+		public override LearnOutcome Learn()
+		{
+			var learnOutCome = new LearnOutcome();
 
-            var logProbV = torch.log(PolicyNet.forward(state)).gather(1, action); 
-            var logProbActionV = stateActionValue.detach() * logProbV;
-            var lossPolicy = -logProbActionV.mean();
+			var episodes = RunEpisodes(Batchsize);
 
 
-            lossPolicy.backward();
-            Optimizer.step();
+			episodes.ToList().ForEach(e =>
+			{
+				learnOutCome.AppendStep(e);
+				ExpReplays.Enqueue(e, false);
+				ExpReplaysForPolicy.Enqueue(e);
+			});
+
+			var experienceCase = ExpReplays.All();
+			var state          = experienceCase.PreState;
+			var action         = experienceCase.Action;
+			var reward         = experienceCase.Reward;
+			var poststate      = experienceCase.PostState;
+			ExpReplays.Clear();
+
+			Optimizer.zero_grad();
+
+			var stateActionValue           = Q.forward(state).gather(1, action);
+			var nextStateValue             = Q.forward(poststate).max(1).values.detach();
+			var expectedStatedActionValuey = reward + nextStateValue * Gamma;
+			var lossValue                  = new MSELoss().forward(stateActionValue, expectedStatedActionValuey);
+			lossValue.backward();
+
+			var logProbV       = torch.log(PolicyNet.forward(state)).gather(1, action);
+			var logProbActionV = stateActionValue.detach() * logProbV;
+			var lossPolicy     = -logProbActionV.mean();
 
 
-            learnOutCome.Evaluate = lossPolicy.item<float>();
-
-            return learnOutCome;
-        }
+			lossPolicy.backward();
+			Optimizer.step();
 
 
-        public override void Save(string path)
-        {
-            if (File.Exists(path)) File.Delete(path);
-            PolicyNet.save(path);
-        }
+			learnOutCome.Evaluate = lossPolicy.item<float>();
 
-        public override void Load(string path)
-        {
-            PolicyNet.load(path);
-        }
-    }
+			return learnOutCome;
+		}
+
+
+		public override void Save(string path)
+		{
+			if (File.Exists(path)) File.Delete(path);
+			PolicyNet.save(path);
+		}
+
+		public override void Load(string path)
+		{
+			PolicyNet.load(path);
+		}
+	}
 }

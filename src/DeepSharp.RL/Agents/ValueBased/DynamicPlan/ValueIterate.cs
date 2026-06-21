@@ -3,64 +3,70 @@ using DeepSharp.Utility;
 
 namespace DeepSharp.RL.Agents
 {
-    public abstract class ValueIterate : ValueAgent
-    {
-        /// <summary>
-        /// </summary>
-        /// <param name="env"></param>
-        /// <param name="p"></param>
-        /// <param name="r"></param>
-        /// <param name="t"></param>
-        /// <param name="threshold"></param>
-        protected ValueIterate(Environ<Space, Space> env, Dictionary<RewardKey, float> p,
-            Dictionary<RewardKey, float> r, int t = 100, float threshold = 0.1f)
-            : base(env, "ValueIterate")
-        {
-            T = t;
-            Threshold = threshold;
-            VTable = new VTable();
-            P = p;
-            R = r;
-            RewardKeys = p.Keys.ToArray();
-            X = P.Keys.Select(a => a.State)
-                .Distinct(new TensorEqualityCompare())
-                .ToArray();
-        }
+	public abstract class ValueIterate : ValueAgent
+	{
+		/// <summary>
+		/// </summary>
+		/// <param name="env"></param>
+		/// <param name="p"></param>
+		/// <param name="r"></param>
+		/// <param name="t"></param>
+		/// <param name="threshold"></param>
+		protected ValueIterate(Environ<Space, Space> env,
+			Dictionary<RewardKey, float>             p,
+			Dictionary<RewardKey, float>             r,
+			int                                      t         = 100,
+			float                                    threshold = 0.1f)
+			: base(env, "ValueIterate")
+		{
+			T          = t;
+			Threshold  = threshold;
+			VTable     = new VTable();
+			P          = p;
+			R          = r;
+			RewardKeys = p.Keys.ToArray();
+			X = P.Keys.Select(a => a.State)
+				.Distinct(new TensorEqualityCompare())
+				.ToArray();
+		}
 
-        public int T { protected set; get; }
+		public int T { get; protected set; }
 
-        /// <summary>
-        ///     Convergence Threshold
-        /// </summary>
-        public float Threshold { protected set; get; }
+		/// <summary>
+		///     Convergence Threshold
+		/// </summary>
+		public float Threshold { get; protected set; }
 
-        public VTable VTable { protected set; get; }
+		public VTable VTable { get; protected set; }
 
-        protected Dictionary<RewardKey, float> P { set; get; }
-        protected Dictionary<RewardKey, float> R { set; get; }
-        protected torch.Tensor[] X { set; get; }
-        protected RewardKey[] RewardKeys { set; get; }
+		protected Dictionary<RewardKey, float> P { get; set; }
+
+		protected Dictionary<RewardKey, float> R { get; set; }
+
+		protected torch.Tensor[] X { get; set; }
+
+		protected RewardKey[] RewardKeys { get; set; }
 
 
-        public override LearnOutcome Learn()
-        {
-            /// Value Iterate
-            foreach (var t in Enumerable.Range(1, T))
-            {
-                var vNext = GetVTable(t);
-                if (vNext - VTable < Threshold)
-                    break;
-                VTable = vNext;
-            }
+		public override LearnOutcome Learn()
+		{
+			/// Value Iterate
+			foreach (var t in Enumerable.Range(1, T))
+			{
+				var vNext = GetVTable(t);
+				if (vNext - VTable < Threshold)
+					break;
+				VTable = vNext;
+			}
 
-            /// Get Policy (argmax Q=> Update QTable) by Value
-            var qTable = GetQTable(VTable, T);
-            QTable = qTable;
-            return new LearnOutcome();
-        }
+			/// Get Policy (argmax Q=> Update QTable) by Value
+			var qTable = GetQTable(VTable, T);
+			QTable = qTable;
+			return new LearnOutcome();
+		}
 
-        protected abstract VTable GetVTable(int t);
+		protected abstract VTable GetVTable(int t);
 
-        protected abstract QTable GetQTable(VTable vTable, int t);
-    }
+		protected abstract QTable GetQTable(VTable vTable, int t);
+	}
 }
