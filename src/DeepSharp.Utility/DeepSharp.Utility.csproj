@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="TorchSharp-cuda-windows" Version="0.107.0" />
+    <PackageReference Include="TorchSharp-cpu" Version="0.107.0" />
   </ItemGroup>
 
   <ItemGroup>
