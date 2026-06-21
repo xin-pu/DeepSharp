@@ -1,14 +1,15 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 
 using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using DeepSharp.RL.Agents.Deep.Value;
 
 static void Print(object obj)
 {
 	Console.WriteLine(obj.ToString());
 }
 
-var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 var agent      = new DQN(frozenlake, 100, 1000, 0.9f, batchSize: 16);
 Print(frozenlake);
 

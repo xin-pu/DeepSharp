@@ -1,6 +1,7 @@
-﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
 using DeepSharp.RL.Trainers;
+using DeepSharp.RL.Agents.Deep.ActorCritic;
 
 namespace TorchSharpTest.RLTest.PolicyBasedTest
 {
@@ -34,7 +35,7 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
 		[Fact]
 		public void ACFLTest()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 			var agent      = new A2C(frozenlake, 16);
 			var trainer    = new RLTrainer(agent, Print);
 			trainer.Train(0.90f, 600, testEpisodes: 20, testInterval: 2, autoSave: false);
@@ -44,7 +45,7 @@ namespace TorchSharpTest.RLTest.PolicyBasedTest
 		[Fact]
 		public void ACFLCVal()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 			var agent      = new A2C(frozenlake, 16);
 			agent.Load("A2CFL.st");
 			var episode = agent.RunEpisodes(10);

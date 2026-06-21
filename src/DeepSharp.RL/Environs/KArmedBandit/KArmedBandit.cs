@@ -12,7 +12,7 @@ namespace DeepSharp.RL.Environs
 			: base("KArmedBandit", deviceType)
 		{
 			bandits          = new Bandit[k];
-			ActionSpace      = new Disperse(k, deviceType: deviceType);
+			ActionSpace      = new Discrete(k, deviceType: deviceType);
 			ObservationSpace = new Box(0, 1, new long[] { k }, deviceType);
 			Create(k);
 			Reset();
@@ -24,7 +24,7 @@ namespace DeepSharp.RL.Environs
 		{
 			var k = probs.Length;
 			bandits          = new Bandit[k];
-			ActionSpace      = new Disperse(k, deviceType: deviceType);
+			ActionSpace      = new Discrete(k, deviceType: deviceType);
 			ObservationSpace = new Box(0, 1, new long[] { k }, deviceType);
 			Create(probs);
 			Reset();

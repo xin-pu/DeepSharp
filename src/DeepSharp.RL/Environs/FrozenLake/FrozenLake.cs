@@ -1,24 +1,24 @@
-ï»¿using System.Text;
+using System.Text;
 using DeepSharp.RL.Environs.Spaces;
 
 namespace DeepSharp.RL.Environs
 {
-	public class Frozenlake : Environ<Space, Space>
+	public class FrozenLake : Environ<Space, Space>
 
 	{
-		public Frozenlake(int order = 4, DeviceType deviceType = DeviceType.CPU)
-			: base("Frozenlake", deviceType)
+		public FrozenLake(int order = 4, DeviceType deviceType = DeviceType.CPU)
+			: base("FrozenLake", deviceType)
 		{
 			var area = (int)Math.Pow(order, 2);
 			Order            = order;
 			LakeUnits        = CreateLake4();
 			PlayID           = 0;
-			ActionSpace      = new Disperse(order, torch.ScalarType.Int32, deviceType);
+			ActionSpace      = new Discrete(order, torch.ScalarType.Int32, deviceType);
 			ObservationSpace = new Box(0, 1, new long[] { area }, deviceType);
 			Reset();
 		}
 
-		public Frozenlake(float[] soomthing, int order = 4, DeviceType deviceType = DeviceType.CPU)
+		public FrozenLake(float[] soomthing, int order = 4, DeviceType deviceType = DeviceType.CPU)
 			: this(order, deviceType)
 		{
 			Smoothing = soomthing;
@@ -152,7 +152,7 @@ namespace DeepSharp.RL.Environs
 
 			PlayID = action switch
 			{
-				/// å¾€ä¸Šèµ°
+				/// ÍùÉÏ×ß
 				0 => moveAction switch
 				{
 					0 => this[new[] { 0, rowCurrent                - 1 }.Max(), columnCurrent].Index,
@@ -160,7 +160,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///å¾€ä¸‹èµ°
+				///ÍùÏÂ×ß
 				1 => moveAction switch
 				{
 					0 => this[new[] { 3, rowCurrent                + 1 }.Min(), columnCurrent].Index,
@@ -168,7 +168,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///å¾€å·¦èµ°
+				///Íù×ó×ß
 				2 => moveAction switch
 				{
 					0 => this[rowCurrent, new[] { 0, columnCurrent - 1 }.Max()].Index,
@@ -176,7 +176,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[new[] { 3, rowCurrent                + 1 }.Min(), columnCurrent].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///å¾€å³èµ°
+				///ÍùÓÒ×ß
 				3 => moveAction switch
 				{
 					0 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
@@ -195,7 +195,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     èŽ·å–ä¸€ä¸ªç‰‡æ®µçš„å¥–åŠ±
+		///     »ñÈ¡Ò»¸öÆ¬¶ÎµÄ½±Àø
 		/// </summary>
 		/// <param name="episode"></param>
 		/// <returns></returns>

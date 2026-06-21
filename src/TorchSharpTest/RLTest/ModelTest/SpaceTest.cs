@@ -10,53 +10,53 @@ namespace TorchSharpTest.RLTest.ModelTest
 		}
 
 
-		#region Disperse Test
+		#region Discrete Test
 
 		[Fact]
-		public void DisperseCons()
+		public void DiscreteCons()
 		{
-			var disperse = new Disperse(5);
+			var disperse = new Discrete(5);
 			var s        = disperse.Generate();
 			Print(s);
 
-			var disperse2 = new Disperse(2);
+			var disperse2 = new Discrete(2);
 			s = disperse2.Generate();
 			Print(s);
 		}
 
 		[Fact]
-		public void DisperseGenerate()
+		public void DiscreteGenerate()
 		{
-			var disperse = new Disperse(5, ScalarType.Int8);
+			var disperse = new Discrete(5, ScalarType.Int8);
 			var one      = disperse.Generate();
 			Print(one);
 			one.dtype.Should().Be(ScalarType.Int8);
 
-			disperse = new Disperse(5, ScalarType.Int16);
+			disperse = new Discrete(5, ScalarType.Int16);
 			one      = disperse.Generate();
 			Print(one);
 			one.dtype.Should().Be(ScalarType.Int16);
 
-			disperse = new Disperse(5, ScalarType.Int32);
+			disperse = new Discrete(5, ScalarType.Int32);
 			one      = disperse.Generate();
 			Print(one);
 			one.dtype.Should().Be(ScalarType.Int32);
 
-			disperse = new Disperse(5);
+			disperse = new Discrete(5);
 			one      = disperse.Generate();
 			Print(one);
 			one.dtype.Should().Be(ScalarType.Int64);
 		}
 
 		[Fact]
-		public void DisperseDevice()
+		public void DiscreteDevice()
 		{
-			var disperse = new Disperse(5, deviceType: DeviceType.CUDA);
+			var disperse = new Discrete(5, deviceType: DeviceType.CUDA);
 			var one      = disperse.Generate();
 			Print(one);
 			one.device_type.Should().Be(DeviceType.CUDA);
 
-			disperse = new Disperse(5, deviceType: DeviceType.CPU);
+			disperse = new Discrete(5, deviceType: DeviceType.CPU);
 			one      = disperse.Generate();
 			Print(one);
 			one.device_type.Should().Be(DeviceType.CPU);
@@ -64,9 +64,9 @@ namespace TorchSharpTest.RLTest.ModelTest
 
 
 		[Fact]
-		public void DisperseSample()
+		public void DiscreteSample()
 		{
-			var a = new Disperse(5);
+			var a = new Discrete(5);
 			foreach (var _ in Enumerable.Repeat(0, 10))
 			{
 				var data = a.Sample();
@@ -135,24 +135,24 @@ namespace TorchSharpTest.RLTest.ModelTest
 		#region Other Space
 
 		[Fact]
-		public void CreateMultiDisperse1()
+		public void CreateMultiDiscrete1()
 		{
 			var low           = tensor(new long[] { 0, 0 });
 			var high          = tensor(new long[] { 3, 4 });
 			var shape         = new long[] { 2 };
-			var multiDisperse = new MultiDisperse(low, high, shape, ScalarType.Int32);
-			var r             = multiDisperse.Sample();
+			var multiDiscrete = new MultiDiscrete(low, high, shape, ScalarType.Int32);
+			var r             = multiDiscrete.Sample();
 			Print(r);
-			Print(multiDisperse);
+			Print(multiDiscrete);
 		}
 
 		[Fact]
-		public void CreateMultiDisperse2()
+		public void CreateMultiDiscrete2()
 		{
-			var multiDisperse = new MultiDisperse(0, 1, new long[] { 2 }, ScalarType.Int64);
-			var r             = multiDisperse.Sample();
+			var multiDiscrete = new MultiDiscrete(0, 1, new long[] { 2 }, ScalarType.Int64);
+			var r             = multiDiscrete.Sample();
 			Print(r);
-			Print(multiDisperse);
+			Print(multiDiscrete);
 		}
 
 

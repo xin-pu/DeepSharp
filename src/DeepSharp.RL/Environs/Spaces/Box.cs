@@ -102,7 +102,7 @@ namespace DeepSharp.RL.Environs.Spaces
 				torch.ScalarType.Float32,
 				torch.ScalarType.Float64
 			};
-			Debug.Assert(acceptType.Contains(Type), $"Disperse accept Type in {string.Join(",", acceptType)}");
+			Debug.Assert(acceptType.Contains(Type), $"Discrete accept Type in {string.Join(",", acceptType)}");
 		}
 
 		private void CoculateBounded()

@@ -1,5 +1,6 @@
-﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using DeepSharp.RL.Agents.Tabular;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {
@@ -65,9 +66,9 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
 
 		[Fact]
-		public void FrozenlakeMain()
+		public void FrozenLakeMain()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 			var agent      = new QLearning(frozenlake);
 			Print(frozenlake);
 

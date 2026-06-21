@@ -6,7 +6,7 @@ namespace DeepSharp.RL.Agents
 	/// <summary>
 	///     智能体
 	/// </summary>
-	public abstract class Agent
+	public abstract class Agent : IAgent
 	{
 		protected Agent(Environ<Space, Space> env, string name)
 		{

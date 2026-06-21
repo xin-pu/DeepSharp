@@ -1,5 +1,6 @@
-﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using DeepSharp.RL.Agents.Tabular;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {
@@ -65,7 +66,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 		[Fact]
 		public void FLOnPolicyTest()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 			var agent      = new MonteCarloOnPolicy(frozenlake, 0.1f, 50);
 			Print(frozenlake);
 
@@ -96,7 +97,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 		[Fact]
 		public void FLOffPolictTest()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0f, 0f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0f, 0f });
 			var agent      = new MonteCarloOffPolicy(frozenlake, 0.1f, 50);
 			Print(frozenlake);
 

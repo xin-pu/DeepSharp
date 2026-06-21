@@ -61,7 +61,7 @@ namespace DeepSharp.RL.Environs.Spaces
 				torch.ScalarType.Int32,
 				torch.ScalarType.Int64
 			};
-			Debug.Assert(acceptType.Contains(Type), $"Disperse accept Type in {string.Join(",", acceptType)}");
+			Debug.Assert(acceptType.Contains(Type), $"Discrete accept Type in {string.Join(",", acceptType)}");
 		}
 	}
 }

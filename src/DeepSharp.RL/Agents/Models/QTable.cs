@@ -16,7 +16,7 @@ namespace DeepSharp.RL.Agents
 
 		public Dictionary<TransitKey, float> Return { get; protected set; }
 
-		protected List<TransitKey> TrasitKeys => Return.Keys.ToList();
+		protected List<TransitKey> TransitKeys => Return.Keys.ToList();
 
 
 		public float this[TransitKey transit]
@@ -36,8 +36,8 @@ namespace DeepSharp.RL.Agents
 		public bool Equals(QTable? other)
 		{
 			if (other                  == null) return false;
-			if (other.TrasitKeys.Count != TrasitKeys.Count) return false;
-			var res = TrasitKeys.All(key => !(Math.Abs(this[key] - other[key]) > 1E-2));
+			if (other.TransitKeys.Count != TransitKeys.Count) return false;
+			var res = TransitKeys.All(key => !(Math.Abs(this[key] - other[key]) > 1E-2));
 			return res;
 		}
 
@@ -61,7 +61,7 @@ namespace DeepSharp.RL.Agents
 		/// <returns></returns>
 		public Act? GetBestAct(torch.Tensor state)
 		{
-			var row = TrasitKeys
+			var row = TransitKeys
 				.Where(a => a.State.Equals(state));
 
 			var stateActions = Return
@@ -86,7 +86,7 @@ namespace DeepSharp.RL.Agents
 		/// <returns></returns>
 		public float GetBestValue(torch.Tensor state)
 		{
-			var row = TrasitKeys
+			var row = TransitKeys
 				.Where(a => a.State.Equals(state));
 
 			var stateActions = Return

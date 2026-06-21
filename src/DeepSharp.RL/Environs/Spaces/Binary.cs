@@ -3,7 +3,7 @@
 	/// <summary>
 	///     It's Space only support [0,1]
 	/// </summary>
-	public class Binary : Disperse
+	public class Binary : Discrete
 	{
 		public Binary(torch.ScalarType dtype      = torch.ScalarType.Int32,
 			DeviceType                 deviceType = DeviceType.CUDA,

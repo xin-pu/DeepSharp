@@ -1,5 +1,6 @@
-﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
+using DeepSharp.RL.Agents.Deep.Value;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {
@@ -14,7 +15,7 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 		[Fact]
 		public void TestDQN()
 		{
-			var frozenLake = new Frozenlake();
+			var frozenLake = new FrozenLake();
 			var dqn        = new DQN(frozenLake);
 			var act        = dqn.GetPolicyAct(frozenLake.Observation!.Value!);
 			Print(act);
@@ -47,9 +48,9 @@ namespace TorchSharpTest.RLTest.ValueBasedTest
 
 
 		[Fact]
-		public void FrozenlakeMain()
+		public void FrozenLakeMain()
 		{
-			var frozenlake = new Frozenlake(new[] { 0.8f, 0.1f, 0.1f });
+			var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
 			var agent      = new DQN(frozenlake, 100, 1000, 0.9f, batchSize: 16);
 			Print(frozenlake);
 

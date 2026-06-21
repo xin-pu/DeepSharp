@@ -1,4 +1,4 @@
-﻿using DeepSharp.RL.Environs;
+using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest.EnvironTest
 {
@@ -14,14 +14,14 @@ namespace TorchSharpTest.RLTest.EnvironTest
 		[Fact]
 		public void FrozenLakeCreateTest1()
 		{
-			var frozenlake = new Frozenlake(deviceType: DeviceType);
+			var frozenlake = new FrozenLake(deviceType: DeviceType);
 			Print(frozenlake);
 		}
 
 		[Fact]
 		public void FrozenLakeCreate2Test()
 		{
-			var frozenlake = new Frozenlake(deviceType: DeviceType);
+			var frozenlake = new FrozenLake(deviceType: DeviceType);
 			frozenlake.SetPlayID(15);
 			Print(frozenlake);
 			frozenlake.IsComplete(1).Should().BeTrue();
@@ -31,7 +31,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
 		[Fact]
 		public void FrozenLakeTestMove()
 		{
-			var frozenlake = new Frozenlake();
+			var frozenlake = new FrozenLake();
 			var testEpoch  = 100;
 			var count      = 0;
 			var countL     = 0;

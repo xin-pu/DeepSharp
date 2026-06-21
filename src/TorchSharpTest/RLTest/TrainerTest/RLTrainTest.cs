@@ -1,6 +1,8 @@
-﻿using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents;
 using DeepSharp.RL.Environs;
 using DeepSharp.RL.Trainers;
+using DeepSharp.RL.Agents.Tabular;
+using DeepSharp.RL.Agents.Deep.Value;
 
 namespace TorchSharpTest.RLTest.TrainerTest
 {
