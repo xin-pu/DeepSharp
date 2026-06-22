@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     Step
+	///     A single time step containing pre-state, action, post-state, and reward.
 	/// </summary>
 	public class Step : ICloneable
 	{
@@ -23,17 +23,17 @@
 		public Observation PreState { get; set; }
 
 		/// <summary>
-		///     动作
+		///     Action performed by the agent.
 		/// </summary>
 		public Act Action { get; set; }
 
 		/// <summary>
-		///     动作后的观察
+		///     Observation after the action.
 		/// </summary>
 		public Observation PostState { get; set; }
 
 		/// <summary>
-		///     动作后的奖励
+		///     Reward received after the action.
 		/// </summary>
 		public Reward Reward { get; set; }
 

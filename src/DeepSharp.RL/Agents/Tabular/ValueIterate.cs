@@ -33,7 +33,7 @@ namespace DeepSharp.RL.Agents.Tabular
 		public int T { get; protected set; }
 
 		/// <summary>
-		///     Convergence Threshold
+		///     Convergence threshold.
 		/// </summary>
 		public float Threshold { get; protected set; }
 
@@ -50,7 +50,7 @@ namespace DeepSharp.RL.Agents.Tabular
 
 		public override LearnOutcome Learn()
 		{
-			/// Value Iterate
+			// Value Iteration loop
 			foreach (var t in Enumerable.Range(1, T))
 			{
 				var vNext = GetVTable(t);
@@ -59,7 +59,7 @@ namespace DeepSharp.RL.Agents.Tabular
 				VTable = vNext;
 			}
 
-			/// Get Policy (argmax Q=> Update QTable) by Value
+			// Get Policy (argmax Q => Update QTable) from Value
 			var qTable = GetQTable(VTable, T);
 			QTable = qTable;
 			return new LearnOutcome();

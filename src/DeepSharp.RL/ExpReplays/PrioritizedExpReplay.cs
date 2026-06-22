@@ -3,13 +3,13 @@
 namespace DeepSharp.RL.ExpReplays
 {
 	/// <summary>
-	///     Uniform sample from Experience Source Cache
+	///     Prioritized sampling from experience replay buffer.
 	/// </summary>
 	public class PrioritizedExpReplay : ExpReplay
 	{
 		/// <summary>
 		/// </summary>
-		/// <param name="c">Capacity of Experience Replay Buffer,recommend 10^5 ~ 10^6</param>
+		/// <param name="c">Capacity of experience replay buffer (recommend 10^5 ~ 10^6).</param>
 		public PrioritizedExpReplay(int capacity = 10000)
 			: base(capacity)
 		{

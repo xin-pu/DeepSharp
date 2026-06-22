@@ -4,7 +4,7 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Tabular;
 
 /// <summary>
-///     基于查表的 Agent 基类
+///     Tabular agent base class — uses a Q-table for state-action value lookup.
 /// </summary>
 public abstract class TabularAgent : Agent
 {
@@ -17,7 +17,7 @@ public abstract class TabularAgent : Agent
     public QTable QTable { get; protected set; }
 
     /// <summary>
-    ///     argmax(a') Q(state,a')
+    ///      argmax_{a'} Q(state, a') — returns the best action or random if Q is zero.
     /// </summary>
     public override Act GetPolicyAct(torch.Tensor state)
     {

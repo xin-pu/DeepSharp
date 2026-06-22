@@ -1,22 +1,22 @@
 ﻿namespace DeepSharp.RL.Enumerates
 {
 	/// <summary>
-	///     Play mode of Agent
+	///     Play mode of the agent.
 	/// </summary>
 	public enum PlayMode
 	{
 		/// <summary>
-		///     平均采样
+		///     Random sampling from the action space.
 		/// </summary>
 		Sample,
 
 		/// <summary>
-		///     根据智能体的策略
+		///     Actions selected by the agent's policy.
 		/// </summary>
 		Agent,
 
 		/// <summary>
-		///     Sample(ε) and Agent(1-ε)
+		///     Sample with probability ε, agent policy with probability 1-ε.
 		/// </summary>
 		EpsilonGreedy
 	}

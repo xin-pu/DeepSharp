@@ -3,7 +3,7 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Tabular
 {
 	/// <summary>
-	///     Monte Carlo Method On Policy
+	///     Monte Carlo method — on-policy learning.
 	/// </summary>
 	public class MonteCarloOnPolicy : TabularAgent
 	{

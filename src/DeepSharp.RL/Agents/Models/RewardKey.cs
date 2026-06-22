@@ -3,7 +3,7 @@
 namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     奖励表 复合键
+	///     Reward table composite key.
 	/// </summary>
 	public struct RewardKey
 	{

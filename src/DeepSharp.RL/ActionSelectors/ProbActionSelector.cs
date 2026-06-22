@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.ActionSelectors
 {
 	/// <summary>
-	///     输入归一化概率,返回从分布中采样的结果
+	///     Takes normalized probabilities, returns a result sampled from the distribution.
 	/// </summary>
 	public class ProbActionSelector : ActionSelector
 	{

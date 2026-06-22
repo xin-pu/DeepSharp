@@ -4,18 +4,17 @@ using DeepSharp.RL.ExpReplays;
 namespace DeepSharp.RL.Agents.Deep.Value
 {
 	/// <summary>
-	///     Deep Q Network
-	///     Now ObservationSpace use one-dimensional for test
-	///     Will support Multi in feature
-	///     Using TargetNet and Experience
+	///     Deep Q Network.
+	///     Currently uses one-dimensional observation space for testing.
+	///     Uses TargetNet and Experience Replay.
 	/// </summary>
 	public class DQN : DeepValueAgent
 	{
 		/// <summary>
 		/// </summary>
 		/// <param name="env"></param>
-		/// <param name="n">update interval</param>
-		/// <param name="c">Capacity of Experience pool</param>
+		/// <param name="n">Update interval (sync target every N episodes).</param>
+		/// <param name="c">Capacity of experience replay buffer.</param>
 		public DQN(Environ<Space, Space> env,
 			int                          n         = 1000,
 			int                          c         = 10000,
@@ -43,26 +42,26 @@ namespace DeepSharp.RL.Agents.Deep.Value
 		public float Gamma { get; protected set; }
 
 		/// <summary>
-		///     Capacity of Experience pool
+		///     Capacity of experience replay buffer.
 		/// </summary>
 		public int C { get; protected set; }
 
 		/// <summary>
-		///     Update interval
+		///     Update interval for syncing target network.
 		/// </summary>
 		public int N { get; protected set; }
 
 		/// <summary>
-		///     Core Net
+		///     Core Q network.
 		/// </summary>
 
 		/// <summary>
-		///     Target Net
+		///     Target network (periodically synced from Q).
 		/// </summary>
 		public Module<torch.Tensor, torch.Tensor> QTarget { get; protected set; }
 
 		/// <summary>
-		///     Batch size of training
+		///     Batch size for training.
 		/// </summary>
 		public int BatchSize { get; protected set; }
 
@@ -85,25 +84,25 @@ namespace DeepSharp.RL.Agents.Deep.Value
 				while (!Environ.IsComplete(epoch))
 				{
 					epoch++;
-					/// Step 2 ε greedy select an action
+					/// Step 2: ε-greedy select an action
 					var act = GetEpsilonAct(Environ.Observation!.Value!);
-					/// Step 3 get reward and next state
+					/// Step 3: get reward and next state
 					var step = Environ.Step(act, epoch);
-					/// Step 4 save to Experience
+					/// Step 4: save to experience replay
 					episode.Enqueue(step);
 
 					Environ.CallBack?.Invoke(step);
-					Environ.Observation = step.PostState; /// It's import for Update Observation
+					Environ.Observation = step.PostState; /// Important: update observation for next step
 				}
 
-				/// Step 5 update Q from Experience
+				/// Step 5: update Q from experience
 				learnOutCome.AppendStep(episode);
 				UniformExp.Enqueue(episode);
 				if (UniformExp.Buffers.Count >= C)
 					learnOutCome.Evaluate = UpdateNet();
 			}
 
-			/// 每隔C次刚更新权重 Net -> TargetNet
+			/// Every N episodes, sync Q weights to QTarget
 			SyncTargetNetwork();
 
 			return learnOutCome;
@@ -111,7 +110,7 @@ namespace DeepSharp.RL.Agents.Deep.Value
 
 
 		/// <summary>
-		///     Copy Q to QTarget
+		///     Sync Q network weights to QTarget.
 		/// </summary>
 		private void SyncTargetNetwork()
 		{
@@ -120,25 +119,25 @@ namespace DeepSharp.RL.Agents.Deep.Value
 		}
 
 		/// <summary>
-		///     Update Q Parameter by gradient
+		///     Update Q network parameters by gradient descent.
 		/// </summary>
 		private float UpdateNet()
 		{
-			/// Get batch size Sample
+			// Get batch size samples
 			var batchSample = UniformExp.Sample(BatchSize);
 
 
-			/// Calcluate => Q(a,s)
+			// Calculate => Q(s,a)
 			var stateActionValue = Q.forward(batchSample.PreState).gather(1, batchSample.Action).squeeze(-1);
 
-			/// Calcluate => y = r + γ*argmaxQ'(a,s)
+			// Calculate => y = r + γ*argmax Q'(a,s)
 			var nextStateValue            = QTarget.forward(batchSample.PostState).max(1).values.detach();
 			var expectedStatedActionValue = batchSample.Reward + Gamma * nextStateValue;
 
-			/// Calcluate => Loss
+			// Calculate => Loss
 			var loss = Loss.call(stateActionValue, expectedStatedActionValue);
 
-			/// Backforward and Update Prameters
+			// Backward pass and update parameters
 			Optimizer.zero_grad();
 			loss.backward();
 			Optimizer.step();

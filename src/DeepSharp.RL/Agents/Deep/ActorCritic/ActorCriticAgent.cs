@@ -3,8 +3,8 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Deep.ActorCritic;
 
 /// <summary>
-///     Actor-Critic 双网络 Agent 基类
-///     持有 PolicyNet (Actor) 和 ValueNet (Critic)
+///     Actor-Critic dual-network agent base class.
+///     Holds PolicyNet (Actor) and ValueNet (Critic).
 /// </summary>
 public abstract class ActorCriticAgent : DeepAgent
 {
@@ -14,12 +14,12 @@ public abstract class ActorCriticAgent : DeepAgent
     }
 
     /// <summary>
-    ///     策略网络（Actor）
+    ///     Policy network (Actor).
     /// </summary>
     public Module<torch.Tensor, torch.Tensor> PolicyNet { get; protected set; } = null!;
 
     /// <summary>
-    ///     值网络（Critic）
+    ///     Value network (Critic).
     /// </summary>
     public Module<torch.Tensor, torch.Tensor> ValueNet { get; protected set; } = null!;
 
@@ -27,7 +27,7 @@ public abstract class ActorCriticAgent : DeepAgent
     public override Module<torch.Tensor, torch.Tensor> MainNet => PolicyNet;
 
     /// <summary>
-    ///     策略动作：按 softmax 概率采样
+    ///     Policy action: multinomial sampling from softmax probabilities.
     /// </summary>
     public override Act GetPolicyAct(torch.Tensor state)
     {
@@ -37,7 +37,7 @@ public abstract class ActorCriticAgent : DeepAgent
     }
 
     /// <summary>
-    ///     保存双网络
+    ///     Save both networks.
     /// </summary>
     public override void Save(string path)
     {
@@ -48,7 +48,7 @@ public abstract class ActorCriticAgent : DeepAgent
     }
 
     /// <summary>
-    ///     加载双网络
+    ///     Load both networks.
     /// </summary>
     public override void Load(string path)
     {

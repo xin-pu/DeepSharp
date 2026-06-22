@@ -3,7 +3,7 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents;
 
 /// <summary>
-///     Agent 核心接口，定义所有智能体的基本契约
+///     Core Agent interface defining the basic contract for all agents.
 /// </summary>
 public interface IAgent
 {

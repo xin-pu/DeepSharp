@@ -31,7 +31,7 @@ namespace DeepSharp.RL.Agents.Deep.Policy
 
 
 		/// <summary>
-		///     智能体 根据观察 生成动作 概率 分布，并按分布生成下一个动作
+		///     Generate action probability distribution from observation, sample next action.
 		/// </summary>
 		/// <param name="observation"></param>
 		/// <returns></returns>

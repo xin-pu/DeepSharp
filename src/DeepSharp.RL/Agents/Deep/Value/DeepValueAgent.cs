@@ -3,8 +3,8 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Deep.Value;
 
 /// <summary>
-///     基于值网络的 Agent 基类
-///     使用 Q 网络，策略为 argmax Q(s, a)
+///     Value-based neural network agent base class.
+///     Uses a Q network with policy: argmax Q(s, a).
 /// </summary>
 public abstract class DeepValueAgent : DeepAgent
 {
@@ -14,7 +14,7 @@ public abstract class DeepValueAgent : DeepAgent
     }
 
     /// <summary>
-    ///     Q 值网络
+    ///     Q-value network.
     /// </summary>
     public Module<torch.Tensor, torch.Tensor> Q { get; protected set; } = null!;
 
@@ -22,7 +22,7 @@ public abstract class DeepValueAgent : DeepAgent
     public override Module<torch.Tensor, torch.Tensor> MainNet => Q;
 
     /// <summary>
-    ///     策略动作：argmax Q(state, a)
+    ///     Policy action: argmax Q(state, a).
     /// </summary>
     public override Act GetPolicyAct(torch.Tensor state)
     {

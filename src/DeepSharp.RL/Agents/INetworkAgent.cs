@@ -1,7 +1,7 @@
 namespace DeepSharp.RL.Agents;
 
 /// <summary>
-///     神经网络 Agent 接口，提供优化器访问和检查点功能
+///     Neural network Agent interface, providing optimizer access and checkpoint functionality.
 /// </summary>
 public interface INetworkAgent
 {

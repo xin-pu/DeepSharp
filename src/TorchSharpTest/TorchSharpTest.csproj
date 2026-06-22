@@ -25,7 +25,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DeepSharp.Dataset\DeepSharp.Dataset.csproj" />
     <ProjectReference Include="..\DeepSharp.RL\DeepSharp.RL.csproj" />
   </ItemGroup>
 

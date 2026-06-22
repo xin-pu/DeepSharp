@@ -3,8 +3,7 @@
 namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     环境
-	///     提供观察 并给与奖励
+	///     Base environment providing observations and rewards.
 	/// </summary>
 	public abstract class Environ<T1, T2>
 		where T1 : Space
@@ -36,17 +35,17 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     Observation Current
+		///     Current observation.
 		/// </summary>
 		public Observation? Observation { get; set; }
 
 		/// <summary>
-		///     Reward Current
+		///     Current reward.
 		/// </summary>
 		public Reward Reward { get; set; }
 
 		/// <summary>
-		///     Observation Temp List
+		///     History of all observations in the current episode.
 		/// </summary>
 		public List<Observation> ObservationList { get; set; }
 
@@ -54,7 +53,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     恢复初始
+		///     Reset environment to initial state and return the initial observation.
 		/// </summary>
 		public virtual Observation Reset()
 		{
@@ -65,7 +64,7 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     获取一个回合的最终奖励
+		///     Compute the total return for an episode.
 		/// </summary>
 		/// <param name="episode"></param>
 		/// <returns></returns>
@@ -77,10 +76,10 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     Agent provide Act
+		///     Execute one step: agent provides an action, environment returns next state and reward.
 		/// </summary>
-		/// <param name="act"></param>
-		/// <returns></returns>
+		/// <param name="act">Action from the agent.</param>
+		/// <returns>The resulting step.</returns>
 		public virtual Step Step(Act act, int epoch)
 		{
 			var state    = Observation!;
@@ -95,28 +94,26 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     Update Environ Observation according  with one action from Agent
+		///     Update environment observation according to one action from agent.
 		/// </summary>
-		/// <param name="act">Action from Policy</param>
-		/// <returns>new observation</returns>
+		/// <param name="act">Action from the policy.</param>
+		/// <returns>New observation after the action.</returns>
 		public abstract Observation Update(Act act);
 
 
 		/// <summary>
-		///     Cal Reward from Observation
-		///     从观察获取单步奖励的计算方法
+		///     Calculate the one-step reward from an observation.
 		/// </summary>
-		/// <param name="observation">one observation</param>
-		/// <returns>one reward</returns>
+		/// <param name="observation">One observation.</param>
+		/// <returns>One reward.</returns>
 		public abstract Reward GetReward(Observation observation);
 
 
 		/// <summary>
-		///     Check Environ is Complete
-		///     判断探索是否结束
+		///     Check whether the episode should end.
 		/// </summary>
-		/// <param name="epoch"></param>
-		/// <returns></returns>
+		/// <param name="epoch">Current time step.</param>
+		/// <returns>True if the episode is complete.</returns>
 		public abstract bool IsComplete(int epoch);
 
 

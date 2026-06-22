@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     DQN Dep Model
+	///     DQN deep network model (CNN-based).
 	/// </summary>
 	public sealed class DQNNet : Module<torch.Tensor, torch.Tensor>
 	{

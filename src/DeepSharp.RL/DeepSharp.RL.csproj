@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DeepSharp.Core\DeepSharp.Core.csproj" />
     <ProjectReference Include="..\DeepSharp.Utility\DeepSharp.Utility.csproj" />
   </ItemGroup>
 

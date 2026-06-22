@@ -7,9 +7,9 @@ namespace DeepSharp.RL.Agents.Tabular
 		/// <summary>
 		/// </summary>
 		/// <param name="env"></param>
-		/// <param name="epsilon">epsilon of ¦Å-greedy Policy</param>
-		/// <param name="alpha">learning rate</param>
-		/// <param name="gamma">rate of discount</param>
+		/// <param name="epsilon">Epsilon of Îµ-greedy policy.</param>
+		/// <param name="alpha">Learning rate.</param>
+		/// <param name="gamma">Discount factor.</param>
 		public SARSA(Environ<Space, Space> env,
 			float                          epsilon = 0.1f,
 			float                          alpha   = 0.2f,
@@ -59,7 +59,7 @@ namespace DeepSharp.RL.Agents.Tabular
 			var sNext = step.PostState.Value!;
 			var q     = QTable[s, a];
 
-			var aNext = GetEpsilonAct(sNext); /// a' by ¦Å-greedy policy
+			var aNext = GetEpsilonAct(sNext); /// a' by Îµ-greedy policy
 			var qNext = QTable[sNext, aNext.Value!];
 
 

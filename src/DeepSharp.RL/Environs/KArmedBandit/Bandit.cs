@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     简化的赌博机，以Prob 概率吐出一枚硬币
+	///     Simplified bandit that outputs a coin with probability Prob.
 	/// </summary>
 	public class Bandit
 	{

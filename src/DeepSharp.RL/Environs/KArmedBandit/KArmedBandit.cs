@@ -4,7 +4,7 @@ using DeepSharp.RL.Environs.Spaces;
 namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     多臂赌博机,每个赌博机以 0,0.1到1 的概率随机生成
+	///     K-armed bandit: each arm has a random probability in [0, 1] of yielding reward.
 	/// </summary>
 	public sealed class KArmedBandit : Environ<Space, Space>
 	{
@@ -50,7 +50,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     该环境下 当次奖励为赌博机的获得金币数量，无需转换
+		///     Sum the observation tensor as the reward (number of coins from all bandits).
 		/// </summary>
 		/// <param name="observation"></param>
 		/// <returns></returns>
@@ -64,8 +64,7 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     The cumulative reward received by the trajectory of an interaction process
-		///     apply for evaluate
+		///     Average reward across all steps in the episode (for evaluation).
 		/// </summary>
 		/// <param name="episode"></param>
 		/// <returns></returns>
@@ -76,8 +75,8 @@ namespace DeepSharp.RL.Environs
 
 		/// <summary>
 		/// </summary>
-		/// <param name="act">动作，该环境下包含智能体选择的赌博机索引</param>
-		/// <returns>返回选择的赌博机当次执行后获得的金币数量 0 或 1</returns>
+		/// <param name="act">Action containing the selected bandit arm index.</param>
+		/// <returns>Observation with 0 or 1 for the selected arm.</returns>
 		public override Observation Update(Act act)
 		{
 			var obs    = new float[ObservationSpace!.N];
@@ -92,7 +91,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     没满20次采样，环境关闭
+		///     Complete after 20 steps.
 		/// </summary>
 		/// <param name="epoch"></param>
 		/// <returns></returns>

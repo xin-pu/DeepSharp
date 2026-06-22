@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     Reward
+	///     Reward value with timestamp.
 	/// </summary>
 	public class Reward
 	{
@@ -12,12 +12,12 @@
 		}
 
 		/// <summary>
-		///     reward
+		///     The reward value.
 		/// </summary>
 		public float Value { get; set; }
 
 		/// <summary>
-		///     TimeStamp of get reward
+		///     Timestamp when the reward was received.
 		/// </summary>
 		public DateTime TimeStamp { get; set; }
 

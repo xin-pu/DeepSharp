@@ -23,7 +23,7 @@ namespace DeepSharp.RL.Agents.Deep.Policy
 		}
 
 		/// <summary>
-		///     增加记忆功能，记录历史的精英片段
+		///     Memory of elite episodes from previous iterations.
 		/// </summary>
 		internal List<Episode> MemeSteps { get; set; } = new();
 

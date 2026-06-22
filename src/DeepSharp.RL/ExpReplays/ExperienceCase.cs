@@ -18,27 +18,27 @@
 		}
 
 		/// <summary>
-		///     State before action
+		///     State before action.
 		/// </summary>
 		public torch.Tensor PreState { get; set; }
 
 		/// <summary>
-		///     Action
+		///     Action taken.
 		/// </summary>
 		public torch.Tensor Action { get; set; }
 
 		/// <summary>
-		///     Reward
+		///     Reward received.
 		/// </summary>
 		public torch.Tensor Reward { get; set; }
 
 		/// <summary>
-		///     State after action
+		///     State after action.
 		/// </summary>
 		public torch.Tensor PostState { get; set; }
 
 		/// <summary>
-		///     Episode is complete?
+		///     Whether the episode is complete.
 		/// </summary>
 		public torch.Tensor Done { get; set; }
 	}

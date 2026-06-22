@@ -3,7 +3,7 @@
 namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     Key of Transit, which combine state and action.
+	///     Transition key — composite key of state + action for table lookups.
 	/// </summary>
 	public class TransitKey
 	{

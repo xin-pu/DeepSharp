@@ -4,7 +4,7 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     智能体
+	///     Abstract agent — interacts with an environment via policy and learning.
 	/// </summary>
 	public abstract class Agent : IAgent
 	{
@@ -37,7 +37,7 @@ namespace DeepSharp.RL.Agents
 
 
 		/// <summary>
-		///     Get a random Action
+		///     Sample a random action from the action space.
 		/// </summary>
 		/// <returns></returns>
 		public Act GetSampleAct()
@@ -46,20 +46,18 @@ namespace DeepSharp.RL.Agents
 		}
 
 		/// <summary>
-		///     Get a action by Policy
-		///     π(s）
+		///     Get an action according to the agent's policy π(s).
 		/// </summary>
-		/// <param name="state">current state</param>
-		/// <returns>a action provide by agent's policy</returns>
+		/// <param name="state">Current state.</param>
+		/// <returns>Action chosen by the agent's policy.</returns>
 		public abstract Act GetPolicyAct(torch.Tensor state);
 
 
 		/// <summary>
-		///     Get a action by ε-greedy method
-		///     π^ε(s）
+		///     Get an action by ε-greedy: π^ε(s).
+		///     With probability ε, pick a random action; otherwise use policy.
 		/// </summary>
-		/// <param name="state">current state</param>
-		/// <param name="epsilon"></param>
+		/// <param name="state">Current state.</param>
 		/// <returns></returns>
 		public Act GetEpsilonAct(torch.Tensor state)
 		{
@@ -73,10 +71,9 @@ namespace DeepSharp.RL.Agents
 
 
 		/// <summary>
-		///     Get Episode by Agent
-		///     以策略为主，运行得到一个完整片段
+		///     Run one complete episode using the specified play mode.
 		/// </summary>
-		/// <returns>奖励</returns>
+		/// <returns>The completed episode.</returns>
 		public virtual Episode RunEpisode(
 			PlayMode playMode = PlayMode.Agent)
 		{
@@ -106,10 +103,9 @@ namespace DeepSharp.RL.Agents
 
 
 		/// <summary>
-		///     Get Episodes by Agent
-		///     以策略为主，运行得到多个完整片段
+		///     Run multiple complete episodes.
 		/// </summary>
-		/// <returns>奖励</returns>
+		/// <returns>Array of episodes.</returns>
 		public virtual Episode[] RunEpisodes(int count,
 			PlayMode                             playMode = PlayMode.Agent)
 		{

@@ -3,7 +3,7 @@
 namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     空间 动作空间和观察空间父类
+	///     Base class for both action space and observation space.
 	/// </summary>
 	public abstract class Space : IDisposable
 	{
@@ -38,7 +38,7 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     Returns a sample from the space.
+		///     Returns a randomly sampled tensor from the space.
 		/// </summary>
 		/// <returns></returns>
 		public abstract torch.Tensor Sample();
@@ -46,7 +46,7 @@ namespace DeepSharp.RL.Environs
 		public abstract void CheckType();
 
 		/// <summary>
-		///     Generates a tensor whose shape and type are consistent with the space definition.
+		///     Generates a zero tensor consistent with the space shape and type.
 		/// </summary>
 		/// <returns></returns>
 		public virtual torch.Tensor Generate()

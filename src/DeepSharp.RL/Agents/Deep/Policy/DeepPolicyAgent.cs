@@ -3,8 +3,8 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Deep.Policy;
 
 /// <summary>
-///     基于策略网络的 Agent 基类
-///     使用 PolicyNet 输出动作概率分布，策略为 multinomial 采样
+///     Policy-based neural network agent base class.
+///     Uses PolicyNet to output action probability distribution, policy is multinomial sampling.
 /// </summary>
 public abstract class DeepPolicyAgent : DeepAgent
 {
@@ -15,7 +15,7 @@ public abstract class DeepPolicyAgent : DeepAgent
     }
 
     /// <summary>
-    ///     策略网络
+    ///     Policy network.
     /// </summary>
     public Module<torch.Tensor, torch.Tensor> PolicyNet { get; protected set; }
 
@@ -23,7 +23,7 @@ public abstract class DeepPolicyAgent : DeepAgent
     public override Module<torch.Tensor, torch.Tensor> MainNet => PolicyNet;
 
     /// <summary>
-    ///     策略动作：按 softmax 概率采样
+    ///     Policy action: multinomial sampling from softmax probabilities.
     /// </summary>
     public override Act GetPolicyAct(torch.Tensor state)
     {

@@ -6,9 +6,9 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Tabular
 {
 	/// <summary>
-	///     This is a demo of ValueIteration
-	///     [Deep Reinforcement Learning Hands-On Second Edition](Russia,Maxim Lapan)
-	///     [Chap5.5]
+	///     Value Iteration demo.
+	///     [Deep Reinforcement Learning Hands-On Second Edition] (Russia, Maxim Lapan)
+	///     [Chap 5.5]
 	/// </summary>
 	public class ValueIteration : Agent
 
@@ -28,24 +28,23 @@ namespace DeepSharp.RL.Agents.Tabular
 		public float Gamma { get; protected set; }
 
 		/// <summary>
-		///     奖励表
+		///     Reward table.
 		/// </summary>
 		public Dictionary<RewardKey, Reward> Rewards { get; set; }
 
 		/// <summary>
-		///     转移表
+		///     Transition table.
 		/// </summary>
 		public Dictionary<TransitKey, Dictionary<torch.Tensor, int>> Transits { get; set; }
 
 		/// <summary>
-		///     价值表
+		///     Value table.
 		/// </summary>
 		public Dictionary<torch.Tensor, float> Values { get; set; }
 
 
 		/// <summary>
-		///     Select  Action According with Latest Observation
-		///     选择动作
+		///     Select action according to latest observation.
 		/// </summary>
 		/// <param name="state"></param>
 		/// <returns></returns>
@@ -55,7 +54,7 @@ namespace DeepSharp.RL.Agents.Tabular
 			Debug.Assert(Transits.Count > 0, "Transits Table is Empty, You should learn first.");
 			Debug.Assert(Values.Count   > 0, "Values Table is Empty, You should learn first.");
 
-			/// Step 1 Get Action Space According Current State from Transits
+			// Step 1: Get action space from Transits for current state
 			var actionSpace = Transits.Keys
 				.Where(a => a.State.Equals(state))
 				.ToList();
@@ -138,8 +137,7 @@ namespace DeepSharp.RL.Agents.Tabular
 
 
 		/// <summary>
-		///     Update Value Iteration
-		///     更新价值表
+		///     Update the value table by iterating over all states.
 		/// </summary>
 		public void UpdateValueIteration()
 		{
@@ -166,7 +164,7 @@ namespace DeepSharp.RL.Agents.Tabular
 			var newTensor   = newState.Value!;
 			var action      = act.Value!;
 
-			///Step 1 更新奖励表
+			// Step 1: Update reward table
 			var rewardKey = new RewardKey(state, act, newState);
 			var existRewardKey = Rewards.Keys.Where(a =>
 					a.Act.Equals(action)        &&
@@ -184,7 +182,7 @@ namespace DeepSharp.RL.Agents.Tabular
 					a.State.Equals(state.Value!))
 				.ToList();
 
-			/// Step 2 更新转移表
+			// Step 2: Update transition table
 			Dictionary<torch.Tensor, int> sonDict;
 			if (existTransitKey.Any())
 			{
@@ -211,8 +209,8 @@ namespace DeepSharp.RL.Agents.Tabular
 		}
 
 		/// <summary>
-		///     状态和动作的近似价值Q(s,a) = 每个状态的概率乘以状态价值
-		///     根据Bellman方程，它也等于立即奖励和折扣长期状态价值之和
+		///     Approximate Q(s,a) = sum of probability * state value for each next state.
+		///     By Bellman equation, also equals immediate reward + discounted long-term value.
 		/// </summary>
 		/// <param name="transitKey"></param>
 		/// <returns></returns>

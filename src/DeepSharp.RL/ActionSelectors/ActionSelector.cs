@@ -1,8 +1,7 @@
 ﻿namespace DeepSharp.RL.ActionSelectors
 {
 	/// <summary>
-	///     Action Selector help to change Pred-out from Net to Specific action objects
-	///     动作选择器，转换网络的输出到具体的动作选择器
+	///     Action Selector helps convert network predictions into specific action objects.
 	/// </summary>
 	public abstract class ActionSelector
 	{

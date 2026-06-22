@@ -4,7 +4,7 @@ using DeepSharp.RL.ExperienceSources;
 namespace DeepSharp.RL.ExpReplays
 {
 	/// <summary>
-	///     Exp Relay apply for Store steps
+	///     Experience replay for storing steps [State, Action, Reward, NextState].
 	/// </summary>
 	public abstract class ExpReplay
 	{
@@ -15,19 +15,19 @@ namespace DeepSharp.RL.ExpReplays
 		}
 
 		/// <summary>
-		///     Capacity of Experience Replay Buffer
+		///     Capacity of experience replay buffer.
 		/// </summary>
 		public int Capacity { get; protected set; }
 
 		/// <summary>
-		///     Cache
+		///     Internal buffer queue.
 		/// </summary>
 		public Queue<Step> Buffers { get; set; }
 
 		public int Size => Buffers.Count();
 
 		/// <summary>
-		///     Record a step [State, Action, Reward, NewState]
+		///     Record one step [State, Action, Reward, NewState].
 		/// </summary>
 		/// <param name="step"></param>
 		public virtual void Enqueue(Step step)
@@ -37,7 +37,7 @@ namespace DeepSharp.RL.ExpReplays
 		}
 
 		/// <summary>
-		///     Record steps {[State , Action, Reward, NewState],...,[State , Action, Reward, NewState]}
+		///     Record multiple steps.
 		/// </summary>
 		public void Enqueue(IEnumerable<Step> steps)
 		{
@@ -55,14 +55,14 @@ namespace DeepSharp.RL.ExpReplays
 		{
 			var batchStep = SampleSteps(batchsize);
 
-			/// Get Array from Steps
+			// Get arrays from steps
 			var stateArray     = batchStep.Select(a => a.PreState.Value!.unsqueeze(0)).ToArray();
 			var actArray       = batchStep.Select(a => a.Action.Value!.unsqueeze(0)).ToArray();
 			var rewardArray    = batchStep.Select(a => a.Reward.Value).ToArray();
 			var stateNextArray = batchStep.Select(a => a.PostState.Value!.unsqueeze(0)).ToArray();
 			var doneArray      = batchStep.Select(a => a.IsComplete).ToArray();
 
-			/// Convert to VStack
+			// Convert to vstack tensors
 			var state     = torch.vstack(stateArray);
 			var actionV   = torch.vstack(actArray).to(torch.ScalarType.Int64);
 			var reward    = torch.from_array(rewardArray).reshape(batchsize);

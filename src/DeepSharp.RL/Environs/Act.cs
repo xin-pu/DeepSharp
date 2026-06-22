@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     动作
+	///     Action
 	/// </summary>
 	public class Act : IEqualityComparer<Act>
 	{
@@ -12,12 +12,12 @@
 		}
 
 		/// <summary>
-		///     奖励的张量格式
+		///     Tensor format of the action.
 		/// </summary>
 		public torch.Tensor? Value { get; set; }
 
 		/// <summary>
-		///     奖励产生的时间戳
+		///     Timestamp when the action was generated.
 		/// </summary>
 		public DateTime TimeStamp { get; set; }
 

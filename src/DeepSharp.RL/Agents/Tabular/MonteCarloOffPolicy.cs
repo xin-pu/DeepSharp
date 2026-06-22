@@ -3,7 +3,7 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Tabular
 {
 	/// <summary>
-	///     Todo has issue about GetTransitPer?   2023/7/3
+	///     Monte Carlo method — off-policy learning. (Known issue with GetTransitPer, 2023/7/3)
 	/// </summary>
 	public class MonteCarloOffPolicy : TabularAgent
 	{

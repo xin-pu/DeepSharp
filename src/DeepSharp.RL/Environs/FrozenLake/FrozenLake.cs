@@ -26,7 +26,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     Means Player 1/3 => Target, 1/3 Per to Left, 1/3 Per to Right
+		///     Probability distribution for movement: 1/3 to target, 1/3 to left, 1/3 to right.
 		/// </summary>
 		public float[] Smoothing { get; protected set; } = { 1f, 1f, 1f };
 
@@ -69,8 +69,8 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     Change observation to Reward,
-		///     Only when at End Position will get reward:1
+		///     Calculate reward from observation.
+		///     Only the End position gives reward: 1.
 		/// </summary>
 		/// <param name="observation"></param>
 		/// <returns></returns>
@@ -88,7 +88,7 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     Player will go to target without fail.
+		///     Set movement to deterministic: player always goes to target.
 		/// </summary>
 		public void ChangeToRough()
 		{
@@ -96,7 +96,7 @@ namespace DeepSharp.RL.Environs
 		}
 
 		/// <summary>
-		///     Player will go to target without fail.
+		///     Set the player's starting position.
 		/// </summary>
 		public void SetPlayID(int playid)
 		{
@@ -105,7 +105,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     When Player can't move towards the wall
+		///     Sample a valid action (prevent moving into walls).
 		/// </summary>
 		/// <returns></returns>
 		public override Act SampleAct()
@@ -128,13 +128,10 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
+		///     Update the player position based on action.
 		/// </summary>
 		/// <param name="act">
-		///     0,1,2,3
-		///     0 => Up
-		///     1 => Down
-		///     2 => Left
-		///     3 => Right
+		///     Action index: 0=Up, 1=Down, 2=Left, 3=Right.
 		/// </param>
 		/// <returns></returns>
 		public override Observation Update(Act act)
@@ -152,7 +149,7 @@ namespace DeepSharp.RL.Environs
 
 			PlayID = action switch
 			{
-				/// 往上走
+				// Move up
 				0 => moveAction switch
 				{
 					0 => this[new[] { 0, rowCurrent                - 1 }.Max(), columnCurrent].Index,
@@ -160,7 +157,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///往下走
+				// Move down
 				1 => moveAction switch
 				{
 					0 => this[new[] { 3, rowCurrent                + 1 }.Min(), columnCurrent].Index,
@@ -168,7 +165,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///往左走
+				// Move left
 				2 => moveAction switch
 				{
 					0 => this[rowCurrent, new[] { 0, columnCurrent - 1 }.Max()].Index,
@@ -176,7 +173,7 @@ namespace DeepSharp.RL.Environs
 					2 => this[new[] { 3, rowCurrent                + 1 }.Min(), columnCurrent].Index,
 					_ => throw new ArgumentOutOfRangeException()
 				},
-				///往右走
+				// Move right
 				3 => moveAction switch
 				{
 					0 => this[rowCurrent, new[] { 3, columnCurrent + 1 }.Min()].Index,
@@ -195,7 +192,7 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     获取一个片段的奖励
+		///     Return the reward from the last step of the episode.
 		/// </summary>
 		/// <param name="episode"></param>
 		/// <returns></returns>

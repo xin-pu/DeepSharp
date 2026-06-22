@@ -1,15 +1,15 @@
 ﻿namespace DeepSharp.RL.Environs.Spaces
 {
 	/// <summary>
-	///     一维 离散的动作空间， 采样为编码的动作序号
 	///     A list of possible actions, where each timestep only one of the actions can be used.
+	///     Discrete Start with 0,
+	///     Discrete(2) will sample {0, 1},
+	///     Discrete(3) will sample from {0, 1, 2}.
 	/// </summary>
 	public class Discrete : DigitalSpace
 	{
 		/// <summary>
-		///     Discrete Start with 0
-		///     Discrete(2) will sample {0, 1}
-		///     Discrete(3) will sample from {0, 1, 2}
+		///     Creates a Discrete action space.
 		/// </summary>
 		/// <param name="length"></param>
 		/// <param name="dtype"></param>

@@ -3,7 +3,7 @@
 namespace DeepSharp.RL.Environs
 {
 	/// <summary>
-	///     片段
+	///     A sequence of steps from an environment interaction.
 	/// </summary>
 	public class Episode
 	{
@@ -67,10 +67,10 @@ namespace DeepSharp.RL.Environs
 
 
 		/// <summary>
-		///     Get a Episode which each step's reward estimate to QValue (discount by Gamma)
+		///     Get an episode where each step's reward is discounted by Gamma to estimate Q-value.
 		/// </summary>
-		/// <param name="gamma"></param>
-		/// <returns></returns>
+		/// <param name="gamma">Discount factor.</param>
+		/// <returns>Episode with discounted rewards.</returns>
 		public Episode GetReturnEpisode(float gamma = 0.9f)
 		{
 			var stepsWithReturn = new List<Step>();

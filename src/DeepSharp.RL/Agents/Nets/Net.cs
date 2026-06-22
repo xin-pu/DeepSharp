@@ -1,7 +1,7 @@
 ﻿namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     This is demo net to guide how to create a new Module
+	///     Simple demo network (two linear layers + ReLU) for guidance on creating custom modules.
 	/// </summary>
 	public sealed class Net : Module<torch.Tensor, torch.Tensor>
 	{

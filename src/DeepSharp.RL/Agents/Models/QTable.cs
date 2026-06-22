@@ -4,8 +4,8 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     State-Action Value Table
-	///     Q(s,a) = Cumulative reward
+	///     State-Action Value Table.
+	///     Q(s,a) = cumulative reward.
 	/// </summary>
 	public class QTable : IEquatable<QTable>
 	{
@@ -55,7 +55,7 @@ namespace DeepSharp.RL.Agents
 
 
 		/// <summary>
-		///     argMax
+		///     argmax_{a} Q(state, a) — returns the best action, or null if Q is zero.
 		/// </summary>
 		/// <param name="state"></param>
 		/// <returns></returns>
@@ -80,7 +80,7 @@ namespace DeepSharp.RL.Agents
 		}
 
 		/// <summary>
-		///     argMax
+		///     max_{a} Q(state, a) — returns the best Q value.
 		/// </summary>
 		/// <param name="state"></param>
 		/// <returns></returns>

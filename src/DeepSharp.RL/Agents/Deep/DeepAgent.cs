@@ -3,8 +3,8 @@ using DeepSharp.RL.Environs;
 namespace DeepSharp.RL.Agents.Deep;
 
 /// <summary>
-///     神经网络 Agent 基类
-///     提供优化器、损失函数、主网络和默认的 Save/Load 实现
+///     Neural network agent base class.
+///     Provides optimizer, loss function, main network and default Save/Load.
 /// </summary>
 public abstract class DeepAgent : Agent, INetworkAgent
 {
@@ -14,22 +14,22 @@ public abstract class DeepAgent : Agent, INetworkAgent
     }
 
     /// <summary>
-    ///     优化器
+    ///     Optimizer.
     /// </summary>
     public Optimizer Optimizer { get; protected set; } = null!;
 
     /// <summary>
-    ///     损失函数
+    ///     Loss function.
     /// </summary>
     public Loss<torch.Tensor, torch.Tensor, torch.Tensor> Loss { get; protected set; } = null!;
 
     /// <summary>
-    ///     主网络（子类重写以暴露对应的网络模块）
+    ///     Main network (overridden by subclasses to expose the corresponding network module).
     /// </summary>
     public abstract Module<torch.Tensor, torch.Tensor> MainNet { get; }
 
     /// <summary>
-    ///     默认保存：保存主网络
+    ///     Default save: saves the main network.
     /// </summary>
     public override void Save(string path)
     {
@@ -38,7 +38,7 @@ public abstract class DeepAgent : Agent, INetworkAgent
     }
 
     /// <summary>
-    ///     默认加载：加载主网络
+    ///     Default load: loads the main network.
     /// </summary>
     public override void Load(string path)
     {
@@ -46,7 +46,7 @@ public abstract class DeepAgent : Agent, INetworkAgent
     }
 
     /// <summary>
-    ///     保存检查点（模型 + 优化器状态）
+    ///     Save checkpoint (model + optimizer state).
     /// </summary>
     public virtual void SaveCheckpoint(string dir)
     {
@@ -56,7 +56,7 @@ public abstract class DeepAgent : Agent, INetworkAgent
     }
 
     /// <summary>
-    ///     加载检查点（模型 + 优化器状态）
+    ///     Load checkpoint (model + optimizer state).
     /// </summary>
     public virtual void LoadCheckpoint(string dir)
     {

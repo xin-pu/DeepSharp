@@ -3,8 +3,8 @@
 namespace DeepSharp.RL.Agents
 {
 	/// <summary>
-	///     State Value Function
-	///     V(s) = Cumulative reward
+	///     State Value Table.
+	///     V(s) = cumulative reward.
 	/// </summary>
 	public class VTable : IEquatable<VTable>
 	{
