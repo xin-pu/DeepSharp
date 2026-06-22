@@ -10,18 +10,18 @@ public static class GridStateExtractor
 {
     public static GridState Extract(FrozenLake env, Step step)
     {
-        var cells = new GridCell[env.LakeUnits.Count];
+        var cells = new List<GridCell>();
         for (var i = 0; i < env.LakeUnits.Count; i++)
         {
             var unit = env[i];
-            cells[i] = new GridCell
+            cells.Add(new GridCell
             {
                 Index = unit.Index,
                 Row = unit.Row,
                 Column = unit.Column,
                 Role = unit.Role.ToString(),
                 IsPlayer = unit.Index == env.PlayID
-            };
+            });
         }
 
         // Action tensor: 0=Up, 1=Down, 2=Left, 3=Right

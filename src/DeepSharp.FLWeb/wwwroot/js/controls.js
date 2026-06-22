@@ -42,6 +42,14 @@ const Controls = (() => {
 
     let isTraining = false;
 
+    function setStatus(msg, className) {
+        const bar = document.getElementById("status-bar");
+        if (bar) {
+            bar.textContent = msg;
+            bar.className = "status " + (className || "");
+        }
+    }
+
     function init() {
         const agentSelect = document.getElementById("agent-select");
         const speedSlider = document.getElementById("speed-slider");
@@ -49,6 +57,30 @@ const Controls = (() => {
         const btnStop = document.getElementById("btn-stop");
         const btnDemo = document.getElementById("btn-demo");
         const btnReset = document.getElementById("btn-reset");
+
+        // Disable action buttons until SignalR connects
+        btnTrain.disabled = true;
+        btnDemo.disabled = true;
+        btnStop.disabled = true;
+        btnReset.disabled = true;
+        setStatus("Connecting...", "");
+
+        // Enable buttons when SignalR connects
+        SignalRClient.onConnectionChange(
+            () => {
+                btnTrain.disabled = false;
+                btnDemo.disabled = false;
+                btnReset.disabled = false;
+                setStatus("Connected", "training");
+            },
+            () => {
+                btnTrain.disabled = true;
+                btnDemo.disabled = true;
+                btnStop.disabled = true;
+                btnReset.disabled = true;
+                setStatus("Disconnected - retrying...", "error");
+            }
+        );
 
         // Agent change -> update params
         agentSelect.addEventListener("change", () => updateParams(agentSelect.value));
@@ -62,24 +94,52 @@ const Controls = (() => {
         // Train button
         btnTrain.addEventListener("click", async () => {
             if (isTraining) return;
-            const config = collectConfig();
-            await SignalRClient.startTraining(config);
+            if (!SignalRClient.isConnected()) {
+                setStatus("Not connected. Please wait...", "error");
+                return;
+            }
+            try {
+                const config = collectConfig();
+                await SignalRClient.startTraining(config);
+            } catch (err) {
+                setStatus("Error: " + err.message, "error");
+            }
         });
 
         // Stop button
         btnStop.addEventListener("click", async () => {
-            await SignalRClient.stopTraining();
+            try {
+                await SignalRClient.stopTraining();
+            } catch (err) {
+                setStatus("Error: " + err.message, "error");
+            }
         });
 
         // Demo button
         btnDemo.addEventListener("click", async () => {
             if (isTraining) return;
-            await SignalRClient.runDemo();
+            if (!SignalRClient.isConnected()) {
+                setStatus("Not connected. Please wait...", "error");
+                return;
+            }
+            try {
+                await SignalRClient.runDemo();
+            } catch (err) {
+                setStatus("Error: " + err.message, "error");
+            }
         });
 
         // Reset button
         btnReset.addEventListener("click", async () => {
-            await SignalRClient.resetEnv();
+            if (!SignalRClient.isConnected()) {
+                setStatus("Not connected. Please wait...", "error");
+                return;
+            }
+            try {
+                await SignalRClient.resetEnv();
+            } catch (err) {
+                setStatus("Error: " + err.message, "error");
+            }
         });
     }
 

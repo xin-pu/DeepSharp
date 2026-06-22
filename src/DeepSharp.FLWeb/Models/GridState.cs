@@ -2,7 +2,7 @@ namespace DeepSharp.FLWeb.Models;
 
 public class GridState
 {
-    public GridCell[] Cells { get; set; } = Array.Empty<GridCell>();
+    public List<GridCell> Cells { get; set; } = new();
     public int PlayerIndex { get; set; }
 
     /// <summary>

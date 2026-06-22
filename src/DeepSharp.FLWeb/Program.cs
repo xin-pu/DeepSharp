@@ -3,8 +3,7 @@ using DeepSharp.FLWeb.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSignalR()
-    .AddJsonProtocol(o => o.PayloadSerializerOptions.PropertyNamingPolicy = null);
+builder.Services.AddSignalR();
 builder.Services.AddSingleton<ITrainingService, TrainingService>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
     .AllowAnyHeader().AllowAnyMethod().AllowCredentials()

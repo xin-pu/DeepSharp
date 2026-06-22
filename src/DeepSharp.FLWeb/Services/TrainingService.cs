@@ -47,8 +47,15 @@ public class TrainingService : ITrainingService
         _env.CallBack = step =>
         {
             if (_cts.IsCancellationRequested || _env == null) return;
-            var gridState = GridStateExtractor.Extract(_env, step);
-            _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            try
+            {
+                var gridState = GridStateExtractor.Extract(_env, step);
+                _ = _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Step callback error");
+            }
         };
 
         await _hubContext.Clients.All.SendAsync("TrainingStarted", config.AgentType);
@@ -138,8 +145,15 @@ public class TrainingService : ITrainingService
         _env.CallBack = step =>
         {
             if (_cts.IsCancellationRequested || _env == null) return;
-            var gridState = GridStateExtractor.Extract(_env, step);
-            _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            try
+            {
+                var gridState = GridStateExtractor.Extract(_env, step);
+                _ = _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Demo step callback error");
+            }
         };
 
         await _hubContext.Clients.All.SendAsync("TrainingStarted", $"Demo-{_agent.Name}");
@@ -194,13 +208,20 @@ public class TrainingService : ITrainingService
         if (_env != null && !_isTraining && !_isDemoRunning)
         {
             _env.Reset();
-            var gridState = GridStateExtractor.Extract(_env, new Step(
-                _env.Observation!,
-                new Act(torch.tensor(0)),
-                _env.Observation!,
-                new Reward(0),
-                false));
-            return _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            try
+            {
+                var gridState = GridStateExtractor.Extract(_env, new Step(
+                    _env.Observation!,
+                    new Act(torch.tensor(0)),
+                    _env.Observation!,
+                    new Reward(0),
+                    false));
+                return _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Reset environment error");
+            }
         }
         return Task.CompletedTask;
     }
