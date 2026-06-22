@@ -35,83 +35,94 @@ public class TrainingService : ITrainingService
         }
 
         _cts = new CancellationTokenSource();
-        _isTraining = true;
         _episodeCount = 0;
 
-        // Create environment
-        _env = new FrozenLake(new[] { config.SmoothTarget, config.SmoothLeft, config.SmoothRight });
-        // Create agent
-        _agent = AgentFactory.Create(config, _env);
+        try
+        {
+            // Create environment
+            _env = new FrozenLake(new[] { config.SmoothTarget, config.SmoothLeft, config.SmoothRight });
+            // Create agent
+            _agent = AgentFactory.Create(config, _env);
+
+            _isTraining = true;
 
         // Hook: push each step to SignalR
-        _env.CallBack = step =>
-        {
-            if (_cts.IsCancellationRequested || _env == null) return;
-            try
+            _env.CallBack = step =>
             {
-                var gridState = GridStateExtractor.Extract(_env, step);
-                _ = _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogWarning(ex, "Step callback error");
-            }
-        };
-
-        await _hubContext.Clients.All.SendAsync("TrainingStarted", config.AgentType);
-
-        // Run training on background thread
-        _ = Task.Run(async () =>
-        {
-            try
-            {
-                while (!_cts.IsCancellationRequested && _episodeCount < config.MaxEpisodes)
+                if (_cts.IsCancellationRequested || _env == null) return;
+                try
                 {
-                    if (_agent == null || _env == null) break;
+                    var gridState = GridStateExtractor.Extract(_env, step);
+                    _ = _hubContext.Clients.All.SendAsync("StepUpdate", gridState);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Step callback failed: Action={ActionType}", 
+                        step.Action?.Value?.GetType().Name ?? "null");
+                }
+            };
 
-                    _env.Reset();
-                    var outcome = _agent.Learn();
-                    Interlocked.Increment(ref _episodeCount);
+            await _hubContext.Clients.All.SendAsync("TrainingStarted", config.AgentType);
 
-                    var progress = new TrainingProgress
+            // Run training on background thread
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    while (!_cts.IsCancellationRequested && _episodeCount < config.MaxEpisodes)
                     {
-                        EpisodeCount = _episodeCount,
-                        StepCount = outcome.Steps.Count,
-                        SumReward = outcome.Steps.Sum(s => s.Reward.Value),
-                        AverageReward = outcome.Steps.Count > 0
-                            ? outcome.Steps.Average(s => s.Reward.Value)
-                            : 0,
-                        Epsilon = _agent.Epsilon,
-                        Loss = outcome.Evaluate
-                    };
+                        if (_agent == null || _env == null) break;
 
-                    await _hubContext.Clients.All.SendAsync("EpisodeEnd", progress);
+                        _env.Reset();
+                        var outcome = _agent.Learn();
+                        Interlocked.Increment(ref _episodeCount);
 
-                    // Throttle between episodes for visualization
-                    if (config.SpeedDelayMs > 0 && !_cts.IsCancellationRequested)
-                    {
-                        try
+                        var progress = new TrainingProgress
                         {
-                            await Task.Delay(config.SpeedDelayMs, _cts.Token);
-                        }
-                        catch (OperationCanceledException)
+                            EpisodeCount = _episodeCount,
+                            StepCount = outcome.Steps.Count,
+                            SumReward = outcome.Steps.Sum(s => s.Reward.Value),
+                            AverageReward = outcome.Steps.Count > 0
+                                ? outcome.Steps.Average(s => s.Reward.Value)
+                                : 0,
+                            Epsilon = _agent.Epsilon,
+                            Loss = outcome.Evaluate
+                        };
+
+                        await _hubContext.Clients.All.SendAsync("EpisodeEnd", progress);
+
+                        // Throttle between episodes for visualization
+                        if (config.SpeedDelayMs > 0 && !_cts.IsCancellationRequested)
                         {
-                            break;
+                            try
+                            {
+                                await Task.Delay(config.SpeedDelayMs, _cts.Token);
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Training error");
-                await _hubContext.Clients.All.SendAsync("Error", ex.Message);
-            }
-            finally
-            {
-                _isTraining = false;
-                await _hubContext.Clients.All.SendAsync("TrainingStopped");
-            }
-        }, _cts.Token);
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Training error");
+                    await _hubContext.Clients.All.SendAsync("Error", ex.Message);
+                }
+                finally
+                {
+                    _isTraining = false;
+                    await _hubContext.Clients.All.SendAsync("TrainingStopped");
+                }
+            }, _cts.Token);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to start training");
+            await _hubContext.Clients.Client(connectionId)
+                .SendAsync("Error", $"Failed to create agent: {ex.Message}");
+        }
     }
 
     public async Task StopTraining()

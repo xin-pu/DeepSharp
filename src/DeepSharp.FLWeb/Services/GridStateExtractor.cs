@@ -25,7 +25,9 @@ public static class GridStateExtractor
         }
 
         // Action tensor: 0=Up, 1=Down, 2=Left, 3=Right
-        var actionIndex = (int)step.Action.Value!.item<long>();
+        var actionIndex = step.Action?.Value is not null
+            ? (int)step.Action.Value.ToInt32()
+            : 0;
 
         return new GridState
         {
