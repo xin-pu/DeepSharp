@@ -1,6 +1,5 @@
-using DeepSharp.RL.Agents;
-using DeepSharp.RL.Environs;
 using DeepSharp.RL.Agents.Tabular;
+using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest.ValueBasedTest
 {

@@ -35,7 +35,7 @@ namespace DeepSharp.RL.Agents
 
 		public bool Equals(QTable? other)
 		{
-			if (other                  == null) return false;
+			if (other                   == null) return false;
 			if (other.TransitKeys.Count != TransitKeys.Count) return false;
 			var res = TransitKeys.All(key => !(Math.Abs(this[key] - other[key]) > 1E-2));
 			return res;

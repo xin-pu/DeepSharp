@@ -39,7 +39,7 @@ namespace DeepSharp.RL.Trainers
 		{
 			Train(0f, 1000);
 		}
-		
+
 		public virtual void Train(
 			float  preReward,
 			int    trainEpoch,
@@ -113,46 +113,46 @@ namespace DeepSharp.RL.Trainers
 			Print?.Invoke($"[{Agent}] start training.");
 			Callback?.OnTrainStart();
 		}
-		
+
 		protected override void OnTrainEnd()
 		{
 			base.OnTrainEnd();
 			Print?.Invoke($"[{Agent}] stop training.");
 			Callback?.OnTrainEnd();
 		}
-		
-		
+
+
 		protected virtual void OnLearnStart(int epoch)
 		{
 			Callback?.OnLearnStart(epoch);
 		}
-		
-		
+
+
 		protected virtual void OnLearnEnd(int epoch, LearnOutcome outcome)
 		{
 			Print?.Invoke($"[Tra]\t{epoch:D5}\t{outcome}");
 			Callback?.OnLearnEnd(epoch, outcome);
 		}
-		
+
 		protected override void OnValStart(int epoch)
 		{
 			base.OnValStart(epoch);
 			Callback?.OnValStart(epoch);
 		}
-		
+
 		protected virtual void OnValStop(int epoch, Episode[] episodes)
 		{
 			var aveReward = episodes.Average(a => a.SumReward.Value);
 			Print?.Invoke($"[Val]\t{epoch:D5}\tE:{episodes.Length}:\tR:{aveReward:F4}");
 			Callback?.OnValEnd(epoch, episodes);
 		}
-		
+
 		protected override void OnSaveStart()
 		{
 			base.OnSaveStart();
 			Callback?.OnSaveStart();
 		}
-		
+
 		protected override void OnSaveEnd()
 		{
 			base.OnSaveEnd();

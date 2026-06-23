@@ -17,7 +17,7 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 			Alpha     = alpha;
 			Beta      = beta;
 			/// Out is V[batchsize,1]
-			ValueNet          = new Net(ObservationSize, 128, 1, DeviceType.CPU);
+			ValueNet   = new Net(ObservationSize, 128, 1, DeviceType.CPU);
 			ExpReplays = new EpisodeExpReplay(batchsize, gamma);
 
 			var parameters = new[] { ValueNet, PolicyNet }
@@ -82,7 +82,5 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 
 			return learnOutCome;
 		}
-
-
 	}
 }

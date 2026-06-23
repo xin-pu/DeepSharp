@@ -15,18 +15,18 @@ namespace DeepSharp.RL.Agents
 			Device  = env.Device;
 		}
 
+		public long ObservationSize => Environ.ObservationSpace!.N;
+
+		public long ActionSize => Environ.ActionSpace!.N;
+
+		public float Epsilon { get; set; } = 0.2f;
+
 
 		public string Name { get; protected set; }
 
 		public torch.Device Device { get; protected set; }
 
-		public long ObservationSize => Environ.ObservationSpace!.N;
-
-		public long ActionSize => Environ.ActionSpace!.N;
-
 		public Environ<Space, Space> Environ { get; protected set; }
-
-		public float Epsilon { get; set; } = 0.2f;
 
 
 		public abstract LearnOutcome Learn();
@@ -34,6 +34,13 @@ namespace DeepSharp.RL.Agents
 		public abstract void Save(string path);
 
 		public abstract void Load(string path);
+
+		/// <summary>
+		///     Get an action according to the agent's policy π(s).
+		/// </summary>
+		/// <param name="state">Current state.</param>
+		/// <returns>Action chosen by the agent's policy.</returns>
+		public abstract Act GetPolicyAct(torch.Tensor state);
 
 
 		/// <summary>
@@ -44,13 +51,6 @@ namespace DeepSharp.RL.Agents
 		{
 			return Environ.SampleAct();
 		}
-
-		/// <summary>
-		///     Get an action according to the agent's policy π(s).
-		/// </summary>
-		/// <param name="state">Current state.</param>
-		/// <returns>Action chosen by the agent's policy.</returns>
-		public abstract Act GetPolicyAct(torch.Tensor state);
 
 
 		/// <summary>

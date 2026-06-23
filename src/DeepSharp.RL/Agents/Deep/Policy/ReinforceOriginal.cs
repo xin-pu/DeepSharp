@@ -27,7 +27,6 @@ namespace DeepSharp.RL.Agents.Deep.Policy
 		public float Alpha { get; protected set; }
 
 
-
 		public override LearnOutcome Learn()
 		{
 			var learnOutCome = new LearnOutcome();

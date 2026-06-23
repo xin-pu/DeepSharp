@@ -95,8 +95,8 @@ namespace DeepSharp.RL.Agents.Tabular
 				}).ToList(),
 				Transits = Transits.Select(kvp => new TEntry
 				{
-					State   = kvp.Key.State.data<float>().ToArray(),
-					Act     = kvp.Key.Act.data<float>().ToArray(),
+					State = kvp.Key.State.data<float>().ToArray(),
+					Act   = kvp.Key.Act.data<float>().ToArray(),
 					Targets = kvp.Value.Select(v => new TTarget
 					{
 						Tensor = v.Key.data<float>().ToArray(),
@@ -117,7 +117,7 @@ namespace DeepSharp.RL.Agents.Tabular
 		{
 			var json = File.ReadAllText(path);
 			var data = JsonSerializer.Deserialize<VData>(json) ?? new VData();
-			Rewards  = data.Rewards.ToDictionary(
+			Rewards = data.Rewards.ToDictionary(
 				r => new RewardKey(
 					new Observation(torch.tensor(r.State)),
 					new Act(torch.tensor(r.Act)),
@@ -126,7 +126,7 @@ namespace DeepSharp.RL.Agents.Tabular
 			Transits = data.Transits.ToDictionary(
 				t => new TransitKey(torch.tensor(t.State), torch.tensor(t.Act)),
 				t => t.Targets.ToDictionary(v => torch.tensor(v.Tensor), v => v.Count));
-			Values   = data.Values.ToDictionary(
+			Values = data.Values.ToDictionary(
 				v => torch.tensor(v.State), v => v.Value);
 		}
 
@@ -278,34 +278,43 @@ namespace DeepSharp.RL.Agents.Tabular
 	internal record VData
 	{
 		public List<REntry> Rewards { get; init; } = new();
+
 		public List<TEntry> Transits { get; init; } = new();
+
 		public List<VEntry> Values { get; init; } = new();
 	}
 
 	internal record REntry
 	{
 		public float[] State { get; init; } = Array.Empty<float>();
+
 		public float[] Act { get; init; } = Array.Empty<float>();
+
 		public float[] NewState { get; init; } = Array.Empty<float>();
+
 		public float Reward { get; init; }
 	}
 
 	internal record TEntry
 	{
 		public float[] State { get; init; } = Array.Empty<float>();
+
 		public float[] Act { get; init; } = Array.Empty<float>();
+
 		public List<TTarget> Targets { get; init; } = new();
 	}
 
 	internal record TTarget
 	{
 		public float[] Tensor { get; init; } = Array.Empty<float>();
+
 		public int Count { get; init; }
 	}
 
 	internal record VEntry
 	{
 		public float[] State { get; init; } = Array.Empty<float>();
+
 		public float Value { get; init; }
 	}
 }

@@ -16,7 +16,7 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 			Gamma               = gamma;
 			Alpha               = alpha;
 			Beta                = beta;
-			ValueNet                   = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
+			ValueNet            = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
 			ExpReplays          = new EpisodeExpReplay(batchsize, gamma);
 			ExpReplaysForPolicy = new EpisodeExpReplay(batchsize, gamma);
 			var parameters = new[] { ValueNet, PolicyNet }
@@ -67,10 +67,10 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 
 			Optimizer.zero_grad();
 
-			var stateActionValue           = ValueNet.forward(state).gather(1, action);
-			var nextStateValue             = ValueNet.forward(poststate).max(1).values.detach();
+			var stateActionValue         = ValueNet.forward(state).gather(1, action);
+			var nextStateValue           = ValueNet.forward(poststate).max(1).values.detach();
 			var expectedStateActionValue = reward + nextStateValue * Gamma;
-			var lossValue                  = MSELoss().forward(stateActionValue, expectedStateActionValue);
+			var lossValue                = MSELoss().forward(stateActionValue, expectedStateActionValue);
 			lossValue.backward();
 
 			var logProbV       = torch.log(PolicyNet.forward(state)).gather(1, action);
@@ -86,7 +86,5 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 
 			return learnOutCome;
 		}
-
-
 	}
 }

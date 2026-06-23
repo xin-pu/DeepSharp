@@ -1,7 +1,6 @@
-using DeepSharp.RL.Agents;
+using DeepSharp.RL.Agents.Deep.Policy;
 using DeepSharp.RL.Environs;
 using DeepSharp.RL.Trainers;
-using DeepSharp.RL.Agents.Deep.Policy;
 
 namespace TorchSharpTest.RLTest.PolicyBasedTest
 {

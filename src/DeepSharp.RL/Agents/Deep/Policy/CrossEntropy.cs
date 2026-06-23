@@ -69,7 +69,7 @@ namespace DeepSharp.RL.Agents.Deep.Policy
 			return new LearnOutcome(episodes, loss);
 		}
 
-		
+
 		/// <summary>
 		///     Replace default Optimizer
 		/// </summary>

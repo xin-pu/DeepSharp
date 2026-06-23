@@ -6,8 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<ITrainingService, TrainingService>();
 builder.Services.AddCors(o => o.AddDefaultPolicy(p => p
-    .AllowAnyHeader().AllowAnyMethod().AllowCredentials()
-    .SetIsOriginAllowed(_ => true)));
+	.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
+	.SetIsOriginAllowed(_ => true)));
 
 var app = builder.Build();
 

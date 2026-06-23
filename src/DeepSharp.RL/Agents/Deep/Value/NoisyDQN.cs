@@ -1,117 +1,119 @@
 using DeepSharp.RL.Environs;
 using DeepSharp.RL.ExpReplays;
 
-namespace DeepSharp.RL.Agents.Deep.Value;
-
-/// <summary>
-///     Noisy DQN.
-///     Uses NoisyNet for parameterized exploration instead of ε-greedy.
-///     Noise parameters automatically tune exploration during training — no manual ε decay needed.
-///     Noise is reset at the start of each Learn(); each episode uses the same noise.
-/// </summary>
-public class NoisyDQN : DeepValueAgent
+namespace DeepSharp.RL.Agents.Deep.Value
 {
-    public NoisyDQN(Environ<Space, Space> env,
-        int   n         = 1000,
-        int   c         = 10000,
-        float gamma     = 0.99f,
-        int   batchSize = 32)
-        : base(env, "NoisyDQN")
-    {
-        C         = c;
-        N         = n;
-        BatchSize = batchSize;
-        Gamma     = gamma;
-        Epsilon   = 0f; // NoisyDQN does not use ε-greedy
+	/// <summary>
+	///     Noisy DQN.
+	///     Uses NoisyNet for parameterized exploration instead of ε-greedy.
+	///     Noise parameters automatically tune exploration during training — no manual ε decay needed.
+	///     Noise is reset at the start of each Learn(); each episode uses the same noise.
+	/// </summary>
+	public class NoisyDQN : DeepValueAgent
+	{
+		public NoisyDQN(Environ<Space, Space> env,
+			int                               n         = 1000,
+			int                               c         = 10000,
+			float                             gamma     = 0.99f,
+			int                               batchSize = 32)
+			: base(env, "NoisyDQN")
+		{
+			C         = c;
+			N         = n;
+			BatchSize = batchSize;
+			Gamma     = gamma;
+			Epsilon   = 0f; // NoisyDQN does not use ε-greedy
 
-        Q       = new NoisyNet(ObservationSize, 128, ActionSize, DeviceType.CPU);
-        QTarget = new NoisyNet(ObservationSize, 128, ActionSize, DeviceType.CPU);
-        QTarget.load_state_dict(Q.state_dict());
+			Q       = new NoisyNet(ObservationSize, 128, ActionSize);
+			QTarget = new NoisyNet(ObservationSize, 128, ActionSize);
+			QTarget.load_state_dict(Q.state_dict());
 
-        Optimizer  = SGD(Q.parameters(), 0.001);
-        Loss       = MSELoss();
-        UniformExp = new UniformExpReplay(C);
-    }
+			Optimizer  = SGD(Q.parameters(), 0.001);
+			Loss       = MSELoss();
+			UniformExp = new UniformExpReplay(C);
+		}
 
-    public float Gamma { get; }
+		public float Gamma { get; }
 
-    public int C { get; }
+		public int C { get; }
 
-    public int N { get; }
+		public int N { get; }
 
-    public int BatchSize { get; }
+		public int BatchSize { get; }
 
-    public Module<torch.Tensor, torch.Tensor> QTarget { get; protected set; }
+		public Module<torch.Tensor, torch.Tensor> QTarget { get; protected set; }
 
-    public UniformExpReplay UniformExp { get; }
+		public UniformExpReplay UniformExp { get; }
 
-    /// <summary>
-    ///     Get inner NoisyNet references (for ResetNoise).
-    /// </summary>
-    private NoisyNet QNoisy => (NoisyNet)Q;
-    private NoisyNet QTargetNoisy => (NoisyNet)QTarget;
+		/// <summary>
+		///     Get inner NoisyNet references (for ResetNoise).
+		/// </summary>
+		private NoisyNet QNoisy => (NoisyNet)Q;
 
-    /// <summary>
-    ///     Learning loop: reset noise before each episode, no ε-greedy.
-    /// </summary>
-    public override LearnOutcome Learn()
-    {
-        var learnOutCome = new LearnOutcome();
+		private NoisyNet QTargetNoisy => (NoisyNet)QTarget;
 
-        foreach (var _ in Enumerable.Range(0, N))
-        {
-            // Reset noise before each episode
-            QNoisy.ResetNoise();
+		/// <summary>
+		///     Learning loop: reset noise before each episode, no ε-greedy.
+		/// </summary>
+		public override LearnOutcome Learn()
+		{
+			var learnOutCome = new LearnOutcome();
 
-            Environ.Reset();
-            var epoch   = 0;
-            var episode = new Episode();
-            while (!Environ.IsComplete(epoch))
-            {
-                epoch++;
-                // NoisyNet: use argmax directly (noise provides exploration)
-                var act  = GetPolicyAct(Environ.Observation!.Value!);
-                var step = Environ.Step(act, epoch);
-                episode.Enqueue(step);
+			foreach (var _ in Enumerable.Range(0, N))
+			{
+				// Reset noise before each episode
+				QNoisy.ResetNoise();
 
-                Environ.CallBack?.Invoke(step);
-                Environ.Observation = step.PostState;
-            }
+				Environ.Reset();
+				var epoch   = 0;
+				var episode = new Episode();
+				while (!Environ.IsComplete(epoch))
+				{
+					epoch++;
+					// NoisyNet: use argmax directly (noise provides exploration)
+					var act  = GetPolicyAct(Environ.Observation!.Value!);
+					var step = Environ.Step(act, epoch);
+					episode.Enqueue(step);
 
-            learnOutCome.AppendStep(episode);
-            UniformExp.Enqueue(episode);
-            if (UniformExp.Buffers.Count >= C)
-                learnOutCome.Evaluate = UpdateNet();
-        }
+					Environ.CallBack?.Invoke(step);
+					Environ.Observation = step.PostState;
+				}
 
-        SyncTargetNetwork();
-        return learnOutCome;
-    }
+				learnOutCome.AppendStep(episode);
+				UniformExp.Enqueue(episode);
+				if (UniformExp.Buffers.Count >= C)
+					learnOutCome.Evaluate = UpdateNet();
+			}
 
-    private float UpdateNet()
-    {
-        QNoisy.ResetNoise();
-        QTargetNoisy.ResetNoise();
+			SyncTargetNetwork();
+			return learnOutCome;
+		}
 
-        var batchSample = UniformExp.Sample(BatchSize);
+		private float UpdateNet()
+		{
+			QNoisy.ResetNoise();
+			QTargetNoisy.ResetNoise();
 
-        var stateActionValue = Q.forward(batchSample.PreState)
-            .gather(1, batchSample.Action).squeeze(-1);
+			var batchSample = UniformExp.Sample(BatchSize);
 
-        var nextStateValue            = QTarget.forward(batchSample.PostState).max(1).values.detach();
-        var expectedStateActionValue = batchSample.Reward + Gamma * nextStateValue;
+			var stateActionValue = Q.forward(batchSample.PreState)
+				.gather(1, batchSample.Action).squeeze(-1);
 
-        var loss = Loss.call(stateActionValue, expectedStateActionValue);
+			var nextStateValue           = QTarget.forward(batchSample.PostState).max(1).values.detach();
+			var expectedStateActionValue = batchSample.Reward + Gamma * nextStateValue;
 
-        Optimizer.zero_grad();
-        loss.backward();
-        Optimizer.step();
-        return loss.item<float>();
-    }
+			var loss = Loss.call(stateActionValue, expectedStateActionValue);
 
-    private void SyncTargetNetwork()
-    {
-        var parameters = Q.state_dict();
-        QTarget.load_state_dict(parameters);
-    }
+			Optimizer.zero_grad();
+			loss.backward();
+			Optimizer.step();
+			return loss.item<float>();
+		}
+
+		private void SyncTargetNetwork()
+		{
+			var parameters = Q.state_dict();
+			QTarget.load_state_dict(parameters);
+		}
+	}
 }

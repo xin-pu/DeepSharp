@@ -54,7 +54,6 @@ namespace DeepSharp.RL.Agents.Deep.Value
 		/// <summary>
 		///     Core Q network.
 		/// </summary>
-
 		/// <summary>
 		///     Target network (periodically synced from Q).
 		/// </summary>
@@ -67,7 +66,6 @@ namespace DeepSharp.RL.Agents.Deep.Value
 
 
 		public UniformExpReplay UniformExp { get; protected set; }
-
 
 
 		/// <summary>

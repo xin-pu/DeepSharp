@@ -1,8 +1,7 @@
-using DeepSharp.RL.Agents;
-using DeepSharp.RL.Enumerates;
-using DeepSharp.RL.Environs;
 using DeepSharp.RL.Agents.Deep.Policy;
 using DeepSharp.RL.Agents.Tabular;
+using DeepSharp.RL.Enumerates;
+using DeepSharp.RL.Environs;
 
 namespace TorchSharpTest.RLTest.EnvironTest
 {

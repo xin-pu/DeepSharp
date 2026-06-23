@@ -1,8 +1,7 @@
 // See https://aka.ms/new-console-template for more information
 
-using DeepSharp.RL.Agents;
-using DeepSharp.RL.Environs;
 using DeepSharp.RL.Agents.Deep.Value;
+using DeepSharp.RL.Environs;
 
 static void Print(object obj)
 {
