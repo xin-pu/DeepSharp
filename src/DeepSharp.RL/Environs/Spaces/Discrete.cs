@@ -17,7 +17,7 @@
 		/// <param name="seed"></param>
 		public Discrete(long length,
 			torch.ScalarType dtype      = torch.ScalarType.Int64,
-			DeviceType       deviceType = DeviceType.CUDA,
+			DeviceType       deviceType = DeviceType.CPU,
 			long             seed       = 1)
 			: base(0, 0 + length - 1, new long[] { 1 }, dtype, deviceType, seed)
 		{
@@ -27,7 +27,7 @@
 		public Discrete(long length,
 			long             start,
 			torch.ScalarType dtype      = torch.ScalarType.Int64,
-			DeviceType       deviceType = DeviceType.CUDA,
+			DeviceType       deviceType = DeviceType.CPU,
 			long             seed       = 1)
 			: base(start, start + length - 1, new long[] { 1 }, dtype, deviceType, seed)
 		{

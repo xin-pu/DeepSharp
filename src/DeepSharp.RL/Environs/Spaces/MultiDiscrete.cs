@@ -9,7 +9,7 @@
 			torch.Tensor                  high,
 			long[]                        shape,
 			torch.ScalarType              type,
-			DeviceType                    deviceType = DeviceType.CUDA,
+			DeviceType                    deviceType = DeviceType.CPU,
 			long                          seed       = 1)
 			: base(low, high, shape, type, deviceType, seed)
 		{
@@ -19,7 +19,7 @@
 			long                  high,
 			long[]                shape,
 			torch.ScalarType      type,
-			DeviceType            deviceType = DeviceType.CUDA,
+			DeviceType            deviceType = DeviceType.CPU,
 			long                  seed       = 1)
 			: base(low, high, shape, type, deviceType, seed)
 		{

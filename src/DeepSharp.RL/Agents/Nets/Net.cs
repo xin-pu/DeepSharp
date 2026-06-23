@@ -7,7 +7,7 @@
 	{
 		private readonly Module<torch.Tensor, torch.Tensor> layers;
 
-		public Net(long obsSize, long hiddenSize, long actionNum, DeviceType deviceType = DeviceType.CUDA) :
+		public Net(long obsSize, long hiddenSize, long actionNum, DeviceType deviceType = DeviceType.CPU) :
 			base("Net")
 		{
 			var modules = new List<(string, Module<torch.Tensor, torch.Tensor>)>

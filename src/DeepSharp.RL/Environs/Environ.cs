@@ -11,7 +11,7 @@ namespace DeepSharp.RL.Environs
 	{
 		public Action<Step>? CallBack;
 
-		protected Environ(string name, DeviceType deviceType = DeviceType.CUDA)
+		protected Environ(string name, DeviceType deviceType = DeviceType.CPU)
 		{
 			Name            = name;
 			Device          = new torch.Device(deviceType);

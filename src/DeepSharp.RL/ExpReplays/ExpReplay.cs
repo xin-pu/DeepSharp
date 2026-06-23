@@ -11,7 +11,10 @@ namespace DeepSharp.RL.ExpReplays
 		protected ExpReplay(int capacity = 10000)
 		{
 			Capacity = capacity;
-			Buffers  = new Queue<Step>(capacity);
+			if (capacity <= 0)
+				throw new ArgumentOutOfRangeException(nameof(capacity), "Capacity must be positive.");
+
+			Buffers = new Queue<Step>(capacity);
 		}
 
 		/// <summary>
@@ -22,7 +25,7 @@ namespace DeepSharp.RL.ExpReplays
 		/// <summary>
 		///     Internal buffer queue.
 		/// </summary>
-		public Queue<Step> Buffers { get; set; }
+		public Queue<Step> Buffers { get; }
 
 		public int Size => Buffers.Count();
 
@@ -53,6 +56,11 @@ namespace DeepSharp.RL.ExpReplays
 
 		public virtual ExperienceCase Sample(int batchsize)
 		{
+			if (batchsize <= 0)
+				throw new ArgumentOutOfRangeException(nameof(batchsize), "Batch size must be positive.");
+			if (Buffers.Count == 0)
+				throw new InvalidOperationException("Cannot sample from an empty replay buffer.");
+
 			var batchStep = SampleSteps(batchsize);
 
 			// Get arrays from steps
@@ -62,15 +70,23 @@ namespace DeepSharp.RL.ExpReplays
 			var stateNextArray = batchStep.Select(a => a.PostState.Value!.unsqueeze(0)).ToArray();
 			var doneArray      = batchStep.Select(a => a.IsComplete).ToArray();
 
-			// Convert to vstack tensors
-			var state     = torch.vstack(stateArray);
-			var actionV   = torch.vstack(actArray).to(torch.ScalarType.Int64);
-			var reward    = torch.from_array(rewardArray).reshape(batchsize);
-			var stateNext = torch.vstack(stateNextArray);
-			var done      = torch.from_array(doneArray).reshape(batchsize);
+			try
+			{
+				var       state       = torch.vstack(stateArray);
+				using var actionStack = torch.vstack(actArray);
+				var       actionV     = actionStack.to(torch.ScalarType.Int64);
+				var       reward      = torch.from_array(rewardArray);
+				var       stateNext   = torch.vstack(stateNextArray);
+				var       done        = torch.from_array(doneArray);
 
-			var excase = new ExperienceCase(state, actionV, reward, stateNext, done);
-			return excase;
+				return new ExperienceCase(state, actionV, reward, stateNext, done);
+			}
+			finally
+			{
+				foreach (var tensor in stateArray) tensor.Dispose();
+				foreach (var tensor in actArray) tensor.Dispose();
+				foreach (var tensor in stateNextArray) tensor.Dispose();
+			}
 		}
 
 

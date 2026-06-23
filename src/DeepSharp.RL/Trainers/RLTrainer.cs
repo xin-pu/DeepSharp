@@ -41,40 +41,38 @@ namespace DeepSharp.RL.Trainers
 		}
 
 		public virtual void Train(
-			float  preReward,
-			int    trainEpoch,
-			string saveFolder   = "",
-			int    testEpisodes = -1,
-			int    testInterval = 5,
-			bool   autoSave     = false)
+			float             preReward,
+			int               trainEpoch,
+			string            saveFolder        = "",
+			int               testEpisodes      = -1,
+			int               testInterval      = 5,
+			bool              autoSave          = false,
+			CancellationToken cancellationToken = default)
 		{
 			OnTrainStart();
 
-			var valEpoch = 0;
-			foreach (var epoch in Enumerable.Range(1, trainEpoch))
+			try
 			{
-				OnLearnStart(epoch);
-				var outcome = Agent.Learn();
-				OnLearnEnd(epoch, outcome);
-
-
-				if (testEpisodes <= 0)
-					continue;
-
-				if (epoch % testInterval == 0)
+				var valEpoch = 0;
+				foreach (var epoch in Enumerable.Range(1, trainEpoch))
 				{
+					cancellationToken.ThrowIfCancellationRequested();
+					OnLearnStart(epoch);
+					var outcome = Agent.Learn();
+					OnLearnEnd(epoch, outcome);
+
+					if (testEpisodes <= 0 || epoch % testInterval != 0)
+						continue;
+
 					valEpoch++;
 					OnValStart(valEpoch);
 					var episodes = Agent.RunEpisodes(testEpisodes);
 					OnValStop(valEpoch, episodes);
-
 					var valReward = episodes.Average(e => e.SumReward.Value);
 
 					if (valReward < preReward)
 						continue;
 
-					/// val reward > pre reward
-					/// save and break from training
 					if (autoSave)
 					{
 						OnSaveStart();
@@ -85,14 +83,16 @@ namespace DeepSharp.RL.Trainers
 					break;
 				}
 			}
-
-			OnTrainEnd();
+			finally
+			{
+				OnTrainEnd();
+			}
 		}
 
 
 		public virtual void Train(RLTrainOption tp)
 		{
-			Train(tp.StopReward, tp.TrainEpoch, tp.SaveFolder, tp.ValEpisode, tp.ValInterval);
+			Train(tp.StopReward, tp.TrainEpoch, tp.SaveFolder, tp.ValEpisode, tp.ValInterval, tp.AutoSave);
 		}
 
 		public override void Val(int valEpoch)

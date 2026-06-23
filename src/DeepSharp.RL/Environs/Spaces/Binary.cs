@@ -6,7 +6,7 @@
 	public class Binary : Discrete
 	{
 		public Binary(torch.ScalarType dtype      = torch.ScalarType.Int32,
-			DeviceType                 deviceType = DeviceType.CUDA,
+			DeviceType                 deviceType = DeviceType.CPU,
 			long                       seed       = 1)
 			: base(2, dtype, deviceType, seed)
 		{

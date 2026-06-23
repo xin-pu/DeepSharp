@@ -53,12 +53,12 @@ namespace DeepSharp.RL.Agents.Deep.Value
 			Temperature = temperature;
 
 			// Q-network and target Q-network
-			Q       = new Net(ObservationSize, hiddenSize, ActionSize, DeviceType.CPU);
-			QTarget = new Net(ObservationSize, hiddenSize, ActionSize, DeviceType.CPU);
+			Q       = new Net(ObservationSize, hiddenSize, ActionSize);
+			QTarget = new Net(ObservationSize, hiddenSize, ActionSize);
 			QTarget.load_state_dict(Q.state_dict());
 
 			// Policy network (outputs logits without softmax; softmax applied at inference)
-			PolicyNet = new Net(ObservationSize, hiddenSize, ActionSize, DeviceType.CPU);
+			PolicyNet = new Net(ObservationSize, hiddenSize, ActionSize);
 
 			// Separate optimizers for Q-network and policy network
 			QOptimizer      = SGD(Q.parameters(), qLr);

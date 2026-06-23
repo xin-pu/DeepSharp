@@ -1,208 +1,73 @@
- # ReinforcementLearning
-Secondary development by torchsharp for Deep Learning and Reinforcement Learning
+# DeepSharp
 
-[Playing Atari with Deep Reinforcement Learning](https://arxiv.org/pdf/1312.5602.pdf)
+DeepSharp is a .NET 8 reinforcement-learning library built on
+[TorchSharp](https://github.com/dotnet/TorchSharp). It includes tabular and
+neural-network agents, reusable environments, experience replay, tests, a
+console sample, and a FrozenLake web visualizer.
 
-## MindMap
+## Requirements
 
-![MindMap](images/Reinforcement.png)
+- .NET 8 SDK
+- Windows, Linux, or macOS supported by the TorchSharp CPU package
+- No CUDA installation is required by the default package configuration
 
-## DataSet 
+## Build and test
 
-Todo
-
-``` C#
-public class IrisData : DataView
-{
-    /// <summary>
-    /// </summary>
-    public IrisData()
-    {
-    }
-
-    [StreamHeader(0)] public float Label { set; get; }
-    [StreamHeader(1)] public float SepalLength { set; get; }
-    [StreamHeader(2)] public float SepalWidth { set; get; }
-    [StreamHeader(3)] public float PetalLength { set; get; }
-    [StreamHeader(4)] public float PetalWidth { set; get; }
-
-    public override torch.Tensor GetFeatures()
-    {
-        return torch.tensor(new[] {SepalLength, SepalWidth, PetalLength, PetalWidth});
-    }
-
-    public override torch.Tensor GetLabels()
-    {
-        return torch.tensor(new[] {Label});
-    }
-
-      
-}
+```powershell
+dotnet restore src/DeepSharp.sln
+dotnet build src/DeepSharp.sln --no-restore
+dotnet test src/TorchSharpTest/TorchSharpTest.csproj --no-build
 ```
 
+Training and convergence tests can take substantially longer than model and
+environment unit tests. CI runs a fast subset on every change and the complete
+suite for pull requests.
 
-``` C#
-var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
-var res = dataset.GetTensor(0);
-Print(res);
+## Minimal example
+
+```csharp
+using DeepSharp.RL;
+using DeepSharp.RL.Agents.Tabular;
+using DeepSharp.RL.Environs;
+
+RandomProvider.SetSeed(42);
+
+var environment = new FrozenLake([0.8f, 0.1f, 0.1f]);
+var agent = new QLearning(
+    environment,
+    epsilon: 0.2f,
+    alpha: 0.2f,
+    gamma: 0.9f);
+
+for (var episode = 0; episode < 100; episode++)
+    agent.Learn();
+
+var result = agent.RunEpisode();
+Console.WriteLine($"Reward: {result.SumReward.Value}");
 ```
 
+## Supported algorithms
 
-## DataLoader
+| Family | Algorithms |
+| --- | --- |
+| Tabular | Q-Learning, SARSA, Monte Carlo, policy iteration, value iteration |
+| Value-based deep RL | DQN, Double DQN, Dueling DQN, Noisy DQN, Categorical DQN, CGP |
+| Policy-based deep RL | REINFORCE, cross entropy |
+| Actor-critic | Actor-Critic, A2C, A3C |
 
-``` C#
-var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
-var dataConfig = new DataLoaderConfig
-{
-    Device = new torch.Device(DeviceType.CUDA)
-};
-var dataloader = new DataLoader<IrisData>(dataset, dataConfig);
+## FrozenLake web demo
 
-using var iterator = dataloader.GetEnumerator();
-while (iterator.MoveNext())
-{
-    var current = iterator.Current;
-    Print(current);
-}
+```powershell
+dotnet run --project src/DeepSharp.FLWeb/DeepSharp.FLWeb.csproj
 ```
 
-## InfiniteDataLoader
+Open the URL printed by ASP.NET Core. Each SignalR connection receives only its
+own training events. Disconnecting the client cancels its active training task.
 
-```c#
+## Project layout
 
-var dataset = new Dataset<IrisData>(@"F:\Iris\iris-train.txt");
-var dataConfig = new DataLoaderConfig();
-var dataloader = new InfiniteDataLoader<IrisData>(dataset, dataConfig);
-
-await foreach (var a in dataloader.GetBatchSample(100))
-{
-    var array = a.Labels.data<float>().ToArray();
-    Print($"{string.Join(";", array)}");
-}
-```
-
-
-## RL
-
-### AgentCrossEntropy
-
-Slove KArmedBandit Problem by Cross Entropy Deep Reinforcement Learning
-
-1. Develop  KArmedBandit which Inherit  from Environ
-2. Create KArmedBandit with 4 Bandit
-3. Create AgentCrossEntropy by send KArmedBandit
-4. Learn by Epoch
-    1. Get Batch Episodes
-    2. Filter Elite from Batch Episodes
-    3. Agent learn by  Elite
-    4. Next epoch until exit learn.
-
-
-``` c#
-var epoch = 100;
-var episodesEachBatch = 20;
-var device = new torch.Device(DeviceType.CUDA);
-
-/// Step 1 Create a 4-Armed Bandit
-var kArmedBandit = new KArmedBandit(2, device);
-Print(kArmedBandit);
-
-/// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-var agent = new AgentCrossEntropy(kArmedBandit);
-
-/// Step 3 Learn and Optimize
-foreach (var i in Enumerable.Range(0, epoch))
-{
-    var batch = kArmedBandit.GetMultiEpisodes(agent, episodesEachBatch);
-    var eliteOars = agent.GetElite(batch); /// Get eliteOars 
-
-    /// Agent Learn by elite observation & action
-    var loss = agent.Learn(eliteOars);
-    var rewardMean = batch.Select(a => a.SumReward.Value).Average();
-
-    Print($"Epoch:{i:D4}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
-}
-```
-
-![R L Cross Entroy Demo](images/RL%20CrossEntroy%20Demo.png)
-
-
-### AgentCrossEntropy With memory and Discount factor
-1. Introducing discount factor 
-2. Increased memory function to retain elite fragments
-
-``` c#
-var epoch = 5000;
-var episodesEachBatch = 100;
-
-/// Step 1 Create a 4-Armed Bandit
-var forFrozenLake = new Frozenlake(Device)
-{
-    Gamma = 0.90f
-};
-Print(forFrozenLake);
-
-/// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-var agent = new AgentCrossEntropyExt(forFrozenLake)
-{
-    MemsEliteLength = 30
-};
-
-/// Step 3 Learn and Optimize
-foreach (var i in Enumerable.Range(0, epoch))
-{
-    var batch = forFrozenLake.GetMultiEpisodes(agent, episodesEachBatch);
-    var success = batch.Count(a => a.SumReward.Value > 0);
-
-    var eliteOars = agent.GetElite(batch); /// Get eliteOars 
-
-    /// Agent Learn by elite observation & action
-    var loss = agent.Learn(eliteOars);
-    var rewardMean = batch.Select(a => a.SumReward.Value).Sum();
-
-    Print($"Epoch:{i:D4}\t:\t{success}\tReward:{rewardMean:F4}\tLoss:{loss:F4}");
-}
-```
-
-### QLearning (Frozen Lake)
-
-1. Create a Forzen Lake wihch smooth Probs is [0.7,0.15,0.15]
-2. Learn By Sample 100 Episodes
-3. Test by 10 Episodes also add to Agent's experience
-4. When Reward is fine. Stop Learn else go to step 2.
-5. Set smooth Probs  to [1,0,0], means will to targer without fail.
-6. Get a Episode to show a best path to the goal of Lake.
-
-```C#
- /// Step 1 Create a 4-Armed Bandit
-var frozenLake = new Frozenlake(deviceType: DeviceType.CPU) {Gamma = 0.95f};
-
-/// Step 2 Create AgentCrossEntropy with 0.7f percentElite as default
-var agent = new AgentQLearning(frozenLake);
-Print(frozenLake);
-
-var i = 0;
-var testEpisode = 10;
-var bestReward = 0f;
-while (true)
-{
-    agent.Learn(100);
-
-    var episode = agent.PlayEpisode(testEpisode);
-
-    var episodeLevel = frozenLake.GetReward(episode);
-
-    bestReward = new[] {bestReward, episodeLevel.Reward}.Max();
-    Print($"{agent} Play:{++i:D3}\t {episodeLevel}");
-    if (bestReward > 0.6)
-        break;
-}
-
-frozenLake.ChangeToRough();
-frozenLake.CallBack = s => { Print(frozenLake); };
-var e = agent.PlayEpisode();
-var act = e.Steps.Select(a => a.Action);
-Print(string.Join("\r\n", act));
-```
-
-![Frozen Lake](images/FrozenLake.png)
+- `src/DeepSharp.RL` — agents, environments, action selectors and replay buffers
+- `src/DeepSharp.Core` — common trainer abstractions
+- `src/DeepSharp.FLWeb` — FrozenLake SignalR web visualizer
+- `src/RLConsole` — console entry point
+- `src/TorchSharpTest` — xUnit test suite

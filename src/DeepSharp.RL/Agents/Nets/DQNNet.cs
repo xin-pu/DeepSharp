@@ -11,7 +11,7 @@
 		public DQNNet(long[] inputShape,
 			int              actions,
 			torch.ScalarType scalar     = torch.ScalarType.Float32,
-			DeviceType       deviceType = DeviceType.CUDA) :
+			DeviceType       deviceType = DeviceType.CPU) :
 			base("DQNN")
 		{
 			ScalarType = scalar;

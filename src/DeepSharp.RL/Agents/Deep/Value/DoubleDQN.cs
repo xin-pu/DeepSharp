@@ -26,8 +26,8 @@ namespace DeepSharp.RL.Agents.Deep.Value
 			Epsilon   = epsilon;
 			Gamma     = gamma;
 
-			Q       = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
-			QTarget = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
+			Q       = new Net(ObservationSize, 128, ActionSize);
+			QTarget = new Net(ObservationSize, 128, ActionSize);
 			QTarget.load_state_dict(Q.state_dict());
 
 			Optimizer  = SGD(Q.parameters(), 0.001);

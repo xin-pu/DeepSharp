@@ -30,8 +30,8 @@ namespace DeepSharp.RL.Agents.Deep.Value
 			Gamma     = gamma;
 
 
-			Q       = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
-			QTarget = new Net(ObservationSize, 128, ActionSize, DeviceType.CPU);
+			Q       = new Net(ObservationSize, 128, ActionSize, Device.type);
+			QTarget = new Net(ObservationSize, 128, ActionSize, Device.type);
 			QTarget.load_state_dict(Q.state_dict());
 			Optimizer  = SGD(Q.parameters(), 0.001);
 			Loss       = MSELoss();
@@ -122,15 +122,19 @@ namespace DeepSharp.RL.Agents.Deep.Value
 		private float UpdateNet()
 		{
 			// Get batch size samples
-			var batchSample = UniformExp.Sample(BatchSize);
+			using var batchSample = UniformExp.Sample(BatchSize);
 
 
 			// Calculate => Q(s,a)
 			var stateActionValue = Q.forward(batchSample.PreState).gather(1, batchSample.Action).squeeze(-1);
 
 			// Calculate => y = r + γ*argmax Q'(a,s)
-			var nextStateValue            = QTarget.forward(batchSample.PostState).max(1).values.detach();
-			var expectedStatedActionValue = batchSample.Reward + Gamma * nextStateValue;
+			using var nextStateValue = QTarget.forward(batchSample.PostState).max(1).values.detach();
+			using var expectedStatedActionValue = CalculateTargets(
+				batchSample.Reward,
+				nextStateValue,
+				batchSample.Done,
+				Gamma);
 
 			// Calculate => Loss
 			var loss = Loss.call(stateActionValue, expectedStatedActionValue);
@@ -140,6 +144,16 @@ namespace DeepSharp.RL.Agents.Deep.Value
 			loss.backward();
 			Optimizer.step();
 			return loss.item<float>();
+		}
+
+		public static torch.Tensor CalculateTargets(
+			torch.Tensor rewards,
+			torch.Tensor nextStateValues,
+			torch.Tensor done,
+			float        gamma)
+		{
+			using var notDone = done.logical_not().to_type(rewards.dtype);
+			return rewards + gamma * nextStateValues * notDone;
 		}
 	}
 }

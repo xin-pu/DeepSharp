@@ -7,38 +7,38 @@ namespace DeepSharp.RL.Environs.Spaces
 	/// </summary>
 	public class Box : DigitalSpace
 	{
-		public Box(float low, float high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(float low, float high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Float32, deviceType, seed)
 		{
 			CoculateBounded();
 		}
 
-		public Box(double low, double high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(double low, double high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Float64, deviceType, seed)
 		{
 			CoculateBounded();
 		}
 
-		public Box(long low, long high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(long low, long high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int64, deviceType, seed)
 		{
 			CoculateBounded();
 		}
 
-		public Box(int low, int high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(int low, int high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low, torch.ScalarType.Int32), torch.full(shape, high, torch.ScalarType.Int32), shape,
 				torch.ScalarType.Int32, deviceType, seed)
 		{
 			CoculateBounded();
 		}
 
-		public Box(short low, short high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(short low, short high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Int16, deviceType, seed)
 		{
 			CoculateBounded();
 		}
 
-		public Box(byte low, byte high, long[] shape, DeviceType deviceType = DeviceType.CUDA, long seed = 1) :
+		public Box(byte low, byte high, long[] shape, DeviceType deviceType = DeviceType.CPU, long seed = 1) :
 			base(torch.full(shape, low), torch.full(shape, high), shape, torch.ScalarType.Byte, deviceType, seed)
 		{
 			CoculateBounded();
@@ -48,7 +48,7 @@ namespace DeepSharp.RL.Environs.Spaces
 			torch.Tensor        high,
 			long[]              shape,
 			torch.ScalarType    type,
-			DeviceType          deviceType = DeviceType.CUDA,
+			DeviceType          deviceType = DeviceType.CPU,
 			long                seed       = 1) : base(low, high, shape, type, deviceType, seed)
 		{
 			CoculateBounded();

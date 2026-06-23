@@ -11,7 +11,7 @@ namespace DeepSharp.RL.Agents.Deep.Policy
 		protected DeepPolicyAgent(Environ<Space, Space> env, string name)
 			: base(env, name)
 		{
-			PolicyNet = new PGN(ObservationSize, 128, ActionSize, DeviceType.CPU);
+			PolicyNet = new PGN(ObservationSize, 128, ActionSize);
 		}
 
 		/// <summary>

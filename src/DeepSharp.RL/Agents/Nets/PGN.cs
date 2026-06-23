@@ -4,7 +4,7 @@
 	{
 		private readonly Module<torch.Tensor, torch.Tensor> layers;
 
-		public PGN(long obsSize, long hiddenSize, long actionNum, DeviceType deviceType = DeviceType.CUDA) :
+		public PGN(long obsSize, long hiddenSize, long actionNum, DeviceType deviceType = DeviceType.CPU) :
 			base("PolicyNet")
 		{
 			var modules = new List<(string, Module<torch.Tensor, torch.Tensor>)>

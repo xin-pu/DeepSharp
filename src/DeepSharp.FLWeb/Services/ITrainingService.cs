@@ -7,8 +7,8 @@ namespace DeepSharp.FLWeb.Services
 		bool IsTraining { get; }
 
 		Task StartTraining(TrainingConfig config, string connectionId);
-		Task StopTraining();
-		Task RunDemo();
-		Task ResetEnvironment();
+		Task StopTraining(string          connectionId);
+		Task RunDemo(string               connectionId);
+		Task ResetEnvironment(string      connectionId);
 	}
 }

@@ -4,7 +4,7 @@ namespace TorchSharpTest.RLTest.EnvironTest
 {
 	public class FrozenLakeTest : AbstractTest
 	{
-		public DeviceType DeviceType = DeviceType.CUDA;
+		public DeviceType DeviceType = DeviceType.CPU;
 
 		public FrozenLakeTest(ITestOutputHelper testOutputHelper)
 			: base(testOutputHelper)

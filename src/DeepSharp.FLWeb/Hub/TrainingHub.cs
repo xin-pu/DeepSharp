@@ -32,7 +32,7 @@ namespace DeepSharp.FLWeb.Hub
 		/// </summary>
 		public async Task StopTraining()
 		{
-			await _trainingService.StopTraining();
+			await _trainingService.StopTraining(Context.ConnectionId);
 		}
 
 		/// <summary>
@@ -40,7 +40,7 @@ namespace DeepSharp.FLWeb.Hub
 		/// </summary>
 		public async Task RunDemo()
 		{
-			await _trainingService.RunDemo();
+			await _trainingService.RunDemo(Context.ConnectionId);
 		}
 
 		/// <summary>
@@ -48,7 +48,13 @@ namespace DeepSharp.FLWeb.Hub
 		/// </summary>
 		public async Task ResetEnv()
 		{
-			await _trainingService.ResetEnvironment();
+			await _trainingService.ResetEnvironment(Context.ConnectionId);
+		}
+
+		public override async Task OnDisconnectedAsync(Exception? exception)
+		{
+			await _trainingService.StopTraining(Context.ConnectionId);
+			await base.OnDisconnectedAsync(exception);
 		}
 	}
 }

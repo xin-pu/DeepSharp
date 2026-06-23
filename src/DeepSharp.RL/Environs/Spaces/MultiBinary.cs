@@ -7,14 +7,14 @@
 	{
 		public MultiBinary(long[] shape,
 			torch.ScalarType      type       = torch.ScalarType.Int32,
-			DeviceType            deviceType = DeviceType.CUDA,
+			DeviceType            deviceType = DeviceType.CPU,
 			long                  seed       = 471) : base(0, 1, shape, type, deviceType, seed)
 		{
 		}
 
 		public MultiBinary(long shape,
 			torch.ScalarType    type       = torch.ScalarType.Int32,
-			DeviceType          deviceType = DeviceType.CUDA,
+			DeviceType          deviceType = DeviceType.CPU,
 			long                seed       = 471) : base(0, 1, new[] { shape }, type, deviceType,
 			seed)
 		{

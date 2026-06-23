@@ -16,7 +16,7 @@ namespace DeepSharp.RL.Environs
 			(Shape, Type, DeviceType) = (shape, type, deviceType);
 			CheckInitParameter(shape, type);
 			CheckType();
-			Generator = torch.random.manual_seed(new Random().NextInt64(0, 1000));
+			Generator = torch.random.manual_seed(seed);
 			N         = shape.Aggregate(1, (a, b) => (int)(a * b));
 		}
 

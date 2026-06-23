@@ -2,7 +2,7 @@
 {
 	/// <summary>
 	/// </summary>
-	public struct ExperienceCase
+	public sealed class ExperienceCase : IDisposable
 	{
 		public ExperienceCase(torch.Tensor preState,
 			torch.Tensor                   action,
@@ -41,5 +41,14 @@
 		///     Whether the episode is complete.
 		/// </summary>
 		public torch.Tensor Done { get; set; }
+
+		public void Dispose()
+		{
+			PreState.Dispose();
+			Action.Dispose();
+			Reward.Dispose();
+			PostState.Dispose();
+			Done.Dispose();
+		}
 	}
 }

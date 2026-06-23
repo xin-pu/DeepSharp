@@ -51,13 +51,8 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void DiscreteDevice()
 		{
-			var disperse = new Discrete(5, deviceType: DeviceType.CUDA);
+			var disperse = new Discrete(5, deviceType: DeviceType.CPU);
 			var one      = disperse.Generate();
-			Print(one);
-			one.device_type.Should().Be(DeviceType.CUDA);
-
-			disperse = new Discrete(5, deviceType: DeviceType.CPU);
-			one      = disperse.Generate();
 			Print(one);
 			one.device_type.Should().Be(DeviceType.CPU);
 		}

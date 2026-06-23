@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet restore src/DeepSharp.sln
+      - run: dotnet build src/DeepSharp.sln --no-restore --configuration Release
+      - name: Fast tests
+        run: dotnet test src/TorchSharpTest/TorchSharpTest.csproj --no-build --configuration Release --logger "console;verbosity=normal"
+
+  slow-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - run: dotnet test src/TorchSharpTest/TorchSharpTest.csproj --configuration Release --filter "FullyQualifiedName~TorchSharpTest" --logger "console;verbosity=normal"

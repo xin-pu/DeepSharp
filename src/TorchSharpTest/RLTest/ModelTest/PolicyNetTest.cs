@@ -12,7 +12,7 @@ namespace TorchSharpTest.RLTest.ModelTest
 		[Fact]
 		public void TestNet()
 		{
-			var net = new PGN(3, 128, 2, DeviceType.CPU);
+			var net = new PGN(3, 128, 2);
 			var res = net.forward(from_array(new float[,] { { 1, 2, 3 } }));
 			Print(res);
 		}

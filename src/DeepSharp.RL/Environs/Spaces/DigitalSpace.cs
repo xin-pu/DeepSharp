@@ -9,7 +9,7 @@ namespace DeepSharp.RL.Environs.Spaces
 			torch.Tensor     high,
 			long[]           shape,
 			torch.ScalarType type,
-			DeviceType       deviceType = DeviceType.CUDA,
+			DeviceType       deviceType = DeviceType.CPU,
 			long             seed       = 471) : base(shape, type, deviceType, seed)
 		{
 			CheckParameters(low, high);
@@ -22,7 +22,7 @@ namespace DeepSharp.RL.Environs.Spaces
 			long             high,
 			long[]           shape,
 			torch.ScalarType type,
-			DeviceType       deviceType = DeviceType.CUDA,
+			DeviceType       deviceType = DeviceType.CPU,
 			long             seed       = 471) : base(shape, type, deviceType, seed)
 		{
 			CheckParameters(low, high);

@@ -24,7 +24,7 @@ namespace DeepSharp.RL.Agents.Deep.ActorCritic
 			NStep       = nStep;
 
 			// PolicyNet is auto-created by ActorCriticAgent base class (using PGN)
-			ValueNet = new Net(ObservationSize, 128, 1, DeviceType.CPU);
+			ValueNet = new Net(ObservationSize, 128, 1);
 
 			var parameters = new[] { ValueNet, PolicyNet }
 				.SelectMany(a => a.parameters());

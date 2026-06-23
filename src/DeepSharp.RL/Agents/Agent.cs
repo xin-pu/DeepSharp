@@ -61,8 +61,7 @@ namespace DeepSharp.RL.Agents
 		/// <returns></returns>
 		public Act GetEpsilonAct(torch.Tensor state)
 		{
-			var d = new Random();
-			var v = d.NextDouble();
+			var v = RandomProvider.NextDouble();
 			var act = v < Epsilon
 				? GetSampleAct()
 				: GetPolicyAct(state);
