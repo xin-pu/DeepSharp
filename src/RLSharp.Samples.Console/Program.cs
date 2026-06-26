@@ -1,0 +1,36 @@
+// See https://aka.ms/new-console-template for more information
+
+using RLSharp.Torch.Agents.Deep.Value;
+using RLSharp.Torch.Environs;
+
+static void Print(object obj)
+{
+	Console.WriteLine(obj.ToString());
+}
+
+var frozenlake = new FrozenLake(new[] { 0.8f, 0.1f, 0.1f });
+var agent      = new DQN(frozenlake, 100, 1000, 0.9f, batchSize: 16);
+Print(frozenlake);
+
+
+var         i = 0;
+float       reward;
+const int   testEpisode = 20;
+const float predReward  = 0.82f;
+do
+{
+	i++;
+
+	frozenlake.Reset();
+	agent.Learn();
+	//var e = 1f - (1 - 0.01f) / 1000 * i;
+	//agent.Epsilon = e < 0.01f ? 0.01f : e;
+
+	reward = agent.TestEpisodes(testEpisode);
+	Print($"{i}:\t{reward}");
+} while (reward < predReward);
+
+Print($"Stop after Learn {i}");
+frozenlake.ChangeToRough();
+var episode = agent.RunEpisode();
+Print(episode);
