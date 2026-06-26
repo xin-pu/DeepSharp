@@ -1,114 +1,100 @@
 ﻿<!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>FrozenLake RL Training Visualizer</title>
-	<link rel="stylesheet" href="css/styles.css">
-	<script src="lib/signalr/signalr.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FrozenLake RL Training Visualizer</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="lib/signalr/signalr.min.js"></script>
 </head>
 <body>
 <div class="container">
-	<!-- Header -->
-	<header>
-		<h1>馃 FrozenLake RL Training Visualizer</h1>
-	</header>
+    <header>
+        <h1>FrozenLake RL Training Visualizer</h1>
+    </header>
 
-	<!-- Main content -->
-	<div class="main-content">
-		<!-- Left: Controls -->
-		<aside class="controls-panel">
-			<h2>Controls</h2>
+    <div class="main-content">
+        <aside class="controls-panel">
+            <h2>Controls</h2>
 
-			<div class="control-group">
-				<label for="agent-select">Agent Strategy</label>
-				<select id="agent-select">
-					<option value="QLearning">Q-Learning</option>
-					<option value="SARSA">SARSA</option>
-					<option value="MonteCarloOnPolicy">MC On-Policy</option>
-					<option value="MonteCarloOffPolicy">MC Off-Policy</option>
-					<option value="DQN">DQN (Deep)</option>
-					<option value="REINFORCE">REINFORCE (Policy)</option>
-					<option value="A2C">A2C (Actor-Critic)</option>
-					<option value="PPO">PPO (Policy)</option>
-				</select>
-			</div>
+            <div class="control-group">
+                <label for="agent-select">Agent Strategy</label>
+                <select id="agent-select">
+                    <option value="QLearning">Q-Learning</option>
+                    <option value="SARSA">SARSA</option>
+                    <option value="MonteCarloOnPolicy">MC On-Policy</option>
+                    <option value="MonteCarloOffPolicy">MC Off-Policy</option>
+                    <option value="DQN">DQN (Deep)</option>
+                    <option value="REINFORCE">REINFORCE (Policy)</option>
+                    <option value="A2C">A2C (Actor-Critic)</option>
+                    <option value="PPO">PPO (Policy)</option>
+                </select>
+            </div>
 
-			<!-- Speed -->
-			<div class="control-group">
-				<label for="speed-slider">Visualization Speed: <span id="speed-value">50</span>ms</label>
-				<input type="range" id="speed-slider" min="0" max="500" value="50" step="10">
-			</div>
+            <div class="control-group">
+                <label for="speed-slider">Visualization Speed: <span id="speed-value">50</span>ms</label>
+                <input type="range" id="speed-slider" min="0" max="500" value="50" step="10">
+            </div>
 
-			<!-- Max episodes -->
-			<div class="control-group">
-				<label for="max-episodes">Max Episodes</label>
-				<input type="number" id="max-episodes" value="1000" min="10" max="50000">
-			</div>
+            <div class="control-group">
+                <label for="max-episodes">Max Episodes</label>
+                <input type="number" id="max-episodes" value="1000" min="10" max="50000">
+            </div>
 
-			<hr>
+            <hr>
+            <div id="params-container"></div>
+            <hr>
 
-			<!-- Dynamic hyperparameters -->
-			<div id="params-container">
-				<!-- Filled by JS -->
-			</div>
+            <div class="button-group">
+                <button id="btn-train" class="btn btn-train">Train</button>
+                <button id="btn-stop" class="btn btn-stop" disabled>Stop</button>
+                <button id="btn-demo" class="btn btn-demo">Demo Run</button>
+                <button id="btn-reset" class="btn btn-reset">Reset</button>
+            </div>
 
-			<hr>
+            <div class="status" id="status-bar">Ready</div>
+        </aside>
 
-			<!-- Buttons -->
-			<div class="button-group">
-				<button id="btn-train" class="btn btn-train">鈻?Train</button>
-				<button id="btn-stop" class="btn btn-stop" disabled>鈴?Stop</button>
-				<button id="btn-demo" class="btn btn-demo">馃幃 Demo Run</button>
-				<button id="btn-reset" class="btn btn-reset">馃攧 Reset</button>
-			</div>
+        <section class="grid-section">
+            <div class="grid-container">
+                <canvas id="grid-canvas" width="420" height="420"></canvas>
+            </div>
+            <div class="action-info" id="action-info">
+                <span class="label">Action:</span>
+                <span id="action-text">-</span>
+                <span class="label reward">Reward:</span>
+                <span id="reward-text">-</span>
+            </div>
+        </section>
 
-			<!-- Status -->
-			<div class="status" id="status-bar">Ready</div>
-		</aside>
-
-		<!-- Center: Grid Canvas -->
-		<section class="grid-section">
-			<div class="grid-container">
-				<canvas id="grid-canvas" width="420" height="420"></canvas>
-			</div>
-			<div class="action-info" id="action-info">
-				<span class="label">Action:</span>
-				<span id="action-text">鈥?/span>
-				<span class="label reward">Reward:</span>
-				<span id="reward-text">鈥?/span>
-			</div>
-		</section>
-
-		<!-- Right: Stats Panel -->
-		<section class="stats-panel">
-			<h2>Statistics</h2>
-			<div class="stat-item">
-				<span class="stat-label">Episode</span>
-				<span class="stat-value" id="stat-episode">0</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-label">Steps</span>
-				<span class="stat-value" id="stat-steps">0</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-label">Sum Reward</span>
-				<span class="stat-value" id="stat-sum-reward">0</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-label">Avg Reward</span>
-				<span class="stat-value" id="stat-avg-reward">0</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-label">Epsilon (蔚)</span>
-				<span class="stat-value" id="stat-epsilon">鈥?/span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-label">Loss</span>
-				<span class="stat-value" id="stat-loss">鈥?/span>
-			</div>
-		</section>
-	</div>
+        <section class="stats-panel">
+            <h2>Statistics</h2>
+            <div class="stat-item">
+                <span class="stat-label">Episode</span>
+                <span class="stat-value" id="stat-episode">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Steps</span>
+                <span class="stat-value" id="stat-steps">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Sum Reward</span>
+                <span class="stat-value" id="stat-sum-reward">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Avg Reward</span>
+                <span class="stat-value" id="stat-avg-reward">0</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Epsilon</span>
+                <span class="stat-value" id="stat-epsilon">-</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Loss</span>
+                <span class="stat-value" id="stat-loss">-</span>
+            </div>
+        </section>
+    </div>
 </div>
 
 <script src="js/signalr-client.js"></script>

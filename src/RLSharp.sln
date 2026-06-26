@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.0.31903.59
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11822.322 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Core", "RLSharp.Core\RLSharp.Core.csproj", "{B336AA48-719C-43AF-B335-514BF91CE387}"
 EndProject
@@ -12,6 +12,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Samples.Console", "RLSharp.Samples.Console\RLSharp.Samples.Console.csproj", "{59BDC6F8-855F-4A53-BBFD-FDF57C648142}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Tests", "RLSharp.Tests\RLSharp.Tests.csproj", "{873F4730-6A76-4B34-862F-832D54A65125}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1DB9A27E-6643-47AB-8621-E9C96E105B0B}"
+	ProjectSection(SolutionItems) = preProject
+		..\README.md = ..\README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

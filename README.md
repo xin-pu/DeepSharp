@@ -147,6 +147,10 @@ Default development URL:
 http://localhost:5111
 ```
 
+Preview:
+
+![FrozenLake RL Training Visualizer](images/frozenlake_web_visualizer.png)
+
 ## Testing
 
 Run the default fast test suite:

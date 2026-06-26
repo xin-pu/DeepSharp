@@ -1,4 +1,4 @@
-// Canvas-based 4x4 FrozenLake grid renderer
+ï»¿// Canvas-based 4x4 FrozenLake grid renderer
 const GridRenderer = (() => {
     const CELL_SIZE = 100;
     const PADDING = 10;
@@ -86,8 +86,8 @@ const GridRenderer = (() => {
         }
 
         // Update action/reward display
-        document.getElementById("action-text").textContent = gridState.actionName || "â€?;
-        document.getElementById("reward-text").textContent = gridState.reward != null ? gridState.reward.toFixed(2) : "â€?;
+        document.getElementById("action-text").textContent = gridState.actionName || "-";
+        document.getElementById("reward-text").textContent = gridState.reward != null ? gridState.reward.toFixed(2) : "-";
     }
 
     function drawCell(x, y, cell) {

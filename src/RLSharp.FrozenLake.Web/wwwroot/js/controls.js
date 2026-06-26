@@ -1,35 +1,34 @@
 ﻿// Controls panel binding and hyperparameter management
 const Controls = (() => {
-    // Parameter definitions per agent type
     const AGENT_PARAMS = {
         "QLearning": [
-            { id: "epsilon", label: "Epsilon (蔚)", value: 0.2, type: "float" },
-            { id: "alpha", label: "Alpha (伪)", value: 0.2, type: "float" },
-            { id: "gamma", label: "Gamma (纬)", value: 0.9, type: "float" }
+            { id: "epsilon", label: "Epsilon", value: 0.2, type: "float" },
+            { id: "alpha", label: "Alpha", value: 0.2, type: "float" },
+            { id: "gamma", label: "Gamma", value: 0.9, type: "float" }
         ],
         "SARSA": [
-            { id: "epsilon", label: "Epsilon (蔚)", value: 0.2, type: "float" },
-            { id: "alpha", label: "Alpha (伪)", value: 0.2, type: "float" },
-            { id: "gamma", label: "Gamma (纬)", value: 0.9, type: "float" }
+            { id: "epsilon", label: "Epsilon", value: 0.2, type: "float" },
+            { id: "alpha", label: "Alpha", value: 0.2, type: "float" },
+            { id: "gamma", label: "Gamma", value: 0.9, type: "float" }
         ],
         "MonteCarloOnPolicy": [
-            { id: "epsilon", label: "Epsilon (蔚)", value: 0.1, type: "float" },
+            { id: "epsilon", label: "Epsilon", value: 0.1, type: "float" },
             { id: "t", label: "T (max steps)", value: 50, type: "int" }
         ],
         "MonteCarloOffPolicy": [
-            { id: "epsilon", label: "Epsilon (蔚)", value: 0.1, type: "float" },
+            { id: "epsilon", label: "Epsilon", value: 0.1, type: "float" },
             { id: "t", label: "T (max steps)", value: 50, type: "int" }
         ],
         "DQN": [
-            { id: "epsilon", label: "Epsilon (蔚)", value: 0.1, type: "float" },
-            { id: "gamma", label: "Gamma (纬)", value: 0.99, type: "float" },
+            { id: "epsilon", label: "Epsilon", value: 0.1, type: "float" },
+            { id: "gamma", label: "Gamma", value: 0.99, type: "float" },
             { id: "n", label: "N (target sync)", value: 1000, type: "int" },
             { id: "c", label: "C (replay cap)", value: 10000, type: "int" },
             { id: "batchSize", label: "Batch Size", value: 32, type: "int" }
         ],
         "REINFORCE": [
-            { id: "gamma", label: "Gamma (纬)", value: 0.99, type: "float" },
-            { id: "alpha", label: "Alpha (伪)", value: 0.01, type: "float" },
+            { id: "gamma", label: "Gamma", value: 0.99, type: "float" },
+            { id: "alpha", label: "Alpha", value: 0.01, type: "float" },
             { id: "batchSize", label: "Batch Size", value: 4, type: "int" }
         ],
         "A2C": [
@@ -63,14 +62,12 @@ const Controls = (() => {
         const btnDemo = document.getElementById("btn-demo");
         const btnReset = document.getElementById("btn-reset");
 
-        // Disable action buttons until SignalR connects
         btnTrain.disabled = true;
         btnDemo.disabled = true;
         btnStop.disabled = true;
         btnReset.disabled = true;
         setStatus("Connecting...", "");
 
-        // Enable buttons when SignalR connects
         SignalRClient.onConnectionChange(
             () => {
                 btnTrain.disabled = false;
@@ -87,16 +84,13 @@ const Controls = (() => {
             }
         );
 
-        // Agent change -> update params
         agentSelect.addEventListener("change", () => updateParams(agentSelect.value));
         updateParams(agentSelect.value);
 
-        // Speed slider
         speedSlider.addEventListener("input", () => {
             document.getElementById("speed-value").textContent = speedSlider.value;
         });
 
-        // Train button
         btnTrain.addEventListener("click", async () => {
             if (isTraining) return;
             if (!SignalRClient.isConnected()) {
@@ -111,7 +105,6 @@ const Controls = (() => {
             }
         });
 
-        // Stop button
         btnStop.addEventListener("click", async () => {
             try {
                 await SignalRClient.stopTraining();
@@ -120,7 +113,6 @@ const Controls = (() => {
             }
         });
 
-        // Demo button
         btnDemo.addEventListener("click", async () => {
             if (isTraining) return;
             if (!SignalRClient.isConnected()) {
@@ -134,7 +126,6 @@ const Controls = (() => {
             }
         });
 
-        // Reset button
         btnReset.addEventListener("click", async () => {
             if (!SignalRClient.isConnected()) {
                 setStatus("Not connected. Please wait...", "error");
@@ -153,8 +144,6 @@ const Controls = (() => {
         container.innerHTML = "";
 
         const params = AGENT_PARAMS[agentType] || [];
-        const stepAttr = params.some(p => p.type === "float") ? "step=\"0.01\"" : "";
-
         params.forEach(param => {
             const div = document.createElement("div");
             div.className = "param-group";
@@ -167,9 +156,7 @@ const Controls = (() => {
             input.type = "number";
             input.id = `param-${param.id}`;
             input.value = param.value;
-            if (param.type === "float") {
-                input.step = "0.01";
-            }
+            if (param.type === "float") input.step = "0.01";
 
             div.appendChild(label);
             div.appendChild(input);
@@ -195,18 +182,13 @@ const Controls = (() => {
             Beta: 0.01
         };
 
-        // Read param values
-        const paramsContainer = document.getElementById("params-container");
-        const inputs = paramsContainer.querySelectorAll("input");
+        const inputs = document.getElementById("params-container").querySelectorAll("input");
         inputs.forEach(input => {
             const id = input.id.replace("param-", "");
-            // Capitalize first letter for PascalCase
             const key = id.charAt(0).toUpperCase() + id.slice(1);
-            if (input.step === "0.01") {
-                config[key] = parseFloat(input.value) || 0;
-            } else {
-                config[key] = parseInt(input.value) || 0;
-            }
+            config[key] = input.step === "0.01"
+                ? (parseFloat(input.value) || 0)
+                : (parseInt(input.value) || 0);
         });
 
         return config;
