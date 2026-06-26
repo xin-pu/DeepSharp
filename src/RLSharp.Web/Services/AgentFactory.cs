@@ -1,18 +1,19 @@
-﻿using RLSharp.FrozenLake.Web.Models;
-using RLSharp.Torch.Agents;
+﻿using RLSharp.Torch.Agents;
 using RLSharp.Torch.Agents.Deep.ActorCritic;
 using RLSharp.Torch.Agents.Deep.Policy;
 using RLSharp.Torch.Agents.Deep.Value;
 using RLSharp.Torch.Agents.Tabular;
+using RLSharp.Torch.Environs;
+using RLSharp.Web.Models;
 
-namespace RLSharp.FrozenLake.Web.Services
+namespace RLSharp.Web.Services
 {
 	/// <summary>
 	///     Creates Agent instances based on TrainingConfig.
 	/// </summary>
 	public static class AgentFactory
 	{
-		public static Agent Create(TrainingConfig cfg, Torch.Environs.FrozenLake env)
+		public static Agent Create(TrainingConfig cfg, FrozenLake env)
 		{
 			return cfg.AgentType switch
 			{

@@ -88,6 +88,13 @@ const SignalRClient = (() => {
         await connection.invoke("ResetEnv");
     }
 
+    async function manualStep(environmentType, action) {
+        if (!isConnected()) {
+            throw new Error("SignalR not connected. Please wait...");
+        }
+        await connection.invoke("ManualStep", environmentType, action);
+    }
+
     return {
         start,
         isConnected,
@@ -100,6 +107,7 @@ const SignalRClient = (() => {
         startTraining,
         stopTraining,
         runDemo,
-        resetEnv
+        resetEnv,
+        manualStep
     };
 })();

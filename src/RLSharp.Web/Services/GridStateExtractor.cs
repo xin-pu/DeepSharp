@@ -1,14 +1,14 @@
-﻿using RLSharp.FrozenLake.Web.Models;
-using RLSharp.Torch.Environs;
+﻿using RLSharp.Torch.Environs;
+using RLSharp.Web.Models;
 
-namespace RLSharp.FrozenLake.Web.Services
+namespace RLSharp.Web.Services
 {
 	/// <summary>
 	///     Extracts a GridState snapshot from RLSharp.Torch.Environs.FrozenLake + Step.
 	/// </summary>
 	public static class GridStateExtractor
 	{
-		public static GridState Extract(Torch.Environs.FrozenLake env, Step step)
+		public static GridState Extract(FrozenLake env, Step step)
 		{
 			var cells = new List<GridCell>();
 			for (var i = 0; i < env.LakeUnits.Count; i++)

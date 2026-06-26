@@ -1,4 +1,4 @@
-namespace RLSharp.FrozenLake.Web.Models
+﻿namespace RLSharp.Web.Models
 {
 	public class GridCell
 	{

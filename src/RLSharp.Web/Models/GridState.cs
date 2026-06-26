@@ -1,7 +1,9 @@
-namespace RLSharp.FrozenLake.Web.Models
+﻿namespace RLSharp.Web.Models
 {
 	public class GridState
 	{
+		public string EnvironmentType { get; set; } = "FrozenLake";
+
 		public List<GridCell> Cells { get; set; } = new();
 
 		public int PlayerIndex { get; set; }

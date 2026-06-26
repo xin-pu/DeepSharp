@@ -1,5 +1,5 @@
-using RLSharp.FrozenLake.Web.Hub;
-using RLSharp.FrozenLake.Web.Services;
+﻿using RLSharp.Web.Hub;
+using RLSharp.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

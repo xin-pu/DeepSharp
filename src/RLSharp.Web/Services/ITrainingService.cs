@@ -1,6 +1,6 @@
-using RLSharp.FrozenLake.Web.Models;
+﻿using RLSharp.Web.Models;
 
-namespace RLSharp.FrozenLake.Web.Services
+namespace RLSharp.Web.Services
 {
 	public interface ITrainingService
 	{
@@ -10,5 +10,6 @@ namespace RLSharp.FrozenLake.Web.Services
 		Task StopTraining(string          connectionId);
 		Task RunDemo(string               connectionId);
 		Task ResetEnvironment(string      connectionId);
+		Task ManualStep(string            environmentType, string action, string connectionId);
 	}
 }

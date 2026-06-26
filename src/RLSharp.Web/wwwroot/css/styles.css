@@ -185,6 +185,30 @@ hr {
     background: #388bfd;
 }
 
+.manual-panel {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #30363d;
+}
+
+.manual-title {
+    margin-bottom: 8px;
+    color: #8b949e;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.manual-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.manual-action {
+    min-height: 34px;
+    padding: 7px 8px;
+}
+
 /* Status bar */
 .status {
     margin-top: 12px;

@@ -1,6 +1,6 @@
-{
+﻿{
   "profiles": {
-    "RLSharp.FrozenLake.Web": {
+    "RLSharp.Web": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

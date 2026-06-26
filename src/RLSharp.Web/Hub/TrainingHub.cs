@@ -1,7 +1,7 @@
-using RLSharp.FrozenLake.Web.Models;
-using RLSharp.FrozenLake.Web.Services;
+﻿using RLSharp.Web.Models;
+using RLSharp.Web.Services;
 
-namespace RLSharp.FrozenLake.Web.Hub
+namespace RLSharp.Web.Hub
 {
 	/// <summary>
 	///     SignalR hub for FrozenLake training communication.
@@ -49,6 +49,11 @@ namespace RLSharp.FrozenLake.Web.Hub
 		public async Task ResetEnv()
 		{
 			await _trainingService.ResetEnvironment(Context.ConnectionId);
+		}
+
+		public async Task ManualStep(string environmentType, string action)
+		{
+			await _trainingService.ManualStep(environmentType, action, Context.ConnectionId);
 		}
 
 		public override async Task OnDisconnectedAsync(Exception? exception)

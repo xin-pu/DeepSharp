@@ -1,4 +1,4 @@
-namespace RLSharp.FrozenLake.Web.Models
+﻿namespace RLSharp.Web.Models
 {
 	public class TrainingConfig
 	{
@@ -6,6 +6,10 @@ namespace RLSharp.FrozenLake.Web.Models
 		[
 			"QLearning", "SARSA", "MonteCarloOnPolicy", "MonteCarloOffPolicy", "DQN", "REINFORCE", "A2C", "PPO"
 		];
+
+		private static readonly HashSet<string> SupportedEnvironments = ["FrozenLake", "CartPole", "RiskyBandit"];
+
+		public string EnvironmentType { get; set; } = "FrozenLake";
 
 		// Agent selection
 		public string AgentType { get; set; } = "QLearning";
@@ -46,6 +50,12 @@ namespace RLSharp.FrozenLake.Web.Models
 		{
 			if (!SupportedAgents.Contains(AgentType))
 				throw new ArgumentException($"Unknown agent type: {AgentType}", nameof(AgentType));
+			if (!SupportedEnvironments.Contains(EnvironmentType))
+				throw new ArgumentException($"Unknown environment type: {EnvironmentType}", nameof(EnvironmentType));
+			if (EnvironmentType == "CartPole" && AgentType is not ("DQN" or "PPO"))
+				throw new ArgumentException("CartPole currently supports DQN and PPO in the web visualizer.");
+			if (EnvironmentType == "RiskyBandit" && AgentType != "QLearning")
+				throw new ArgumentException("RiskyBandit currently supports QLearning in the web visualizer.");
 			ValidateUnitInterval(Epsilon, nameof(Epsilon));
 			ValidateUnitInterval(Gamma, nameof(Gamma));
 			ValidateUnitInterval(Alpha, nameof(Alpha));

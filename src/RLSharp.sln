@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Core", "RLSharp.Cor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Torch", "RLSharp.Torch\RLSharp.Torch.csproj", "{A9EFA43F-064E-424B-B77F-CAB76F1A46BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.FrozenLake.Web", "RLSharp.FrozenLake.Web\RLSharp.FrozenLake.Web.csproj", "{988CF0C7-F518-4DC3-AB62-240260E08715}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Web", "RLSharp.Web\RLSharp.Web.csproj", "{988CF0C7-F518-4DC3-AB62-240260E08715}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RLSharp.Samples.Console", "RLSharp.Samples.Console\RLSharp.Samples.Console.csproj", "{59BDC6F8-855F-4A53-BBFD-FDF57C648142}"
 EndProject
@@ -93,3 +93,4 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal
+

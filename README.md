@@ -7,7 +7,7 @@ RLSharp is a reinforcement learning library for .NET. The public entry point is 
 - Pure .NET environment and policy interfaces in `RLSharp.Core`.
 - Train/inference separation through `IAgent<TState,TAction>` and `IPolicy<TState,TAction>`.
 - TorchSharp-backed generic agents for custom state/action types.
-- Legacy tensor-first algorithms and FrozenLake web visualizer retained for compatibility.
+- Legacy tensor-first algorithms plus a web visualizer for FrozenLake, CartPole, and RiskyBandit.
 - Console sample and xUnit test suite.
 
 ## Requirements
@@ -23,7 +23,7 @@ RLSharp
 |-- src
 |   |-- RLSharp.Core                 Pure .NET abstractions and trainer
 |   |-- RLSharp.Torch                TorchSharp backend, encoders, generic agents
-|   |-- RLSharp.FrozenLake.Web       FrozenLake ASP.NET Core visualizer
+|   |-- RLSharp.Web                  ASP.NET Core training visualizer
 |   |-- RLSharp.Samples.Console      Console sample
 |   |-- RLSharp.Tests                xUnit tests
 |   `-- RLSharp.sln
@@ -103,6 +103,36 @@ MoveAction action = agent.Policy.SelectAction(liveState);
 
 The same pattern applies to `QLearningAgent<TState,TAction>`, `DqnAgent<TState,TAction>`, and `PpoAgent<TState,TAction>`.
 
+## CartPole Example
+
+RLSharp includes a pure .NET CartPole environment that implements the generic
+Core API:
+
+```csharp
+using RLSharp.Core.Training;
+using RLSharp.Torch.Agents.Generic;
+using RLSharp.Torch.Encoding;
+using RLSharp.Torch.Examples.CartPole;
+
+var environment = new CartPoleEnvironment(seed: 42, maxSteps: 500);
+var encoder = new DelegateStateEncoder<CartPoleState>(
+    inputSize: 4,
+    encode: state => state.ToFeatures());
+
+var agent = new DqnAgent<CartPoleState, CartPoleAction>(
+    environment,
+    encoder,
+    epsilon: 0.2f,
+    maxStepsPerEpisode: 500,
+    seed: 42);
+
+var trainer = new Trainer<CartPoleState, CartPoleAction>(agent);
+trainer.Train(new TrainingOptions { MaxEpisodes = 100 });
+
+var liveState = environment.Reset();
+var action = agent.Policy.SelectAction(liveState);
+```
+
 ## Core API
 
 | Type | Purpose |
@@ -135,10 +165,10 @@ Console sample:
 dotnet run --project src/RLSharp.Samples.Console/RLSharp.Samples.Console.csproj
 ```
 
-FrozenLake web visualizer:
+Web visualizer:
 
 ```powershell
-dotnet run --project src/RLSharp.FrozenLake.Web/RLSharp.FrozenLake.Web.csproj
+dotnet run --project src/RLSharp.Web/RLSharp.Web.csproj
 ```
 
 Default development URL:
@@ -146,6 +176,12 @@ Default development URL:
 ```text
 http://localhost:5111
 ```
+
+The web visualizer currently includes:
+
+- `FrozenLake`: grid-world training and manual play with arrow keys.
+- `CartPole`: dynamic cart-pole rendering, trainable with DQN/PPO, manual play with `A`/`D` or left/right arrows.
+- `RiskyBandit`: a simulated slot-machine style environment with safe, neutral, and risky arms; use `1`, `2`, and `3` for manual play.
 
 Preview:
 
