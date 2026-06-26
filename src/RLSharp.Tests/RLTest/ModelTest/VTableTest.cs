@@ -1,5 +1,5 @@
-using RLSharp.Torch.Agents;
 using RLSharp.Torch;
+using RLSharp.Torch.Agents;
 
 namespace RLSharp.Tests.RLTest.ModelTest
 {

@@ -1,5 +1,4 @@
 using RLSharp.Torch.Environs;
-using RLSharp.Torch;
 
 namespace RLSharp.Torch.Agents.Tabular
 {
@@ -13,9 +12,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		/// <param name="t"></param>
 		/// <param name="threshold"></param>
 		protected PolicyIteration(EnvironmentBase<Space, Space> env,
-			Dictionary<RewardKey, float>                p,
-			Dictionary<RewardKey, float>                r,
-			int                                         t = 100)
+			Dictionary<RewardKey, float>                        p,
+			Dictionary<RewardKey, float>                        r,
+			int                                                 t = 100)
 			: base(env, "ValueIterate")
 		{
 			T          = t;

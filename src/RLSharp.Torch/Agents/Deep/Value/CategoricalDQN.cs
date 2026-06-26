@@ -12,13 +12,13 @@ namespace RLSharp.Torch.Agents.Deep.Value
 	public class CategoricalDQN : DeepValueAgent
 	{
 		public CategoricalDQN(EnvironmentBase<Space, Space> env,
-			int                                     n         = 1000,
-			int                                     c         = 10000,
-			float                                   gamma     = 0.99f,
-			int                                     batchSize = 32,
-			long                                    numAtoms  = 51,
-			float                                   vMin      = -10f,
-			float                                   vMax      = 10f)
+			int                                             n         = 1000,
+			int                                             c         = 10000,
+			float                                           gamma     = 0.99f,
+			int                                             batchSize = 32,
+			long                                            numAtoms  = 51,
+			float                                           vMin      = -10f,
+			float                                           vMax      = 10f)
 			: base(env, "CategoricalDQN")
 		{
 			C         = c;
@@ -102,8 +102,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				while (!EnvironmentBase.IsComplete(epoch))
 				{
 					epoch++;
-					var ActionValue  = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);
@@ -156,7 +156,7 @@ namespace RLSharp.Torch.Agents.Deep.Value
 			var l = b.floor().to_type(torch.ScalarType.Int64); // [batch, numAtoms]
 			var u = b.ceil().to_type(torch.ScalarType.Int64);  // [batch, numAtoms]
 
-			// Project target distribution onto discrete support points (manual loop, batch usually â‰?56)
+			// Project target distribution onto discrete support points (manual loop, batch usually ï¿½?56)
 			var targetDistribution = torch.zeros(batch, NumAtoms);
 			var massL              = bestProbs * (u.to_type(torch.ScalarType.Float32) - b); // [batch, numAtoms]
 			var massU              = bestProbs * (b - l.to_type(torch.ScalarType.Float32)); // [batch, numAtoms]

@@ -1,16 +1,15 @@
 using RLSharp.Torch.Environs;
-using RLSharp.Torch;
 
 namespace RLSharp.Torch.Agents.Tabular
 {
 	public class VIDiscountR : ValueIterate
 	{
 		public VIDiscountR(EnvironmentBase<Space, Space> env,
-			Dictionary<RewardKey, float>         p,
-			Dictionary<RewardKey, float>         r,
-			int                                  t,
-			float                                gamma     = 0.9f,
-			float                                threshold = 0.1f)
+			Dictionary<RewardKey, float>                 p,
+			Dictionary<RewardKey, float>                 r,
+			int                                          t,
+			float                                        gamma     = 0.9f,
+			float                                        threshold = 0.1f)
 			: base(env, p, r, t, threshold)
 		{
 			Gamma = gamma;

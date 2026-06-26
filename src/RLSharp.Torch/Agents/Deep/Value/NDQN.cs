@@ -13,10 +13,10 @@ namespace RLSharp.Torch.Agents.Deep.Value
 	public class NDQN : DeepValueAgent
 	{
 		public NDQN(EnvironmentBase<Space, Space> env,
-			int                           n         = 1000,
-			int                           c         = 10000,
-			float                         gamma     = 0.99f,
-			int                           batchSize = 32)
+			int                                   n         = 1000,
+			int                                   c         = 10000,
+			float                                 gamma     = 0.99f,
+			int                                   batchSize = 32)
 			: base(env, "NDQN")
 		{
 			C         = c;
@@ -68,8 +68,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				while (!EnvironmentBase.IsComplete(epoch))
 				{
 					epoch++;
-					var ActionValue  = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);

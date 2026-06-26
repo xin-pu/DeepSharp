@@ -10,9 +10,9 @@ namespace RLSharp.Torch.Agents
 	{
 		protected Agent(EnvironmentBase<Space, Space> env, string name)
 		{
-			Name    = name;
+			Name            = name;
 			EnvironmentBase = env;
-			Device  = env.Device;
+			Device          = env.Device;
 		}
 
 		public long ObservationSize => EnvironmentBase.ObservationSpace!.N;

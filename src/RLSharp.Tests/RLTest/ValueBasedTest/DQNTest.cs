@@ -14,9 +14,9 @@ namespace RLSharp.Tests.RLTest.ValueBasedTest
 		[Fact]
 		public void TestDQN()
 		{
-			var frozenLake = new FrozenLake();
-			var dqn        = new DQN(frozenLake);
-			var ActionValue        = dqn.GetPolicyAct(frozenLake.ObservationValue!.Value!);
+			var frozenLake  = new FrozenLake();
+			var dqn         = new DQN(frozenLake);
+			var ActionValue = dqn.GetPolicyAct(frozenLake.ObservationValue!.Value!);
 			Print(ActionValue);
 		}
 

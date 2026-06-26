@@ -1,14 +1,13 @@
 using RLSharp.Torch.Environs;
-using RLSharp.Torch;
 
 namespace RLSharp.Torch.Agents.Tabular
 {
 	public class PITStepR : ValueIterate
 	{
 		public PITStepR(EnvironmentBase<Space, Space> env,
-			Dictionary<RewardKey, float>      p,
-			Dictionary<RewardKey, float>      r,
-			int                               t = 100) : base(env, p, r, t)
+			Dictionary<RewardKey, float>              p,
+			Dictionary<RewardKey, float>              r,
+			int                                       t = 100) : base(env, p, r, t)
 		{
 		}
 

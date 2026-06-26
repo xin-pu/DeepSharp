@@ -23,9 +23,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		public override LearnOutcome Learn()
 		{
 			EnvironmentBase.Reset();
-			var episode = new Episode();
-			var epoch   = 0;
-			var ActionValue     = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
+			var episode     = new Episode();
+			var epoch       = 0;
+			var ActionValue = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
 			while (!EnvironmentBase.IsComplete(epoch) && epoch < T)
 			{
 				epoch++;

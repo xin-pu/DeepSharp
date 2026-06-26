@@ -14,9 +14,9 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 		public List<DateTime> Start           = new();
 
 		public CrossEntropyExt(EnvironmentBase<Space, Space> EnvironmentBase,
-			int                                      t,
-			float                                    percentElite = 0.7f,
-			int                                      hiddenSize   = 100)
+			int                                              t,
+			float                                            percentElite = 0.7f,
+			int                                              hiddenSize   = 100)
 			: base(EnvironmentBase, t, percentElite, hiddenSize)
 		{
 			Optimizer = Adam(PolicyNet.parameters(), 0.01);

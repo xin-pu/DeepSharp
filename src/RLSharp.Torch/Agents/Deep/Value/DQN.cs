@@ -16,11 +16,11 @@ namespace RLSharp.Torch.Agents.Deep.Value
 		/// <param name="n">Update interval (sync target every N episodes).</param>
 		/// <param name="c">Capacity of experience replay buffer.</param>
 		public DQN(EnvironmentBase<Space, Space> env,
-			int                          n         = 1000,
-			int                          c         = 10000,
-			float                        epsilon   = 0.1f,
-			float                        gamma     = 0.99f,
-			int                          batchSize = 32)
+			int                                  n         = 1000,
+			int                                  c         = 10000,
+			float                                epsilon   = 0.1f,
+			float                                gamma     = 0.99f,
+			int                                  batchSize = 32)
 			: base(env, "DQN")
 		{
 			C         = c;
@@ -90,7 +90,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);
-					EnvironmentBase.ObservationValue = step.PostState; /// Important: update ObservationValue for next step
+					EnvironmentBase.ObservationValue =
+						step.PostState; /// Important: update ObservationValue for next step
 				}
 
 				/// Step 5: update Q from experience

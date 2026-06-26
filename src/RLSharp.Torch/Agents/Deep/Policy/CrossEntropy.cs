@@ -13,13 +13,14 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 	public class CrossEntropy : DeepPolicyAgent
 	{
 		public CrossEntropy(EnvironmentBase<Space, Space> EnvironmentBase,
-			int                                   t,
-			float                                 percentElite = 0.7f,
-			int                                   hiddenSize   = 100) : base(EnvironmentBase, "CrossEntropy")
+			int                                           t,
+			float                                         percentElite = 0.7f,
+			int                                           hiddenSize   = 100) : base(EnvironmentBase, "CrossEntropy")
 		{
 			T            = t;
 			PercentElite = percentElite;
-			PolicyNet = new Net((int)EnvironmentBase.ObservationSpace!.N, hiddenSize, (int)EnvironmentBase.ActionSpace!.N,
+			PolicyNet = new Net((int)EnvironmentBase.ObservationSpace!.N, hiddenSize,
+				(int)EnvironmentBase.ActionSpace!.N,
 				Device.type);
 			Optimizer = Adam(PolicyNet.parameters(), 0.01);
 			Loss      = CrossEntropyLoss();
@@ -62,7 +63,7 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 				.ToList();
 
 			var ObservationValue = torch.vstack(observations!);
-			var action      = torch.vstack(actions!);
+			var action           = torch.vstack(actions!);
 
 			var loss = Learn(ObservationValue, action);
 

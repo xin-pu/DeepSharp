@@ -6,10 +6,10 @@ namespace RLSharp.Torch.Agents.Deep.ActorCritic
 	public class ActorCritic : ActorCriticAgent
 	{
 		public ActorCritic(EnvironmentBase<Space, Space> env,
-			int                                  batchsize,
-			float                                alpha = 0.01f,
-			float                                beta  = 0.01f,
-			float                                gamma = 0.99f)
+			int                                          batchsize,
+			float                                        alpha = 0.01f,
+			float                                        beta  = 0.01f,
+			float                                        gamma = 0.99f)
 			: base(env, "ActorCritic")
 		{
 			Batchsize           = batchsize;

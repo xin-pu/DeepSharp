@@ -6,16 +6,16 @@ namespace RLSharp.Torch.Agents.Deep.Value
 	/// <summary>
 	///     Noisy DQN.
 	///     Uses NoisyNet for parameterized exploration instead of ε-greedy.
-	///     Noise parameters automatically tune exploration during training �?no manual ε decay needed.
+	///     Noise parameters automatically tune exploration during training �?no manual ε decay needed.
 	///     Noise is reset at the start of each Learn(); each episode uses the same noise.
 	/// </summary>
 	public class NoisyDQN : DeepValueAgent
 	{
 		public NoisyDQN(EnvironmentBase<Space, Space> env,
-			int                               n         = 1000,
-			int                               c         = 10000,
-			float                             gamma     = 0.99f,
-			int                               batchSize = 32)
+			int                                       n         = 1000,
+			int                                       c         = 10000,
+			float                                     gamma     = 0.99f,
+			int                                       batchSize = 32)
 			: base(env, "NoisyDQN")
 		{
 			C         = c;
@@ -71,8 +71,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				{
 					epoch++;
 					// NoisyNet: use argmax directly (noise provides exploration)
-					var ActionValue  = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);

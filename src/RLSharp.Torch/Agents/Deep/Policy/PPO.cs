@@ -9,16 +9,16 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 	public class PPO : DeepPolicyAgent
 	{
 		public PPO(EnvironmentBase<Space, Space> env,
-			int    batchSize    = 4,
-			float  gamma        = 0.99f,
-			float  learningRate = 0.001f,
-			float  clipEpsilon  = 0.2f,
-			int    updateEpochs = 4)
+			int                                  batchSize    = 4,
+			float                                gamma        = 0.99f,
+			float                                learningRate = 0.001f,
+			float                                clipEpsilon  = 0.2f,
+			int                                  updateEpochs = 4)
 			: base(env, "PPO")
 		{
-			if (batchSize <= 0) throw new ArgumentOutOfRangeException(nameof(batchSize));
+			if (batchSize    <= 0) throw new ArgumentOutOfRangeException(nameof(batchSize));
 			if (updateEpochs <= 0) throw new ArgumentOutOfRangeException(nameof(updateEpochs));
-			if (clipEpsilon <= 0) throw new ArgumentOutOfRangeException(nameof(clipEpsilon));
+			if (clipEpsilon  <= 0) throw new ArgumentOutOfRangeException(nameof(clipEpsilon));
 
 			BatchSize    = batchSize;
 			Gamma        = gamma;
@@ -44,7 +44,7 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 
 		public override LearnOutcome Learn()
 		{
-			var outcome = new LearnOutcome();
+			var outcome  = new LearnOutcome();
 			var episodes = RunEpisodes(BatchSize);
 
 			foreach (var episode in episodes)
@@ -65,11 +65,11 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 			{
 				Optimizer.zero_grad();
 
-				var logProb = torch.log(PolicyNet.forward(batch.PreState)).gather(1, batch.Action);
-				var ratio = torch.exp(logProb - oldLogProb);
+				var logProb      = torch.log(PolicyNet.forward(batch.PreState)).gather(1, batch.Action);
+				var ratio        = torch.exp(logProb     - oldLogProb);
 				var clippedRatio = torch.clamp(ratio, 1f - ClipEpsilon, 1f + ClipEpsilon);
-				var objective = torch.min(ratio * batch.Reward, clippedRatio * batch.Reward);
-				var loss = -objective.mean();
+				var objective    = torch.min(ratio * batch.Reward, clippedRatio * batch.Reward);
+				var loss         = -objective.mean();
 
 				loss.backward();
 				Optimizer.step();

@@ -16,9 +16,9 @@ namespace RLSharp.Tests.RLTest.ValueBasedTest
 		[Fact]
 		public void TestCGP()
 		{
-			var frozenLake = new FrozenLake();
-			var cgp        = new CGP(frozenLake);
-			var ActionValue        = cgp.GetPolicyAct(frozenLake.ObservationValue!.Value!);
+			var frozenLake  = new FrozenLake();
+			var cgp         = new CGP(frozenLake);
+			var ActionValue = cgp.GetPolicyAct(frozenLake.ObservationValue!.Value!);
 			Print(ActionValue);
 		}
 

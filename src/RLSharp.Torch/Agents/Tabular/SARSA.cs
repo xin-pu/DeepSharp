@@ -11,9 +11,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		/// <param name="alpha">Learning rate.</param>
 		/// <param name="gamma">Discount factor.</param>
 		public SARSA(EnvironmentBase<Space, Space> env,
-			float                          epsilon = 0.1f,
-			float                          alpha   = 0.2f,
-			float                          gamma   = 0.9f) : base(env, "SARSA")
+			float                                  epsilon = 0.1f,
+			float                                  alpha   = 0.2f,
+			float                                  gamma   = 0.9f) : base(env, "SARSA")
 		{
 			Epsilon = epsilon;
 			Alpha   = alpha;
@@ -27,9 +27,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		public override LearnOutcome Learn()
 		{
 			EnvironmentBase.Reset();
-			var episode = new Episode();
-			var epoch   = 0;
-			var ActionValue     = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
+			var episode     = new Episode();
+			var epoch       = 0;
+			var ActionValue = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
 			while (!EnvironmentBase.IsComplete(epoch))
 			{
 				epoch++;
@@ -41,7 +41,7 @@ namespace RLSharp.Torch.Agents.Tabular
 				EnvironmentBase.CallBack?.Invoke(step);
 
 				EnvironmentBase.ObservationValue = step.PostState; /// It's import for Update ObservationValue
-				ActionValue                 = actNext;
+				ActionValue                      = actNext;
 			}
 
 			var sumReward = episode.Steps.Sum(a => a.Reward.Value);

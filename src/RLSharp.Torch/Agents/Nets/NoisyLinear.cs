@@ -5,7 +5,7 @@ namespace RLSharp.Torch.Agents
 	/// <summary>
 	///     Noisy Linear Layer (Factorized Gaussian Noise).
 	///     Uses learnable noise parameters instead of ε-greedy exploration:
-	///     y = (μ_w + σ_w �?ε_w) @ x + (μ_b + σ_b �?ε_b)
+	///     y = (μ_w + σ_w �?ε_w) @ x + (μ_b + σ_b �?ε_b)
 	///     Noise ε uses factorized Gaussian to reduce parameter count:
 	///     ε_w = f(ε_i) * f(ε_j)^T
 	///     f(x) = sign(x) * sqrt(|x|)
@@ -76,7 +76,7 @@ namespace RLSharp.Torch.Agents
 
 		public override torch.Tensor forward(torch.Tensor input)
 		{
-			// y = (μ_w + σ_w �?ε_w) @ x + (μ_b + σ_b �?ε_b)
+			// y = (μ_w + σ_w �?ε_w) @ x + (μ_b + σ_b �?ε_b)
 			var weight = MuWeight + SigmaWeight * _epsilonWeight;
 			var bias   = MuBias   + SigmaBias   * _epsilonBias;
 			return functional.linear(input, weight, bias);

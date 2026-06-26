@@ -29,9 +29,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		{
 			var data = QTable.Return.Select(kvp => new QEntry
 			{
-				State = kvp.Key.State.data<float>().ToArray(),
-				ActionValue   = kvp.Key.ActionValue.data<float>().ToArray(),
-				Value = kvp.Value
+				State       = kvp.Key.State.data<float>().ToArray(),
+				ActionValue = kvp.Key.ActionValue.data<float>().ToArray(),
+				Value       = kvp.Value
 			}).ToList();
 			var json = JsonSerializer.Serialize(data);
 			File.WriteAllText(path, json);

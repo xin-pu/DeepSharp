@@ -8,7 +8,7 @@ namespace RLSharp.FrozenLake.Web.Services
 	/// </summary>
 	public static class GridStateExtractor
 	{
-		public static GridState Extract(RLSharp.Torch.Environs.FrozenLake env, Step step)
+		public static GridState Extract(Torch.Environs.FrozenLake env, Step step)
 		{
 			var cells = new List<GridCell>();
 			for (var i = 0; i < env.LakeUnits.Count; i++)

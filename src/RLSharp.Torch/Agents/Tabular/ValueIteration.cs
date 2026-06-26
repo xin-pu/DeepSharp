@@ -88,15 +88,15 @@ namespace RLSharp.Torch.Agents.Tabular
 			{
 				Rewards = Rewards.Select(kvp => new REntry
 				{
-					State    = kvp.Key.State.data<float>().ToArray(),
-					ActionValue      = kvp.Key.ActionValue.data<float>().ToArray(),
-					NewState = kvp.Key.NewState.data<float>().ToArray(),
-					Reward   = kvp.Value.Value
+					State       = kvp.Key.State.data<float>().ToArray(),
+					ActionValue = kvp.Key.ActionValue.data<float>().ToArray(),
+					NewState    = kvp.Key.NewState.data<float>().ToArray(),
+					Reward      = kvp.Value.Value
 				}).ToList(),
 				Transits = Transits.Select(kvp => new TEntry
 				{
-					State = kvp.Key.State.data<float>().ToArray(),
-					ActionValue   = kvp.Key.ActionValue.data<float>().ToArray(),
+					State       = kvp.Key.State.data<float>().ToArray(),
+					ActionValue = kvp.Key.ActionValue.data<float>().ToArray(),
 					Targets = kvp.Value.Select(v => new TTarget
 					{
 						Tensor = v.Key.data<float>().ToArray(),
@@ -158,7 +158,10 @@ namespace RLSharp.Torch.Agents.Tabular
 		}
 
 
-		private void UpdateTables(ObservationValue state, ActionValue ActionValue, ObservationValue newState, Reward reward)
+		private void UpdateTables(ObservationValue state,
+			ActionValue                            ActionValue,
+			ObservationValue                       newState,
+			Reward                                 reward)
 		{
 			var startTensor = state.Value!;
 			var newTensor   = newState.Value!;
@@ -167,8 +170,8 @@ namespace RLSharp.Torch.Agents.Tabular
 			// Step 1: Update reward table
 			var rewardKey = new RewardKey(state, ActionValue, newState);
 			var existRewardKey = Rewards.Keys.Where(a =>
-					a.ActionValue.Equals(action)        &&
-					a.State.Equals(startTensor) &&
+					a.ActionValue.Equals(action) &&
+					a.State.Equals(startTensor)  &&
 					a.NewState.Equals(newTensor))
 				.ToList();
 
@@ -250,8 +253,8 @@ namespace RLSharp.Torch.Agents.Tabular
 			try
 			{
 				var key = Rewards.Keys
-					.First(a => a.ActionValue.Equals(rewardKey.ActionValue)     &&
-					            a.State.Equals(rewardKey.State) &&
+					.First(a => a.ActionValue.Equals(rewardKey.ActionValue) &&
+					            a.State.Equals(rewardKey.State)             &&
 					            a.NewState.Equals(rewardKey.NewState));
 				return Rewards[key];
 			}

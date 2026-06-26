@@ -34,15 +34,15 @@ namespace RLSharp.Torch.Agents.Deep.Value
 		/// <param name="qLr">Learning rate for Q-network optimizer.</param>
 		/// <param name="policyLr">Learning rate for policy network optimizer.</param>
 		public CGP(EnvironmentBase<Space, Space> env,
-			int                          n           = 1000,
-			int                          c           = 10000,
-			float                        epsilon     = 0.1f,
-			float                        gamma       = 0.99f,
-			int                          batchSize   = 32,
-			float                        temperature = 1.0f,
-			long                         hiddenSize  = 128,
-			float                        qLr         = 0.001f,
-			float                        policyLr    = 0.001f)
+			int                                  n           = 1000,
+			int                                  c           = 10000,
+			float                                epsilon     = 0.1f,
+			float                                gamma       = 0.99f,
+			int                                  batchSize   = 32,
+			float                                temperature = 1.0f,
+			long                                 hiddenSize  = 128,
+			float                                qLr         = 0.001f,
+			float                                policyLr    = 0.001f)
 			: base(env, "CGP")
 		{
 			C           = c;
@@ -94,8 +94,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 
 		/// <summary>
 		///     Temperature Ï„ for Boltzmann target distribution.
-		///     Ï„ â†?0: target is one-hot at argmax Q (greedy).
-		///     Ï„ â†?âˆ? target is uniform.
+		///     Ï„ ï¿½?0: target is one-hot at argmax Q (greedy).
+		///     Ï„ ï¿½?ï¿½? target is uniform.
 		///     Ï„ = 1: standard softmax.
 		/// </summary>
 		public float Temperature { get; }
@@ -145,7 +145,7 @@ namespace RLSharp.Torch.Agents.Deep.Value
 
 		/// <inheritdoc />
 		/// <remarks>
-		///     MainNet returns the policy network â€?this is the network used at inference.
+		///     MainNet returns the policy network ï¿½?this is the network used at inference.
 		/// </remarks>
 		public override Module<torch.Tensor, torch.Tensor> MainNet => PolicyNet;
 
@@ -164,7 +164,7 @@ namespace RLSharp.Torch.Agents.Deep.Value
 		}
 
 		/// <summary>
-		///     Greedy (argmax) action â€?deterministic, used at inference.
+		///     Greedy (argmax) action ï¿½?deterministic, used at inference.
 		///     Only one forward pass through the policy network, no Q-value computation.
 		/// </summary>
 		public ActionValue GetGreedyAct(torch.Tensor state)
@@ -218,8 +218,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				{
 					epoch++;
 					// Multinomial sampling from policy provides natural exploration
-					var ActionValue  = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetPolicyAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);
@@ -264,13 +264,13 @@ namespace RLSharp.Torch.Agents.Deep.Value
 		/// </summary>
 		private float UpdateQNetwork(ExperienceCase batchSample)
 		{
-			// Q(s, a) â€?current network estimate for the chosen action
+			// Q(s, a) ï¿½?current network estimate for the chosen action
 			var stateActionValue = Q.forward(batchSample.PreState)
 				.gather(1, batchSample.Action).squeeze(-1);
 
 			// Double DQN style target:
-			// a*  = argmax_a Q(s', a)         â€?use Q to select action
-			// y   = r + Î³ * QTarget(s', a*)    â€?use QTarget to evaluate it
+			// a*  = argmax_a Q(s', a)         ï¿½?use Q to select action
+			// y   = r + Î³ * QTarget(s', a*)    ï¿½?use QTarget to evaluate it
 			var bestActions = Q.forward(batchSample.PostState).argmax(1).unsqueeze(1);
 			var nextStateValues = QTarget.forward(batchSample.PostState).gather(1, bestActions).squeeze(-1).detach();
 			var expectedStateActionValue = batchSample.Reward + Gamma * nextStateValues;
@@ -286,8 +286,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 
 		/// <summary>
 		///     Policy network update via cross-entropy guided by Q-values:
-		///     d(s)   = softmax(Q(s,Â·) / Ï„)     â€?target distribution (Boltzmann from Q)
-		///     L_Ï€    = -Î£ d(s) * log Ï€(a|s)    â€?cross-entropy loss
+		///     d(s)   = softmax(Q(s,Â·) / Ï„)     ï¿½?target distribution (Boltzmann from Q)
+		///     L_Ï€    = -Î£ d(s) * log Ï€(a|s)    ï¿½?cross-entropy loss
 		///     The Q-network is detached (no grad) when computing the target distribution,
 		///     so gradients only flow through the policy network.
 		/// </summary>
@@ -301,7 +301,7 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				targetDist = functional.softmax(qValues / Temperature, -1); // [batch, actionSize]
 			}
 
-			// Policy network logits â†?log-softmax
+			// Policy network logits ï¿½?log-softmax
 			var policyLogits = PolicyNet.forward(batchSample.PreState); // [batch, actionSize]
 			var logProbs     = functional.log_softmax(policyLogits, -1);
 

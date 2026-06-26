@@ -8,8 +8,8 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 	public class ReinforceOriginal : DeepPolicyAgent
 	{
 		public ReinforceOriginal(EnvironmentBase<Space, Space> env,
-			float                                      gamma = 0.99f,
-			float                                      alpha = 0.01f)
+			float                                              gamma = 0.99f,
+			float                                              alpha = 0.01f)
 			: base(env, "ReinforceOriginal")
 		{
 			Gamma     = gamma;

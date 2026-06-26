@@ -13,11 +13,11 @@ namespace RLSharp.Torch.Agents.Deep.Value
 	public class DoubleDQN : DeepValueAgent
 	{
 		public DoubleDQN(EnvironmentBase<Space, Space> env,
-			int                                n         = 1000,
-			int                                c         = 10000,
-			float                              epsilon   = 0.1f,
-			float                              gamma     = 0.99f,
-			int                                batchSize = 32)
+			int                                        n         = 1000,
+			int                                        c         = 10000,
+			float                                      epsilon   = 0.1f,
+			float                                      gamma     = 0.99f,
+			int                                        batchSize = 32)
 			: base(env, "DoubleDQN")
 		{
 			C         = c;
@@ -64,7 +64,7 @@ namespace RLSharp.Torch.Agents.Deep.Value
 
 		/// <summary>
 		///     Double DQN learning loop.
-		///     N episodes collect experience â†?sample from replay buffer â†?Double DQN update.
+		///     N episodes collect experience ï¿½?sample from replay buffer ï¿½?Double DQN update.
 		/// </summary>
 		public override LearnOutcome Learn()
 		{
@@ -77,8 +77,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				while (!EnvironmentBase.IsComplete(epoch))
 				{
 					epoch++;
-					var ActionValue  = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);
@@ -103,13 +103,13 @@ namespace RLSharp.Torch.Agents.Deep.Value
 		{
 			var batchSample = UniformExp.Sample(BatchSize);
 
-			// Q(s, a) â€?current network estimate of chosen action
+			// Q(s, a) ï¿½?current network estimate of chosen action
 			var stateActionValue = Q.forward(batchSample.PreState)
 				.gather(1, batchSample.Action).squeeze(-1);
 
 			// Double DQN target:
-			// a* = argmax_a Q(s', a)   â†?use Q to select action
-			// y  = r + Î³ * QTarget(s', a*)  â†?use QTarget to evaluate it
+			// a* = argmax_a Q(s', a)   ï¿½?use Q to select action
+			// y  = r + Î³ * QTarget(s', a*)  ï¿½?use QTarget to evaluate it
 			var bestActions = Q.forward(batchSample.PostState).argmax(1).unsqueeze(1);
 			var nextStateValues = QTarget.forward(batchSample.PostState).gather(1, bestActions).squeeze(-1).detach();
 			var expectedStateActionValue = batchSample.Reward + Gamma * nextStateValues;

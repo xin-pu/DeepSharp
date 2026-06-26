@@ -1,15 +1,14 @@
 using RLSharp.Torch.Environs;
-using RLSharp.Torch;
 
 namespace RLSharp.Torch.Agents.Tabular
 {
 	public class VITStepR : ValueIterate
 	{
 		public VITStepR(EnvironmentBase<Space, Space> env,
-			Dictionary<RewardKey, float>      p,
-			Dictionary<RewardKey, float>      r,
-			int                               t         = 100,
-			float                             threshold = 0.1f) : base(env, p, r, t, threshold)
+			Dictionary<RewardKey, float>              p,
+			Dictionary<RewardKey, float>              r,
+			int                                       t         = 100,
+			float                                     threshold = 0.1f) : base(env, p, r, t, threshold)
 		{
 		}
 

@@ -11,9 +11,9 @@ namespace RLSharp.Torch.Agents.Tabular
 		/// <param name="alpha">Learning rate.</param>
 		/// <param name="gamma">Discount factor.</param>
 		public QLearning(EnvironmentBase<Space, Space> env,
-			float                              epsilon = 0.1f,
-			float                              alpha   = 0.2f,
-			float                              gamma   = 0.9f) :
+			float                                      epsilon = 0.1f,
+			float                                      alpha   = 0.2f,
+			float                                      gamma   = 0.9f) :
 			base(env, "QLearning")
 		{
 			Epsilon = epsilon;

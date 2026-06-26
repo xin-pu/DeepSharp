@@ -57,9 +57,9 @@ namespace RLSharp.Torch.Environs
 		/// </summary>
 		public virtual ObservationValue Reset()
 		{
-			ObservationValue     = new ObservationValue(ObservationSpace!.Generate());
-			ObservationList = new List<ObservationValue> { ObservationValue };
-			Reward          = new Reward(0);
+			ObservationValue = new ObservationValue(ObservationSpace!.Generate());
+			ObservationList  = new List<ObservationValue> { ObservationValue };
+			Reward           = new Reward(0);
 			return ObservationValue;
 		}
 

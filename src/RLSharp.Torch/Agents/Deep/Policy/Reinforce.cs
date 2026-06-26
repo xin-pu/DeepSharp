@@ -9,9 +9,9 @@ namespace RLSharp.Torch.Agents.Deep.Policy
 	public class Reinforce : DeepPolicyAgent
 	{
 		public Reinforce(EnvironmentBase<Space, Space> env,
-			int                                batchsize = 4,
-			float                              gamma     = 0.99f,
-			float                              alpha     = 0.01f)
+			int                                        batchsize = 4,
+			float                                      gamma     = 0.99f,
+			float                                      alpha     = 0.01f)
 			: base(env, "Reinforce")
 		{
 			Batchsize = batchsize;

@@ -9,13 +9,13 @@ namespace RLSharp.Torch.Agents
 	{
 		public TransitKey(ObservationValue state, ActionValue action)
 		{
-			State = state.Value!;
+			State       = state.Value!;
 			ActionValue = action.Value!;
 		}
 
 		public TransitKey(torch.Tensor state, torch.Tensor action)
 		{
-			State = state;
+			State       = state;
 			ActionValue = action;
 		}
 

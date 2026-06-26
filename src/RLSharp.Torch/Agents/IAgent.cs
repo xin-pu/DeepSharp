@@ -16,6 +16,6 @@ namespace RLSharp.Torch.Agents
 		LearnOutcome Learn();
 		void         Save(string               path);
 		void         Load(string               path);
-		ActionValue          GetPolicyAct(torch.Tensor state);
+		ActionValue  GetPolicyAct(torch.Tensor state);
 	}
 }

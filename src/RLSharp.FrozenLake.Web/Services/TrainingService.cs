@@ -1,9 +1,9 @@
 ﻿using System.Threading.Channels;
+using Microsoft.AspNetCore.SignalR;
 using RLSharp.FrozenLake.Web.Hub;
 using RLSharp.FrozenLake.Web.Models;
 using RLSharp.Torch.Agents;
 using RLSharp.Torch.Environs;
-using Microsoft.AspNetCore.SignalR;
 
 namespace RLSharp.FrozenLake.Web.Services
 {
@@ -24,12 +24,12 @@ namespace RLSharp.FrozenLake.Web.Services
 		private readonly SemaphoreSlim            _lifecycle = new(1, 1);
 		private readonly ILogger<TrainingService> _logger;
 
-		private Agent?                   _agent;
-		private RLSharp.Torch.Environs.FrozenLake?              _env;
-		private int                      _episodeCount;
-		private string?                  _ownerConnectionId;
-		private CancellationTokenSource? _runCts;
-		private Task?                    _runTask;
+		private Agent?                     _agent;
+		private Torch.Environs.FrozenLake? _env;
+		private int                        _episodeCount;
+		private string?                    _ownerConnectionId;
+		private CancellationTokenSource?   _runCts;
+		private Task?                      _runTask;
 
 		public TrainingService(IHubContext<TrainingHub> hubContext, ILogger<TrainingService> logger)
 		{
@@ -75,11 +75,11 @@ namespace RLSharp.FrozenLake.Web.Services
 				}
 
 				DisposeRunToken();
-				_env               = new RLSharp.Torch.Environs.FrozenLake([config.SmoothTarget, config.SmoothLeft, config.SmoothRight]);
-				_agent             = AgentFactory.Create(config, _env);
+				_env = new Torch.Environs.FrozenLake([config.SmoothTarget, config.SmoothLeft, config.SmoothRight]);
+				_agent = AgentFactory.Create(config, _env);
 				_ownerConnectionId = connectionId;
-				_episodeCount      = 0;
-				_runCts            = new CancellationTokenSource();
+				_episodeCount = 0;
+				_runCts = new CancellationTokenSource();
 				AttachStepCallback(connectionId, _runCts.Token);
 				Queue(connectionId, "TrainingStarted", config.AgentType);
 				_runTask = RunTrainingAsync(config, connectionId, _runCts.Token);

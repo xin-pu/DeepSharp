@@ -4,7 +4,7 @@ namespace RLSharp.Torch.Agents
 	///     Dueling Network architecture.
 	///     Decomposes Q(s,a) into state value V(s) and advantage A(s,a):
 	///     Q(s,a) = V(s) + A(s,a) - mean(A(s,Â·))
-	///     Shared feature extractor â†?V head (output 1) + A head (output actionSize)
+	///     Shared feature extractor ï¿½?V head (output 1) + A head (output actionSize)
 	/// </summary>
 	public sealed class DuelingNet : Module<torch.Tensor, torch.Tensor>
 	{

@@ -1,15 +1,14 @@
 using RLSharp.Torch.Environs;
-using RLSharp.Torch;
 
 namespace RLSharp.Torch.Agents.Tabular
 {
 	public class PIDiscountR : PolicyIteration
 	{
 		public PIDiscountR(EnvironmentBase<Space, Space> env,
-			Dictionary<RewardKey, float>         p,
-			Dictionary<RewardKey, float>         r,
-			int                                  t,
-			float                                gamma = 0.9f)
+			Dictionary<RewardKey, float>                 p,
+			Dictionary<RewardKey, float>                 r,
+			int                                          t,
+			float                                        gamma = 0.9f)
 			: base(env, p, r, t)
 		{
 			Gamma = gamma;

@@ -4,7 +4,6 @@ using RLSharp.Torch.Agents.Deep.ActorCritic;
 using RLSharp.Torch.Agents.Deep.Policy;
 using RLSharp.Torch.Agents.Deep.Value;
 using RLSharp.Torch.Agents.Tabular;
-using RLSharp.Torch.Environs;
 
 namespace RLSharp.FrozenLake.Web.Services
 {
@@ -13,7 +12,7 @@ namespace RLSharp.FrozenLake.Web.Services
 	/// </summary>
 	public static class AgentFactory
 	{
-		public static Agent Create(TrainingConfig cfg, RLSharp.Torch.Environs.FrozenLake env)
+		public static Agent Create(TrainingConfig cfg, Torch.Environs.FrozenLake env)
 		{
 			return cfg.AgentType switch
 			{

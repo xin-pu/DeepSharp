@@ -9,16 +9,16 @@ namespace RLSharp.Torch.Agents
 	{
 		public RewardKey(torch.Tensor state, torch.Tensor action, torch.Tensor newState)
 		{
-			State    = state;
+			State       = state;
 			ActionValue = action;
-			NewState = newState;
+			NewState    = newState;
 		}
 
 		public RewardKey(ObservationValue state, ActionValue action, ObservationValue newState)
 		{
-			State    = state.Value!;
+			State       = state.Value!;
 			ActionValue = action.Value!;
-			NewState = newState.Value!;
+			NewState    = newState.Value!;
 		}
 
 		public torch.Tensor State { get; set; }
@@ -49,7 +49,8 @@ namespace RLSharp.Torch.Agents
 
 		public bool Equals(RewardKey other)
 		{
-			return State.Equals(other.State) && ActionValue.Equals(other.ActionValue) && NewState.Equals(other.NewState);
+			return State.Equals(other.State) && ActionValue.Equals(other.ActionValue) &&
+			       NewState.Equals(other.NewState);
 		}
 
 

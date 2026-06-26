@@ -12,10 +12,10 @@ namespace RLSharp.Torch.Agents.Deep.ActorCritic
 	public class A3C : ActorCriticAgent
 	{
 		public A3C(EnvironmentBase<Space, Space> env,
-			int                          workerCount = 4,
-			float                        alpha       = 0.01f,
-			float                        gamma       = 0.99f,
-			int                          nStep       = 5)
+			int                                  workerCount = 4,
+			float                                alpha       = 0.01f,
+			float                                gamma       = 0.99f,
+			int                                  nStep       = 5)
 			: base(env, "A3C")
 		{
 			WorkerCount = workerCount;
@@ -53,7 +53,7 @@ namespace RLSharp.Torch.Agents.Deep.ActorCritic
 
 		/// <summary>
 		///     A3C learning loop:
-		///     Each worker samples an episode â†?collect n-step returns â†?unified update.
+		///     Each worker samples an episode ï¿½?collect n-step returns ï¿½?unified update.
 		/// </summary>
 		public override LearnOutcome Learn()
 		{

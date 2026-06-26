@@ -1,31 +1,28 @@
 ﻿# RLSharp
 
-RLSharp is a reinforcement learning project built with .NET 8 and TorchSharp.
-It is currently intended for learning, experimentation, and further development.
-The public API is still allowed to change.
+RLSharp is a reinforcement learning library for .NET. The public entry point is a pure .NET Core API: application code defines its own state, action, environment, and reward model, then uses RLSharp agents to train, save, load, and run policies in real systems. TorchSharp is used only by the `RLSharp.Torch` backend.
 
 ## Features
 
-- Tabular reinforcement learning algorithms.
-- Deep reinforcement learning algorithms backed by TorchSharp.
-- FrozenLake and K-Armed Bandit environments.
-- Action selectors, replay buffers, trainers, and network helpers.
-- FrozenLake web visualizer.
+- Pure .NET environment and policy interfaces in `RLSharp.Core`.
+- Train/inference separation through `IAgent<TState,TAction>` and `IPolicy<TState,TAction>`.
+- TorchSharp-backed generic agents for custom state/action types.
+- Legacy tensor-first algorithms and FrozenLake web visualizer retained for compatibility.
 - Console sample and xUnit test suite.
 
 ## Requirements
 
 - .NET 8 SDK
 - Windows, Linux, or macOS
-- CPU TorchSharp runtime through `TorchSharp-cpu`
+- CPU TorchSharp runtime through `TorchSharp-cpu` for `RLSharp.Torch`
 
 ## Project Structure
 
 ```text
 RLSharp
 |-- src
-|   |-- RLSharp.Core                 Shared training abstractions
-|   |-- RLSharp.Torch                TorchSharp-backed RL library
+|   |-- RLSharp.Core                 Pure .NET abstractions and trainer
+|   |-- RLSharp.Torch                TorchSharp backend, encoders, generic agents
 |   |-- RLSharp.FrozenLake.Web       FrozenLake ASP.NET Core visualizer
 |   |-- RLSharp.Samples.Console      Console sample
 |   |-- RLSharp.Tests                xUnit tests
@@ -34,9 +31,7 @@ RLSharp
 `-- resources
 ```
 
-`RLSharp.Torch` currently contains the environment and agent implementations.
-`RLSharp.Core` is kept TorchSharp-free for shared abstractions; future work can
-move pure .NET tabular/environment contracts there as the API stabilizes.
+`RLSharp.Core` does not reference TorchSharp and does not expose tensors in its public API.
 
 ## Build
 
@@ -45,52 +40,92 @@ dotnet restore src/RLSharp.sln
 dotnet build src/RLSharp.sln --no-restore
 ```
 
-## Quick Start
+## Generic Library Quick Start
+
+Define your domain state/action and implement an environment:
 
 ```csharp
-using RLSharp.Torch;
-using RLSharp.Torch.Agents.Tabular;
-using RLSharp.Torch.Environs;
+using RLSharp.Core.Environments;
+using RLSharp.Core.Spaces;
 
-RandomProvider.SetSeed(42);
+public enum MoveAction { Left, Right }
 
-var environment = new FrozenLake([0.8f, 0.1f, 0.1f]);
-var agent = new QLearning(environment, epsilon: 0.2f, alpha: 0.2f, gamma: 0.9f);
-
-for (var episode = 0; episode < 1_000; episode++)
+public sealed class LineWorld : IEnvironment<int, MoveAction>
 {
-    agent.Learn();
+    private int _state;
+
+    public string Name => "LineWorld";
+    public IActionSpace<MoveAction> ActionSpace { get; } =
+        new DiscreteActionSpace<MoveAction>(Enum.GetValues<MoveAction>());
+
+    public int Reset()
+    {
+        _state = 0;
+        return _state;
+    }
+
+    public StepResult<int> Step(MoveAction action)
+    {
+        _state = action == MoveAction.Right ? Math.Min(2, _state + 1) : Math.Max(0, _state - 1);
+        return new StepResult<int>(_state, _state == 2 ? 1f : 0f, _state == 2);
+    }
+}
+```
+
+Train a generic agent and save it:
+
+```csharp
+using RLSharp.Core.Training;
+using RLSharp.Torch.Agents.Generic;
+using RLSharp.Torch.Encoding;
+
+static float[] EncodeState(int state)
+{
+    var values = new float[3];
+    values[state] = 1f;
+    return values;
 }
 
-var result = agent.RunEpisode();
-Console.WriteLine($"Reward: {result.SumReward.Value}");
+var environment = new LineWorld();
+var encoder = new DelegateStateEncoder<int>(3, EncodeState);
+var agent = new DqnAgent<int, MoveAction>(environment, encoder);
+var trainer = new Trainer<int, MoveAction>(agent);
+
+trainer.Train(new TrainingOptions { MaxEpisodes = 100, CheckpointPath = "lineworld.dat" });
 ```
+
+Use the trained policy in a real system without an environment:
+
+```csharp
+var liveState = 0;
+MoveAction action = agent.Policy.SelectAction(liveState);
+```
+
+The same pattern applies to `QLearningAgent<TState,TAction>`, `DqnAgent<TState,TAction>`, and `PpoAgent<TState,TAction>`.
+
+## Core API
+
+| Type | Purpose |
+| --- | --- |
+| `IEnvironment<TState,TAction>` | User-defined training environment with `Reset()` and `Step(action)`. |
+| `IActionSpace<TAction>` | Defines valid actions and random sampling. |
+| `IAgent<TState,TAction>` | Trainable policy with `Learn()`, `SelectAction()`, `Save()`, and `Load()`. |
+| `IPolicy<TState,TAction>` | Inference-only policy for deployment. |
+| `Trainer<TState,TAction>` | Reusable training loop with stop/checkpoint options. |
+| `Transition<TState,TAction>` / `Episode<TState,TAction>` | Pure .NET training data models. |
 
 ## Included Algorithms
 
 | Category | Implementations |
 | --- | --- |
-| Tabular methods | Q-Learning, SARSA, on-policy Monte Carlo, off-policy Monte Carlo |
-| Dynamic programming | Policy Iteration, Value Iteration, and variants |
-| Value-based deep RL | DQN, Double DQN, Dueling DQN, Noisy DQN, Categorical DQN, CGP |
-| Policy gradient | REINFORCE, Cross Entropy, PPO |
-| Actor-Critic | Actor-Critic, A2C, A3C |
+| Generic discrete agents | QLearningAgent, DqnAgent, PpoAgent |
+| Legacy tabular methods | Q-Learning, SARSA, on-policy Monte Carlo, off-policy Monte Carlo |
+| Legacy deep value methods | DQN, Double DQN, Dueling DQN, Noisy DQN, Categorical DQN, CGP |
+| Legacy policy gradient | REINFORCE, Cross Entropy, PPO |
+| Legacy actor-critic | Actor-Critic, A2C, A3C |
 | Continuous control boundaries | DDPG, TD3, SAC |
 
-DDPG, TD3, and SAC are present as Torch-layer algorithm boundaries for the next
-continuous-control phase. They are not exposed in the FrozenLake web UI because
-FrozenLake uses a discrete action space.
-
-The FrozenLake web UI currently supports:
-
-- `QLearning`
-- `SARSA`
-- `MonteCarloOnPolicy`
-- `MonteCarloOffPolicy`
-- `DQN`
-- `REINFORCE`
-- `A2C`
-- `PPO`
+DDPG, TD3, and SAC are present as Torch-layer boundaries for the next continuous-control phase. They require a continuous action-space adapter before full training support.
 
 ## Running Samples
 
@@ -112,31 +147,6 @@ Default development URL:
 http://localhost:5111
 ```
 
-## Common Agent APIs
-
-All concrete agents inherit from `Agent`.
-
-| API | Description |
-| --- | --- |
-| `Learn()` | Executes one algorithm-specific learning operation and returns `LearnOutcome`. |
-| `RunEpisode()` | Runs one episode with the current policy. |
-| `RunEpisodes(count)` | Runs multiple episodes. |
-| `TestEpisodes(count)` | Returns average reward over multiple episodes. |
-| `GetPolicyAct(state)` | Selects an action using the current policy. |
-| `GetEpsilonAct(state)` | Selects an action using epsilon-greedy policy. |
-| `Save(path)` | Saves model or value data. |
-| `Load(path)` | Loads model or value data. |
-
-Core environment types currently use these public names:
-
-- `EnvironmentBase<TActionSpace, TObservationSpace>`
-- `ActionValue`
-- `ObservationValue`
-- `Reward`
-- `Step`
-- `ReplayBuffer`
-- `TrainerCallback`
-
 ## Testing
 
 Run the default fast test suite:
@@ -145,22 +155,18 @@ Run the default fast test suite:
 dotnet test src/RLSharp.Tests/RLSharp.Tests.csproj
 ```
 
-The default test filter excludes long-running training and stochastic convergence
-scenarios. To run all tests explicitly:
+Run the generic library API tests explicitly:
 
 ```powershell
-dotnet test src/RLSharp.Tests/RLSharp.Tests.csproj `
-  --filter "FullyQualifiedName~RLSharp.Tests" `
-  --logger "console;verbosity=normal"
+dotnet test src/RLSharp.Tests/RLSharp.Tests.csproj --filter "FullyQualifiedName~GenericLibraryApiTest"
 ```
 
 ## Development Notes
 
 - NuGet package versions are managed in `Directory.Packages.props`.
-- CPU is the default TorchSharp runtime.
-- Call `RandomProvider.SetSeed(seed)` at experiment entry points when reproducibility matters.
-- Dispose temporary TorchSharp tensors directly or with `using` when extending algorithms.
-- New algorithms should include deterministic model tests plus separate long-running convergence tests.
+- `RLSharp.Core` must remain TorchSharp-free.
+- TorchSharp tensors should not leak through new public Core APIs.
+- Legacy tensor-first APIs remain available while algorithms migrate to the generic Core model.
 
 ## License
 

@@ -6,11 +6,11 @@ namespace RLSharp.Torch.Environs
 	public class Step : ICloneable
 	{
 		public Step(ObservationValue preState,
-			ActionValue                 action,
+			ActionValue              action,
 			ObservationValue         postState,
-			Reward              reward,
-			bool                isComplete = false,
-			float               priority   = 1f)
+			Reward                   reward,
+			bool                     isComplete = false,
+			float                    priority   = 1f)
 		{
 			PreState   = preState;
 			Action     = action;

@@ -11,11 +11,11 @@ namespace RLSharp.Torch.Agents.Deep.Value
 	public class DuelingDQN : DeepValueAgent
 	{
 		public DuelingDQN(EnvironmentBase<Space, Space> env,
-			int                                 n         = 1000,
-			int                                 c         = 10000,
-			float                               epsilon   = 0.1f,
-			float                               gamma     = 0.99f,
-			int                                 batchSize = 32)
+			int                                         n         = 1000,
+			int                                         c         = 10000,
+			float                                       epsilon   = 0.1f,
+			float                                       gamma     = 0.99f,
+			int                                         batchSize = 32)
 			: base(env, "DuelingDQN")
 		{
 			C         = c;
@@ -74,8 +74,8 @@ namespace RLSharp.Torch.Agents.Deep.Value
 				while (!EnvironmentBase.IsComplete(epoch))
 				{
 					epoch++;
-					var ActionValue  = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
-					var step = EnvironmentBase.Step(ActionValue, epoch);
+					var ActionValue = GetEpsilonAct(EnvironmentBase.ObservationValue!.Value!);
+					var step        = EnvironmentBase.Step(ActionValue, epoch);
 					episode.Enqueue(step);
 
 					EnvironmentBase.CallBack?.Invoke(step);
